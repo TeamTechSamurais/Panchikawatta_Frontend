@@ -8,7 +8,20 @@ class notification_page extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notification Page'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: const Text(
+          'Notifications',
+          style: TextStyle(
+            color: Color(0xFFFF5C01),
+            fontSize: 27,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
       ),
       body: const Center(
         child: Text('Notification Page Content'),
