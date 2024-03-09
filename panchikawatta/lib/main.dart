@@ -59,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.lightbulb),
-            label: 'Alerts',
+            label: 'Quick Help',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
