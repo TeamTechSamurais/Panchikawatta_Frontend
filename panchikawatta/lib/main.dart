@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'screens/search_page.dart';
 import 'screens/notification_page.dart';
@@ -33,10 +31,10 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    search_page(),
-    notification_page(),
-    alert_page(),
-    profile_page(),
+    const search_page(),
+    const notification_page(),
+    const alert_page(),
+    const profile_page(),
   ];
 
   void _onItemTapped(int index) {
