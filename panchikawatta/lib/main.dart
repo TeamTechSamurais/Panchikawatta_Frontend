@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:panchikawatta/screens/SplashScreen.dart';
 import 'screens/search_page.dart';
 import 'screens/notification_page.dart';
 import 'screens/alert_page.dart';
@@ -13,11 +14,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: MyHomePage(),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: SplashScreen(),
     );
   }
 }
+  
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
