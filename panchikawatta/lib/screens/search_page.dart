@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:panchikawatta/screens/browse.dart';
 
-// ignore: camel_case_types
+ 
 class search_page extends StatelessWidget {
   const search_page({super.key});
 
@@ -11,7 +12,10 @@ class search_page extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () {
-            Navigator.pop(context);
+             Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => browse()),
+            );
           },
         ),
         title: const Text(

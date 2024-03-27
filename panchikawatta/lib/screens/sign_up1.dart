@@ -1,26 +1,23 @@
-  import 'dart:io';
-
+import 'dart:io';
 import 'package:panchikawatta/screens/login.dart';
 import 'package:panchikawatta/screens/sign_up2.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:panchikawatta/screens/login.dart';
-import 'package:panchikawatta/screens/sign_up2.dart';
 
 class sign_up1 extends StatefulWidget {
-  const  sign_up1({Key? key}) : super(key: key);
+  const sign_up1({Key? key}) : super(key: key);
 
   @override
   _SignUp1State createState() => _SignUp1State();
 }
 
 class _SignUp1State extends State<sign_up1> {
-  String? imagePath; // Holds the path of the selected image
+  String? imagePath;
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size; // Define size here
+    Size size = MediaQuery.of(context).size;
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -63,11 +60,11 @@ class _SignUp1State extends State<sign_up1> {
                         child: GestureDetector(
                           onTap: () async {
                             final imagePicker = ImagePicker();
-                            final XFile? pickedFile = await imagePicker.pickImage(
+                            final XFile? pickedFile =
+                                await imagePicker.pickImage(
                               source: ImageSource.gallery,
                             );
                             if (pickedFile != null) {
-                              // Handle the picked image
                               setState(() {
                                 imagePath = pickedFile.path;
                               });
@@ -81,40 +78,41 @@ class _SignUp1State extends State<sign_up1> {
                               : CircleAvatar(
                                   radius: 50,
                                   backgroundColor: Colors.grey[400],
-                                   child: Image.asset('lib/src/img/profile.png',
-                                   height: 150,
-                                    width: 150, 
-                                    ),
+                                  child: Image.asset(
+                                    'lib/src/img/profile.png',
+                                    height: 150,
+                                    width: 150,
+                                  ),
                                 ),
                         ),
                       ),
                     ),
-     Positioned(
-  bottom: -20,
-  right: -10,
-  child: Padding(
-    padding: const EdgeInsets.all(10.0), // Add your desired padding here
-    child: GestureDetector(
-      onTap: () async {
-        final imagePicker = ImagePicker();
-        final XFile? pickedFile = await imagePicker.pickImage(
-          source: ImageSource.gallery,
-        );
-        if (pickedFile != null) {
-          // Handle the picked image
-          setState(() {
-            imagePath = pickedFile.path;
-          });
-        }
-      },
-      child: Image.asset(
-        'lib/src/img/uploadicon.png',
-        height: 50,
-        width: 50,
-      ),
-    ),
-  ),
-),
+                    Positioned(
+                      bottom: -20,
+                      right: -10,
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: GestureDetector(
+                          onTap: () async {
+                            final imagePicker = ImagePicker();
+                            final XFile? pickedFile =
+                                await imagePicker.pickImage(
+                              source: ImageSource.gallery,
+                            );
+                            if (pickedFile != null) {
+                              setState(() {
+                                imagePath = pickedFile.path;
+                              });
+                            }
+                          },
+                          child: Image.asset(
+                            'lib/src/img/uploadicon.png',
+                            height: 50,
+                            width: 50,
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -188,13 +186,11 @@ class _SignUp1State extends State<sign_up1> {
                     child: DropdownButtonFormField<String>(
                       decoration: InputDecoration(
                         hintText: ' Province',
-                        border: InputBorder.none, // Set the hint text here
+                        border: InputBorder.none,
                       ),
                       isExpanded: true,
-                      value: null, // Set the initial value
-                      onChanged: (String? newValue) {
-                        // Handle province selection
-                      },
+                      value: null,
+                      onChanged: (String? newValue) {},
                       items: <String>[
                         'Western',
                         'Central',
@@ -217,10 +213,10 @@ class _SignUp1State extends State<sign_up1> {
                     child: DropdownButtonFormField<String>(
                       decoration: InputDecoration(
                         hintText: ' District',
-                        border: InputBorder.none, // Set the hint text here
+                        border: InputBorder.none,
                       ),
                       isExpanded: true,
-                      value: null, // Set the initial value
+                      value: null,
                       onChanged: (String? newValue) {},
                       items: <String>[
                         'Colombo',
@@ -264,8 +260,7 @@ class _SignUp1State extends State<sign_up1> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(29),
                   child: TextButton(
-                    onPressed: ()
- {
+                    onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => sign_up2()),
@@ -275,13 +270,12 @@ class _SignUp1State extends State<sign_up1> {
                       padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
                         EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                       ),
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(const Color(0xFFFF5C01)),
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          const Color(0xFFFF5C01)),
                     ),
                     child: Text(
                       "Next",
                       style: TextStyle(color: Colors.white),
-
                     ),
                   ),
                 ),
@@ -298,9 +292,6 @@ class _SignUp1State extends State<sign_up1> {
                       ),
                     ),
                   ),
-                 
-                   
-
                   GestureDetector(
                     onTap: () {
                       Navigator.push(
@@ -313,17 +304,13 @@ class _SignUp1State extends State<sign_up1> {
                       child: Text(
                         "Login",
                         style: TextStyle(
-                        color: Color(0xFFFF5C01),
+                          color: Color(0xFFFF5C01),
                           fontWeight: FontWeight.bold,
                           decoration: TextDecoration.underline,
                         ),
                       ),
-                      onEnter: (PointerEnterEvent event) {
-                          
-                      },
-                      onExit: (PointerExitEvent) {
-                         
-                      },
+                      onEnter: (PointerEnterEvent event) {},
+                      onExit: (PointerExitEvent) {},
                     ),
                   ),
                 ],
@@ -343,7 +330,7 @@ class TextFieldContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size; // Define size here
+    Size size = MediaQuery.of(context).size;
     return Container(
       margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
       padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),

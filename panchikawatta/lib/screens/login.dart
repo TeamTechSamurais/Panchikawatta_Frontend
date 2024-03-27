@@ -1,8 +1,7 @@
- import 'package:panchikawatta/main.dart';
+import 'package:panchikawatta/main.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/screens/sign_up1.dart';
- 
 
 class login extends StatelessWidget {
   const login({Key? key}) : super(key: key);
@@ -12,7 +11,6 @@ class login extends StatelessWidget {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       body: SingleChildScrollView(
-        // Wrap your Column with SingleChildScrollView 
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 25),
           child: Column(
@@ -74,11 +72,12 @@ class login extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(29),
                   child: TextButton(
-                    onPressed: () { Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) =>MyHomePage()),
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => MyHomePage()),
                       );
-                      },
+                    },
                     style: ButtonStyle(
                       padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
                         EdgeInsets.symmetric(vertical: 15, horizontal: 40),
@@ -123,15 +122,8 @@ class login extends StatelessWidget {
                           decoration: TextDecoration.underline,
                         ),
                       ),
-                      onEnter: (PointerEnterEvent event) {
-                        // Change color when hovering
-                        // Update the text style
-                        // You can directly set the color here
-                        // Or you can define a new TextStyle object with the desired color
-                      },
-                      onExit: (PointerExitEvent event) {
-                        // Restore original TextStyle when not hovering
-                      },
+                      onEnter: (PointerEnterEvent event) {},
+                      onExit: (PointerExitEvent event) {},
                     ),
                   ),
                 ],
@@ -157,12 +149,10 @@ class TextFieldContainer extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 30, vertical: 5),
       width: size.width * 0.9,
       decoration: BoxDecoration(
-         color: Color.fromRGBO(246, 243, 243, 0.8),
+        color: Color.fromRGBO(246, 243, 243, 0.8),
         borderRadius: BorderRadius.circular(10),
       ),
       child: child,
     );
   }
 }
-
-

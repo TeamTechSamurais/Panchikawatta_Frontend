@@ -66,6 +66,8 @@ flutter:
   - lib\src\img\profile.png
   - lib\src\img\uploadicon.png
   - lib\src\img\Whitelogo2.png
+  - lib\src\img\vehicleDetails.jpeg
+  - lib\src\img\Success.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

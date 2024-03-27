@@ -1,17 +1,16 @@
- import 'package:panchikawatta/main.dart';
- import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
+import 'package:panchikawatta/main.dart';
 import 'package:panchikawatta/screens/login.dart';
+import 'package:flutter/material.dart';
 
-class login_1 extends StatelessWidget {
-  const login_1({Key? key});
+class browse extends StatelessWidget {
+  const browse({Key? key});
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 80,vertical: 20),
+        padding: EdgeInsets.symmetric(horizontal: 80, vertical: 20),
         child: Column(
           children: <Widget>[
             SizedBox(height: 40),
@@ -30,11 +29,10 @@ class login_1 extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(29),
                 child: TextButton(
-              
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) =>login()),
+                      MaterialPageRoute(builder: (context) => login()),
                     );
                   },
                   style: ButtonStyle(
@@ -52,23 +50,22 @@ class login_1 extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 30), 
-Text(
-  "or",
-  style: TextStyle(
-    color: Colors.black,
-    fontSize: 16, // Adjust font size as needed
-  ),
-),
-Container(
-  width: size.width * 1.8,
-  child: Divider(
-    color: Colors.grey, // Gray color for the divider
-    thickness: 1, // Adjust thickness as needed
-  ),
-),
-
-            SizedBox(height: 20), // Added spacing
+            SizedBox(height: 30),
+            Text(
+              "or",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+              ),
+            ),
+            Container(
+              width: size.width * 1.8,
+              child: Divider(
+                color: Colors.grey,
+                thickness: 1,
+              ),
+            ),
+            SizedBox(height: 20),
             Container(
               width: size.width * 0.3,
               child: ClipRRect(
@@ -85,7 +82,7 @@ Container(
                       EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                     ),
                     backgroundColor: MaterialStateProperty.all<Color>(
-                        const Color(0xFFFF5C01),
+                      const Color(0xFFFF5C01),
                     ),
                   ),
                   child: Text(
