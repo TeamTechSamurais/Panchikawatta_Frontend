@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:panchikawatta/components/custom_button.dart';
+import 'package:panchikawatta/screens/adPost1.dart';
 
 // ignore: camel_case_types
 class profile_page extends StatelessWidget {
@@ -10,9 +12,7 @@ class profile_page extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'My Profile',
@@ -23,8 +23,17 @@ class profile_page extends StatelessWidget {
           ),
         ),
       ),
-      body: const Center(
-        child: Text('Profile Page Content'),
+      body: Center(
+        child: CustomButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => AdPost1(key: UniqueKey())),
+            );
+          },
+          text: 'Post Ad',
+        ),
       ),
     );
   }
