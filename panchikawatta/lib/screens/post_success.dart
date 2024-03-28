@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, unused_import
+// ignore_for_file: prefer_const_constructors, unused_import, prefer_const_constructors_in_immutables
 
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
@@ -6,13 +6,13 @@ import 'package:panchikawatta/screens/profile_page.dart';
 
 class PostSuccess extends StatelessWidget {
   // ignore: use_super_parameters
-  const PostSuccess({Key? key}) : super(key: key);
+  PostSuccess({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(''),
+        title: Text(''),
       ),
       body: Center(
         child: Container(
@@ -20,7 +20,7 @@ class PostSuccess extends StatelessWidget {
             color: Colors.white,
           ),
           padding: EdgeInsets.all(30),
-          child: const Column(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(Icons.check_circle_outline_rounded,
@@ -32,6 +32,17 @@ class PostSuccess extends StatelessWidget {
                     fontSize: 25,
                     color: Color(0xFFFF5C01),
                     fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 20),
+              CustomButton(
+                text: 'Go to Profile',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const profile_page()),
+                  );
+                },
               ),
             ],
           ),

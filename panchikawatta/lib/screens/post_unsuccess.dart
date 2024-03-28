@@ -12,15 +12,15 @@ class PostUnsuccess extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(''),
+        title: Text(''),
       ),
       body: Center(
         child: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.white,
           ),
-          padding: const EdgeInsets.all(30),
-          child: const Column(
+          padding: EdgeInsets.all(30),
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(Icons.cancel_rounded, size: 100, color: Color(0xFFFF5C01)),
@@ -31,6 +31,16 @@ class PostUnsuccess extends StatelessWidget {
                     fontSize: 25,
                     color: Color(0xFFFF5C01),
                     fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 20),
+              CustomButton(
+                text: 'Try Again',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const AdPost1()),
+                  );
+                },
               ),
             ],
           ),
