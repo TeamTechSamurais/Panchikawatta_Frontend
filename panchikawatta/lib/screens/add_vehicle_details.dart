@@ -11,39 +11,6 @@ class AddVehicleDetails extends StatefulWidget {
 }
 
 class _AddVehicleDetailsState extends State<AddVehicleDetails> {
-  // ignore: unused_field
-  // String _textFieldValue = '';
-
-  // Widget buildInputField(BuildContext context, String hintText, double width1, {Icon? suffixIcon}) {
-  //   return SizedBox(
-  //     width: MediaQuery.of(context).size.width * width1,
-  //     height: 55,
-  //     child: TextField(
-  //       onChanged: (value) {
-  //         setState(() {
-  //           _textFieldValue = value;
-  //         });
-  //       },
-  //       decoration: InputDecoration(
-  //         hintText: hintText,
-  //         hintStyle: const TextStyle(fontSize: 16, color: Color(0xCC000000), fontWeight: FontWeight.normal),
-  //         filled: true,
-  //         fillColor: const Color(0xFFFAFAFA),//0x80FF5C01
-  //         border: const OutlineInputBorder(
-  //           borderRadius: BorderRadius.all(Radius.circular(10)),
-  //           borderSide: BorderSide.none,
-  //         ),
-  //         suffixIcon: suffixIcon != null ? IconButton(
-  //           onPressed: () {
-  //             // Handle icon tap (e.g., open a date picker)
-  //           },
-  //           icon: suffixIcon,
-  //         ) : null,
-  //       ),
-  //     ),
-  //   );
-  // }
-
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +24,9 @@ class _AddVehicleDetailsState extends State<AddVehicleDetails> {
         ),
         title: const Text('Vehicle Details', style: TextStyle(color: Color(0xFFFF5C01), fontSize: 28)),
       ),
+      
+      
+      //body of the page
       body: SingleChildScrollView(
         child:Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,6 +40,8 @@ class _AddVehicleDetailsState extends State<AddVehicleDetails> {
                     Positioned.fill(
                       child: Image.asset('lib/assets/vehicleDetails.jpeg', fit: BoxFit.cover,),
                     ),
+                    
+                    //A button to upload the vehicle image
                     Align(
                       alignment: Alignment.bottomRight,
                       child: IconButton(
@@ -98,7 +70,6 @@ class _AddVehicleDetailsState extends State<AddVehicleDetails> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // buildInputField(context, 'Vehicle Name', 0.8),
                     InputFields(hintText: 'Vehicle Name', width1: 0.8),
                     
                     const SizedBox(height: 15),
@@ -106,8 +77,6 @@ class _AddVehicleDetailsState extends State<AddVehicleDetails> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // buildInputField(context, 'Type', 0.38, suffixIcon: const Icon(Icons.expand_more, size: 30, color: Color(0xCC000000))),
-                        // buildInputField(context, 'Make', 0.38, suffixIcon: const Icon(Icons.expand_more, size: 30, color: Color(0xCC000000))),
                         InputFields(hintText: 'Type', width1: 0.38, suffixIcon: const Icon(Icons.expand_more, size: 30, color: Color(0xCC000000))),
                         InputFields(hintText: 'Make', width1: 0.38, suffixIcon: const Icon(Icons.expand_more, size: 30, color: Color(0xCC000000))),
                       ],
@@ -118,8 +87,6 @@ class _AddVehicleDetailsState extends State<AddVehicleDetails> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // buildInputField(context, 'Model', 0.38, suffixIcon: const Icon(Icons.expand_more, size: 30, color: Color(0xCC000000))),
-                        // buildInputField(context, 'Year', 0.38,),
                         InputFields(hintText: 'Model', width1: 0.38, suffixIcon: const Icon(Icons.expand_more, size: 30, color: Color(0xCC000000))),
                         InputFields(hintText: 'Year', width1: 0.38,),
                       ],
@@ -145,7 +112,6 @@ class _AddVehicleDetailsState extends State<AddVehicleDetails> {
                         fontWeight: FontWeight.normal,
                       ),
                     ),
-                    // buildInputField(context, 'DD/MM/YY', 0.8, suffixIcon: const Icon(Icons.calendar_today)),
                     InputFields(hintText: 'DD/MM/YY', width1: 0.8, suffixIcon: const Icon(Icons.calendar_today)),
 
                     const SizedBox(height: 15),
@@ -158,7 +124,6 @@ class _AddVehicleDetailsState extends State<AddVehicleDetails> {
                         fontWeight: FontWeight.normal,
                       ),
                     ),
-                    // buildInputField(context, 'DD/MM/YY', 0.8, suffixIcon: const Icon(Icons.calendar_today)),
                     InputFields(hintText: 'DD/MM/YY', width1: 0.8, suffixIcon: const Icon(Icons.calendar_today)),
 
                     const SizedBox(height: 40),
