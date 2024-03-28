@@ -1,4 +1,8 @@
+// ignore_for_file: prefer_const_constructors, unused_import
+
 import 'package:flutter/material.dart';
+import 'package:panchikawatta/components/custom_button.dart';
+import 'package:panchikawatta/screens/adPost1.dart';
 
 class PostUnsuccess extends StatelessWidget {
   // ignore: use_super_parameters
@@ -12,15 +16,23 @@ class PostUnsuccess extends StatelessWidget {
       ),
       body: Center(
         child: Container(
-          decoration: BoxDecoration(
-            color: const Color(0xFFFF5C01),
-            borderRadius: BorderRadius.circular(50),
+          decoration: const BoxDecoration(
+            color: Colors.white,
           ),
           padding: const EdgeInsets.all(30),
-          child: const Text(
-            'Ad Posting \nUnsuccessful!',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 30, color: Colors.white),
+          child: const Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.cancel_rounded, size: 100, color: Color(0xFFFF5C01)),
+              Text(
+                'Ad Posted Unsuccessful!',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 25,
+                    color: Color(0xFFFF5C01),
+                    fontWeight: FontWeight.bold),
+              ),
+            ],
           ),
         ),
       ),
