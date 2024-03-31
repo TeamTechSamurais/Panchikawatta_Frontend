@@ -27,7 +27,6 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //backgroundColor: Colors.green.shade100,
       appBar: AppBar(
         elevation: 0.0,
         leading: IconButton(
@@ -128,7 +127,6 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  // BuyerProfile(),
                   Expanded(
                     child: BuyerProfile(),
                   ),
@@ -144,6 +142,9 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     );
   }
 
+  
+  
+  //A method to create an individual tab. This is created to add a vertical divider between the tabs.
   Widget _individualTab(String text) {
     return Container(
         height: 50 + MediaQuery

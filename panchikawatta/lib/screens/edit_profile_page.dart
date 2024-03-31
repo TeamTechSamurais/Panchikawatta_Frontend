@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-// import 'package:image_picker/image_picker.dart';
 import 'package:panchikawatta/components/custom_button.dart';
+import 'package:panchikawatta/components/drop_down_input_fields.dart';
 import 'package:panchikawatta/components/input_fields.dart';
 import 'dart:io';
 import 'package:panchikawatta/screens/image_picker.dart';
@@ -11,7 +11,9 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage>{
-  File? _image;
+  File? _image; //create a File object to store the image
+  // final emailController = TextEditingController(); //create a TextEditingController for the email field
+  final formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -56,17 +58,9 @@ class _EditProfilePageState extends State<EditProfilePage>{
                               return ImagePickerPage();
                             },
                           );
-                          // if (selectedImage != null) {
                             setState(() {
                               _image = selectedImage;
                             });
-                          // }
-                          // showDialog(
-                          //   context: context,
-                          //   builder: (BuildContext context) {
-                          //     return ImagePickerPage();
-                          //   },
-                          // );
                         },
                       ),
                     ),
@@ -84,7 +78,10 @@ class _EditProfilePageState extends State<EditProfilePage>{
               ),
               child: Container(
                 width: MediaQuery.of(context).size.width * 0.8,
-                child: Column(
+                child: Form(
+                  key: formKey,
+                  child:
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 20),
@@ -107,19 +104,84 @@ class _EditProfilePageState extends State<EditProfilePage>{
 
                     const SizedBox(height: 15),
 
-                    InputFields(hintText: 'annefernando82@gmail.com', width1: 0.8),
+                    InputFields(
+                      validator: (value) {
+                        String emailPattern = r'^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+';    //format: username@domain.extension.
+                        RegExp emailRegex = RegExp(emailPattern);
 
-                    const SizedBox(height: 15),
-
-                    InputFields(hintText: '0712345678', width1: 0.8),
+                        if (!emailRegex.hasMatch(value!)) {
+                          return 'Please enter a valid email address';
+                        }
+                        return null;
+                      },
+                      hintText: 'annefernando82@gmail.com', 
+                      width1: 0.8
+                    ),
 
                     const SizedBox(height: 15),
 
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        InputFields(hintText: 'Colombo', width1: 0.38, suffixIcon: const Icon(Icons.expand_more, size: 30, color: Color(0xCC000000))),
-                        InputFields(hintText: 'Western', width1: 0.38, suffixIcon: const Icon(Icons.expand_more, size: 30, color: Color(0xCC000000))),
+
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.25, // adjust as needed
+                          color: const Color(0xFFFAFAFA), // to visualize the container
+                          child: DropdownInputField(  // use the custom DropdownInputField widget
+                            dropdownItems: ['+94'],
+                            hintText: '+94',
+                            initialValue: '+94',
+                          ),
+                        ),
+
+                        InputFields(
+                          hintText: '712345678', 
+                          width1: 0.5, 
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter a phone number';
+                            }
+                            // Check if the phone number is valid
+                            final phoneRegExp = RegExp(r'^\d{9}$');
+                            if (!phoneRegExp.hasMatch(value)) {
+                              return 'Please enter a valid phone number';
+                            }
+                            return null;
+                          },
+                        ),
+
+                      ],
+                    ),
+
+                    const SizedBox(height: 15),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // InputFields(hintText: 'Colombo', width1: 0.38, suffixIcon: const Icon(Icons.expand_more, size: 30, color: Color(0xCC000000))),
+                        // InputFields(hintText: 'Western', width1: 0.38, suffixIcon: const Icon(Icons.expand_more, size: 30, color: Color(0xCC000000))),
+
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.38, // adjust as needed
+                          color: const Color(0xFFFAFAFA), // to visualize the container
+                          child: DropdownInputField(  // use the custom DropdownInputField widget
+                            dropdownItems: ['Ampara', 'Anuradhapura', 'Badulla', 'Batticaloa', 'Colombo', 'Galle', 'Gampaha', 'Hambantota', 'Jaffna', 'Kalutara', 'Kandy', 'Kegalle', 'Kilinochchi', 'Kurunegala', 'Mannar', 'Matale', 'Matara', 'Monaragala', 'Mullaitivu', 'Nuwara Eliya', 'Polonnaruwa', 'Puttalam', 'Ratnapura', 'Trincomalee', 'Vavuniya'],
+                            hintText: 'District',
+                            initialValue: 'Colombo',
+                          ),
+                        ),
+
+                        //"'package:flutter/src/material/dropdown.dart':Failed assertion:line 1619 pos 15: 'items == null || items.isEmpty || value == null || items.
+
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.38, // adjust as needed
+                          color: const Color(0xFFFAFAFA), // to visualize the container
+                          child: DropdownInputField(  // use the custom DropdownInputField widget
+                            dropdownItems: ['Central', 'Eastern', 'North Central', 'Northern', 'North Western', 'Sabaragamuwa', 'Southern', 'Uva', 'Western'],
+                            hintText: 'Province',
+                            initialValue: 'Western',
+                          ),
+                        ),
                       ],
                     ),
 
@@ -128,10 +190,13 @@ class _EditProfilePageState extends State<EditProfilePage>{
                     CustomButton(
                       onPressed: () {
                         // Navigate to the add vehicle page
+                        submitForm();
                       }, 
-                      text: 'Save',)
+                      text: 'Save',
+                    )
 
                   ],
+                ),
                 ),
               ),
             ),
@@ -139,5 +204,11 @@ class _EditProfilePageState extends State<EditProfilePage>{
         ),
       ),
     );
+  }
+
+  void submitForm() {
+    if (formKey.currentState?.validate() ?? false) {
+      // Continue with form submission
+    }
   }
 }
