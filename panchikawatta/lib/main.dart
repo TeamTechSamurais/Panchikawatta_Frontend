@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-//import 'package:panchikawatta/screens/add_vehicle_details.dart';
 import 'package:panchikawatta/screens/profile_page.dart';
 
 
