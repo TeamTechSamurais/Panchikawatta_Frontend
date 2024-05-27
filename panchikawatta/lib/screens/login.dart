@@ -1,11 +1,22 @@
+ import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:panchikawatta/main.dart';
-import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
+import 'package:panchikawatta/rest/rest_api.dart';
+import 'package:panchikawatta/screens/forgetpassword1.dart';
 import 'package:panchikawatta/screens/sign_up1.dart';
 
-class login extends StatelessWidget {
-  const login({Key? key}) : super(key: key);
+class login extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return _loginState();
+  }
+}
 
+class _loginState extends State<login> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -50,6 +61,8 @@ class login extends StatelessWidget {
               SizedBox(height: 10),
               TextFieldContainer(
                 child: TextField(
+                  controller: usernameController,
+                  obscureText: true,
                   cursorColor: Colors.black,
                   decoration: InputDecoration(
                     hintText: "Username",
@@ -59,6 +72,8 @@ class login extends StatelessWidget {
               ),
               TextFieldContainer(
                 child: TextField(
+                  controller: passwordController,
+                  obscureText: true,
                   cursorColor: Colors.black,
                   decoration: InputDecoration(
                     hintText: "Password",
@@ -66,30 +81,65 @@ class login extends StatelessWidget {
                   ),
                 ),
               ),
+               TextFieldContainer(
+                child: TextField(
+                  controller: emailController,
+                  obscureText: true,
+                  cursorColor: Colors.black,
+                  decoration: InputDecoration(
+                    hintText: "Email",
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    child: Text(
+                      "Forget Password?",
+                      style: TextStyle(
+                        color: Color(0xFF000000),
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ForgetPassword1()),
+                      );
+                    },
+                    child: Icon(
+                      Icons.arrow_forward,
+                      color: Colors.black,
+                      size: 24,
+                    ),
+                  ),
+                ],
+              ),
               SizedBox(height: 20),
               Container(
                 width: size.width * 0.8,
-                child: ClipRRect(
+                decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(29),
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => MyHomePage()),
-                      );
-                    },
-                    style: ButtonStyle(
-                      padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                        EdgeInsets.symmetric(vertical: 15, horizontal: 40),
-                      ),
-                      backgroundColor: MaterialStateProperty.all<Color>(
-                        const Color(0xFFFF5C01),
-                      ),
-                    ),
-                    child: Text(
-                      "Login",
-                      style: TextStyle(color: Colors.white),
-                    ),
+                ),
+                child: ElevatedButton(
+                  onPressed: () {
+                    usernameController.text.isNotEmpty && passwordController.text.isNotEmpty
+                        ? doLogin(usernameController.text, passwordController.text)
+                        : Fluttertoast.showToast(
+                            msg: 'All fields are required',
+                            textColor: Colors.white);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 40),
+                    backgroundColor: const Color(0xFFFF5C01),
+                  ),
+                  child: Text(
+                    "Login",
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
               ),
@@ -112,18 +162,13 @@ class login extends StatelessWidget {
                         MaterialPageRoute(builder: (context) => sign_up1()),
                       );
                     },
-                    child: MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: Text(
-                        "Sign Up",
-                        style: TextStyle(
-                          color: Color(0xFFFF8000),
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline,
-                        ),
+                    child: Text(
+                      "Sign Up",
+                      style: TextStyle(
+                        color: Color(0xFFFF8000),
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline,
                       ),
-                      onEnter: (PointerEnterEvent event) {},
-                      onExit: (PointerExitEvent event) {},
                     ),
                   ),
                 ],
@@ -133,6 +178,34 @@ class login extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void doLogin(String username, String password) async {
+    var res = await userLogin(username.trim(), password.trim());
+
+    if (res['success']) {
+      // Navigate to home page if login is successful
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) =>MyHomePage()));
+    } else {
+      // Show error message if login fails
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('Invalid username or password'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 }
 
@@ -155,4 +228,10 @@ class TextFieldContainer extends StatelessWidget {
       child: child,
     );
   }
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: login(),
+  ));
 }

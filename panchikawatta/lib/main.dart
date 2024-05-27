@@ -4,11 +4,17 @@ import 'screens/search_page.dart';
 import 'screens/notification_page.dart';
 import 'screens/alert_page.dart';
 import 'screens/profile_page.dart';
-
-void main() {
-  runApp(const MyApp());
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+void main() async {
+   
+  WidgetsFlutterBinding.ensureInitialized();
+ await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+);
+runApp(const MyApp());
 }
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 

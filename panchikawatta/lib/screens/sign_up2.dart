@@ -1,14 +1,46 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+import 'dart:math';
+
+
+
+import 'package:http/http.dart' as http;
+import 'package:panchikawatta/screens/Vehicledetails2.dart';
+import 'package:panchikawatta/screens/login.dart';
 import 'package:panchikawatta/screens/sign_up1.dart';
 import 'package:flutter/material.dart';
-
 import 'package:panchikawatta/screens/Vehicledetails1.dart';
 
-class sign_up2 extends StatelessWidget {
-  const sign_up2({Key? key}) : super(key: key);
+class sign_up2 extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return _SignUp2State();
+  }
+}
 
+class _SignUp2State extends State<sign_up2> {
+  String? imagePath;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController Business_NameController = TextEditingController();
+  final TextEditingController Business_AddressController = TextEditingController();
+  final TextEditingController Business_contact_noController = TextEditingController();
+  final TextEditingController Business_descriptionController = TextEditingController();
+  final TextEditingController firstNameController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    Map<String, String?>? data =
+        ModalRoute.of(context)!.settings.arguments as Map<String,String?>?;
+ 
+    String fname = data?['firstname'] ?? '';
+    String lname = data?['lastname'] ?? '';
+    String username = data?['username'] ?? '';  
+    String password = data?['password'] ?? '';
+    String email = data?['email'] ?? '';
+    String phoneno = data?['phoneno'] ?? '';
+    String? district = data?['district'];
+    String? province = data?['province'];
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -51,11 +83,23 @@ class sign_up2 extends StatelessWidget {
                   ),
                 ),
               ),
+              
               TextFieldContainer(
                 child: TextField(
+                  controller: Business_NameController,
                   cursorColor: Colors.black,
                   decoration: InputDecoration(
-                    hintText: "UserName",
+                    hintText: "Business Name",
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+              TextFieldContainer(
+                child: TextField(
+                  controller: Business_AddressController,
+                  cursorColor: Colors.black,
+                  decoration: InputDecoration(
+                    hintText: "Business Address",
                     border: InputBorder.none,
                   ),
                 ),
@@ -63,8 +107,9 @@ class sign_up2 extends StatelessWidget {
               TextFieldContainer(
                 child: TextField(
                   cursorColor: Colors.black,
+                  controller: Business_contact_noController,
                   decoration: InputDecoration(
-                    hintText: "Password",
+                    hintText: "Business contact no",
                     border: InputBorder.none,
                   ),
                 ),
@@ -72,17 +117,9 @@ class sign_up2 extends StatelessWidget {
               TextFieldContainer(
                 child: TextField(
                   cursorColor: Colors.black,
+                  controller: Business_descriptionController,
                   decoration: InputDecoration(
-                    hintText: "Email",
-                    border: InputBorder.none,
-                  ),
-                ),
-              ),
-              TextFieldContainer(
-                child: TextField(
-                  cursorColor: Colors.black,
-                  decoration: InputDecoration(
-                    hintText: "Password",
+                    hintText: "Business description",
                     border: InputBorder.none,
                   ),
                 ),
@@ -100,12 +137,12 @@ class sign_up2 extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => Vehicledetails1()),
+                                builder: (context) =>
+                                    Vehicledetails1()),  
                           );
                         },
                         style: ButtonStyle(
-                          padding:
-                              MaterialStateProperty.all<EdgeInsetsGeometry>(
+                          padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
                             EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                           ),
                           backgroundColor: MaterialStateProperty.all<Color>(
@@ -125,15 +162,27 @@ class sign_up2 extends StatelessWidget {
                       borderRadius: BorderRadius.circular(29),
                       child: TextButton(
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => Vehicledetails1()),
-                          );
+                         
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Vehicledetails1(), 
+                                
+                                settings: RouteSettings(
+                                  arguments: {
+                                  'Business_Name': Business_NameController.text,
+                                  'Business_Address': Business_AddressController.text,
+                                  'Business_contact_no': Business_contact_noController.text,
+                                  'Business_contact_no': Business_descriptionController.text,
+                                  'firstname': firstNameController.text,
+                                 
+                                }),
+                              ),
+                            );
+                          
                         },
                         style: ButtonStyle(
-                          padding:
-                              MaterialStateProperty.all<EdgeInsetsGeometry>(
+                          padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
                             EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                           ),
                           backgroundColor: MaterialStateProperty.all<Color>(
