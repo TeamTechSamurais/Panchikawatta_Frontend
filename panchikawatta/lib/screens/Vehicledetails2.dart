@@ -149,7 +149,7 @@ class _Vehicledetails2State extends State<Vehicledetails2> {
                           onPressed: () {
                             Navigator.pop(context);
                           },
-                          text: 'Back',
+                          text: 'Back',  
                         ),
                         CustomButton(
                           onPressed: signUp,
