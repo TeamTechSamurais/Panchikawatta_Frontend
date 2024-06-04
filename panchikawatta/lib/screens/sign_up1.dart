@@ -3,12 +3,16 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:http/http.dart' as http;
+import 'package:panchikawatta/screens/Registration_successs.dart';
 import 'package:panchikawatta/screens/login.dart';
 import 'package:panchikawatta/screens/sign_up2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:panchikawatta/user_auth/firebase_auth_implementation/firebase_auth_services.dart';
 
 class EmailValidationResult {
   final bool isValid;
@@ -25,15 +29,14 @@ class PhoneNumberValidationResult {
 }
 
 class sign_up1 extends StatefulWidget {
-
-
-
   @override
   _SignUp1State createState() => _SignUp1State();
 }
 
 class _SignUp1State extends State<sign_up1> {
+  final FirebaseAuthServices _auth = FirebaseAuthServices();
   String? imagePath;
+  bool _isSigningUp = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
@@ -43,8 +46,13 @@ class _SignUp1State extends State<sign_up1> {
   final TextEditingController phoneNoController = TextEditingController();
   String? selectedProvince;
   String? selectedDistrict;
-@override
-
+  @override
+  void dispose() {
+    usernameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   void _showFillMessage(String message, [String? emailError]) {
     showDialog(
@@ -491,65 +499,7 @@ class _SignUp1State extends State<sign_up1> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(29),
                     child: TextButton(
-                      onPressed: () async {
-                        // Check if any field is empty
-                        if (firstNameController.text.isEmpty ||
-                            lastNameController.text.isEmpty ||
-                            usernameController.text.isEmpty ||
-                            passwordController.text.isEmpty ||
-                            emailController.text.isEmpty ||
-                            phoneNoController.text.isEmpty ||
-                            selectedProvince == null ||
-                            selectedDistrict == null) {
-                          _showFillMessage("Please fill all required fields");
-                        } else {
-                          // Check password validity
-                          String? passwordError =
-                              validatePassword(passwordController.text);
-                          if (passwordError != null) {
-                            _showFillMessage(passwordError);
-                          } else {
-                            // Perform email validation asynchronously
-                            EmailValidationResult result =
-                                await isEmailValid(emailController.text);
-                            if (!result.isValid) {
-                              // Show validation message if email is not valid
-                              _showFillMessage(result.message,
-                                  'Please enter a valid email');
-                            } else {
-                              // Custom phone number validation
-                              PhoneNumberValidationResult phoneValidationResult =
-                                  validatePhoneNumber(
-                                      phoneNoController.text);
-                              if (!phoneValidationResult.isValid) {
-                                // Show validation message if phone number is not valid
-                                _showFillMessage(phoneValidationResult.message,
-                                    'Please enter a valid phone number');
-                              } else {
-                                // If all fields are filled and email is valid, navigate to next screen
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => sign_up2(),
-                                    settings: RouteSettings(
-                                      arguments: {
-                                        'firstname': firstNameController.text,
-                                        'lastname': lastNameController.text,
-                                        'username': usernameController.text,
-                                        'password': passwordController.text,
-                                        'email': emailController.text,
-                                        'phoneno': phoneNoController.text,
-                                        'province': selectedProvince,
-                                        'district': selectedDistrict
-                                      },
-                                    ),
-                                  ),
-                                );
-                              }
-                            }
-                          }
-                        }
-                      },
+                      onPressed: handleNextButtonPressed,
                       style: ButtonStyle(
                         padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
                           EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -557,10 +507,12 @@ class _SignUp1State extends State<sign_up1> {
                         backgroundColor: MaterialStateProperty.all<Color>(
                             const Color(0xFFFF5C01)),
                       ),
-                      child: Text(
-                        "Next",
-                        style: TextStyle(color: Colors.white),
-                      ),
+                      child: _isSigningUp
+                          ? CircularProgressIndicator(color: Colors.white)
+                          : Text(
+                              "Next",
+                              style: TextStyle(color: Colors.white),
+                            ),
                     ),
                   ),
                 ),
@@ -605,5 +557,70 @@ class _SignUp1State extends State<sign_up1> {
         ),
       ),
     );
+  }
+
+  void sign_up1() async {
+    setState(() {
+      _isSigningUp = true;
+    });
+    String username = usernameController.text;
+    String password = passwordController.text;
+    String email = emailController.text;
+
+    User? user = await _auth.signUpWithEmailAndPassword(email, password);
+
+    setState(() {
+      _isSigningUp = false;
+    });
+    if (user != null) {
+      print("User is successfully created");
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Registraion_success(),
+        ),
+      );
+    } else {
+      print("Some error happend");
+    }
+  }
+
+  void handleNextButtonPressed() async {
+    // Check if any field is empty
+    if (firstNameController.text.isEmpty ||
+        lastNameController.text.isEmpty ||
+        usernameController.text.isEmpty ||
+        passwordController.text.isEmpty ||
+        emailController.text.isEmpty ||
+        phoneNoController.text.isEmpty ||
+        selectedProvince == null ||
+        selectedDistrict == null) {
+      _showFillMessage("Please fill all required fields");
+    } else {
+      // Check password validity
+      String? passwordError = validatePassword(passwordController.text);
+      if (passwordError != null) {
+        _showFillMessage(passwordError);
+      } else {
+        // Perform email validation asynchronously
+        EmailValidationResult result = await isEmailValid(emailController.text);
+        if (!result.isValid) {
+          // Show validation message if email is not valid
+          _showFillMessage(result.message, 'Please enter a valid email');
+        } else {
+          // Custom phone number validation
+          PhoneNumberValidationResult phoneValidationResult =
+              validatePhoneNumber(phoneNoController.text);
+          if (!phoneValidationResult.isValid) {
+            // Show validation message if phone number is not valid
+            _showFillMessage(phoneValidationResult.message,
+                'Please enter a valid phone number');
+          } else {
+            // If all fields are filled and password is valid, call sign_up1()
+            sign_up1();
+          }
+        }
+      }
+    }
   }
 }

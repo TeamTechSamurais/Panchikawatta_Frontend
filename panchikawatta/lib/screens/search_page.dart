@@ -9,15 +9,7 @@ class search_page extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded),
-          onPressed: () {
-             Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => browse()),
-            );
-          },
-        ),
+         
         title: const Text(
           '',
           style: TextStyle(

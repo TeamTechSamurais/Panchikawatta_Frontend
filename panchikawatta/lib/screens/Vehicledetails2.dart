@@ -6,7 +6,7 @@ import 'package:panchikawatta/screens/Registration_successs.dart';
 import 'package:panchikawatta/screens/Vehicledetails1.dart';
 import 'package:panchikawatta/user_auth/firebase_auth_implementation/firebase_auth_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+ 
 class Vehicledetails2 extends StatefulWidget {
   final FirebaseAuthServices _auth = FirebaseAuthServices();
   final TextEditingController usernameController;

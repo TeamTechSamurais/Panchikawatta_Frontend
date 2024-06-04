@@ -8,12 +8,7 @@ class profile_page extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+        
         title: const Text(
           'My Profile',
           style: TextStyle(

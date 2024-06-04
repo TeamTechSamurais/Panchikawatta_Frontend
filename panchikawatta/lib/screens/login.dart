@@ -1,22 +1,39 @@
- import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:panchikawatta/global/common/toast.dart';
+
 import 'package:panchikawatta/main.dart';
 import 'package:panchikawatta/rest/rest_api.dart';
 import 'package:panchikawatta/screens/forgetpassword1.dart';
 import 'package:panchikawatta/screens/sign_up1.dart';
+import 'package:panchikawatta/user_auth/firebase_auth_implementation/firebase_auth_services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class login extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _loginState();
+    return _LoginState();
   }
 }
 
-class _loginState extends State<login> {
+class _LoginState extends State<login> {
+  bool _isSigning = false;
+  final FirebaseAuthServices _auth = FirebaseAuthServices();
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+
+  @override
+  void dispose() {
+    usernameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -62,7 +79,6 @@ class _loginState extends State<login> {
               TextFieldContainer(
                 child: TextField(
                   controller: usernameController,
-                  obscureText: true,
                   cursorColor: Colors.black,
                   decoration: InputDecoration(
                     hintText: "Username",
@@ -81,10 +97,9 @@ class _loginState extends State<login> {
                   ),
                 ),
               ),
-               TextFieldContainer(
+              TextFieldContainer(
                 child: TextField(
                   controller: emailController,
-                  obscureText: true,
                   cursorColor: Colors.black,
                   decoration: InputDecoration(
                     hintText: "Email",
@@ -108,7 +123,8 @@ class _loginState extends State<login> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => ForgetPassword1()),
+                        MaterialPageRoute(
+                            builder: (context) => ForgetPassword1()),
                       );
                     },
                     child: Icon(
@@ -126,18 +142,12 @@ class _loginState extends State<login> {
                   borderRadius: BorderRadius.circular(29),
                 ),
                 child: ElevatedButton(
-                  onPressed: () {
-                    usernameController.text.isNotEmpty && passwordController.text.isNotEmpty
-                        ? doLogin(usernameController.text, passwordController.text)
-                        : Fluttertoast.showToast(
-                            msg: 'All fields are required',
-                            textColor: Colors.white);
-                  },
+                  onPressed: _signIn,
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 15, horizontal: 40),
                     backgroundColor: const Color(0xFFFF5C01),
                   ),
-                  child: Text(
+                  child: _isSigning ? CircularProgressIndicator(color:Colors.white):Text(
                     "Login",
                     style: TextStyle(color: Colors.white),
                   ),
@@ -180,33 +190,33 @@ class _loginState extends State<login> {
     );
   }
 
-  void doLogin(String username, String password) async {
-    var res = await userLogin(username.trim(), password.trim());
+  void _signIn() async {
+    setState(() {
+      _isSigning = true;
+    });
+    String username = usernameController.text;
+    String email = emailController.text;
+    String password = passwordController.text;
 
-    if (res['success']) {
-      // Navigate to home page if login is successful
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) =>MyHomePage()));
-    } else {
-      // Show error message if login fails
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Error'),
-            content: Text('Invalid username or password'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
+    User? user = await _auth.signInWithEmailAndPassword(email, password);
+
+    setState(() {
+      _isSigning = false;
+    });
+    if (user != null) {
+      showToast(message: " yor are  successfully signed in");
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MyHomePage(),
+        ),
       );
+    } else {
+      showToast(message: "Invalid input");
     }
   }
+
+   
 }
 
 class TextFieldContainer extends StatelessWidget {

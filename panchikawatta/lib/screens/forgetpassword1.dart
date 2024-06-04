@@ -1,6 +1,7 @@
- 
+ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/screens/forgetpassword2.dart';
+import 'package:panchikawatta/screens/forgetpassword3.dart';
 import 'package:panchikawatta/screens/login.dart';
 
 class ForgetPassword1 extends StatefulWidget {
@@ -13,27 +14,50 @@ class ForgetPassword1 extends StatefulWidget {
 class _ForgetPassword1State extends State<ForgetPassword1> {
   final TextEditingController _emailController = TextEditingController();
 
-  Future<void> _resetPassword() async {
-    try {
-       
-      // Password reset email sent successfully
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => forget_password2()),
-      );
-    } catch (e) {
-      // An error occurred
-      print('Error sending password reset email: $e');
-    }
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
   }
 
+  Future<void> _resetPassword() async {
+  try {
+    await FirebaseAuth.instance.sendPasswordResetEmail(email: _emailController.text.trim());
+    
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: Text('Password reset link sent! Check your email.'),
+        );
+      },
+    );
+
+    // Navigate to forgetpassword2.dart after sending the password reset email
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => forget_password3()),
+    );
+  } on FirebaseAuthException catch (e) {
+    print(e);
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: Text(e.message.toString()),
+        );
+      },
+    );
+  }
+}
+ 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 25,vertical: 60),
+          padding: EdgeInsets.symmetric(horizontal: 25, vertical: 60),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -73,7 +97,8 @@ class _ForgetPassword1State extends State<ForgetPassword1> {
                       borderRadius: BorderRadius.circular(40),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 40),
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: 15, horizontal: 40),
                   ),
                 ),
               ),
@@ -133,7 +158,8 @@ class _ForgetPassword1State extends State<ForgetPassword1> {
                     ),
                     child: Text(
                       "Sign in",
-                      style: TextStyle(color: const Color.fromARGB(255, 59, 53, 53)),
+                      style: TextStyle(
+                          color: const Color.fromARGB(255, 59, 53, 53)),
                     ),
                   ),
                 ),
