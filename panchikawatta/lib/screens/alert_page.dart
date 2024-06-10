@@ -1,6 +1,8 @@
-import 'package:flutter/material.dart';
+// ignore_for_file: camel_case_types
 
-// ignore: camel_case_types
+import 'package:flutter/material.dart';
+import 'package:panchikawatta/components/grid_block.dart';
+
 class alert_page extends StatelessWidget {
   const alert_page({super.key});
 
@@ -23,8 +25,27 @@ class alert_page extends StatelessWidget {
           ),
         ),
       ),
-      body: const Center(
-        child: Text('Alert Page Content'),
+      body: Center(
+        child: GridView.count(
+          crossAxisCount: 2, // Number of columns in the grid
+          children: <Widget>[
+            GridBlock(
+              imagePath: 'assets/WarningLights/seat_belt.png',
+              buttonText: 'Button 1',
+              onPressed: () {
+                // Action for button 1
+              },
+            ),
+            GridBlock(
+              imagePath: 'assets/WarningLights/check_engine.jpg',
+              buttonText: 'Button 2',
+              onPressed: () {
+                // Action for button 2
+              },
+            ),
+            // Add more GridBlock widgets as needed
+          ],
+        ),
       ),
     );
   }
