@@ -2,6 +2,16 @@
 
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/grid_block.dart';
+import 'package:panchikawatta/screens/abs_light_action.dart';
+import 'package:panchikawatta/screens/brake_light_action.dart';
+import 'package:panchikawatta/screens/check_engine_action.dart';
+import 'package:panchikawatta/screens/engine_temp_action.dart';
+import 'package:panchikawatta/screens/oil_pressure_action.dart';
+import 'package:panchikawatta/screens/power_steering_action.dart';
+import 'package:panchikawatta/screens/seat_belt_action.dart';
+import 'package:panchikawatta/screens/security_light_action.dart';
+import 'package:panchikawatta/screens/tire_pressure_action.dart';
+import 'package:panchikawatta/screens/washer_fluid_action.dart';
 
 class alert_page extends StatelessWidget {
   const alert_page({super.key});
@@ -27,23 +37,141 @@ class alert_page extends StatelessWidget {
       ),
       body: Center(
         child: GridView.count(
-          crossAxisCount: 2, // Number of columns in the grid
+          crossAxisCount: 2,
+          mainAxisSpacing: 0, // Space between rows
+          crossAxisSpacing: 1.0, // Space between columns
+          childAspectRatio: 1.2, // Ratio of width to height
           children: <Widget>[
             GridBlock(
-              imagePath: 'assets/WarningLights/seat_belt.png',
-              buttonText: 'Button 1',
+              //imagePath: 'assets/check_engine.jpg',
+              buttonText: 'Instructions',
               onPressed: () {
-                // Action for button 1
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => check_engine_action(
+                            key: key,
+                          )),
+                );
               },
             ),
             GridBlock(
-              imagePath: 'assets/WarningLights/check_engine.jpg',
-              buttonText: 'Button 2',
+              //imagePath: 'assets/seat_belt.png',
+              buttonText: 'Instructions',
               onPressed: () {
-                // Action for button 2
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => engine_temp_action(
+                            key: key,
+                          )),
+                );
               },
             ),
-            // Add more GridBlock widgets as needed
+            GridBlock(
+              //imagePath: 'assets/check_engine.jpg',
+              buttonText: 'Instructions',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => oil_pressure_action(
+                            key: key,
+                          )),
+                );
+              },
+            ),
+            GridBlock(
+              //imagePath: 'assets/seat_belt.png',
+              buttonText: 'Instructions',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => brake_light_action(
+                            key: key,
+                          )),
+                );
+              },
+            ),
+            GridBlock(
+              //imagePath: 'assets/check_engine.jpg',
+              buttonText: 'Instructions',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => abs_light_action(
+                            key: key,
+                          )),
+                );
+              },
+            ),
+            GridBlock(
+              //imagePath: 'assets/seat_belt.png',
+              buttonText: 'Instructions',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => tire_pressure_action(
+                            key: key,
+                          )),
+                );
+              },
+            ),
+            GridBlock(
+              //imagePath: 'assets/check_engine.jpg',
+              buttonText: 'Instructions',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => power_steering_action(
+                            key: key,
+                          )),
+                );
+              },
+            ),
+            GridBlock(
+              //imagePath: 'assets/seat_belt.png',
+              buttonText: 'Instructions',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => washer_fluid_action(
+                            key: key,
+                          )),
+                );
+              },
+            ),
+            GridBlock(
+              //imagePath: 'assets/check_engine.jpg',
+              buttonText: 'Instructions',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => seat_belt_action(
+                            key: key,
+                          )),
+                );
+              },
+            ),
+            GridBlock(
+              //imagePath: 'assets/seat_belt.png',
+              buttonText: 'Instructions',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => security_light_action(
+                            key: key,
+                          )),
+                );
+              },
+            ),
           ],
         ),
       ),
