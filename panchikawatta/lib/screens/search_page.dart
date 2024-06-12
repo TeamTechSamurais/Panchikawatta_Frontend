@@ -1,8 +1,12 @@
+// ignore_for_file: use_key_in_widget_constructors
+
 import 'package:flutter/material.dart';
+import 'package:panchikawatta/components/custom_button.dart';
+import 'package:panchikawatta/screens/filter_sort.dart';
 
 // ignore: camel_case_types
 class search_page extends StatelessWidget {
-  const search_page({super.key});
+  const search_page({Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +27,18 @@ class search_page extends StatelessWidget {
           ),
         ),
       ),
-      body: const Center(
-        child: Text('Search Page Content'),
+      body: Center(
+        child: CustomButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => FilterSortScreen(),
+              ),
+            );
+          },
+          text: 'Filter and Sort',
+        ),
       ),
     );
   }
