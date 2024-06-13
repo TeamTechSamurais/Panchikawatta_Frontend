@@ -44,29 +44,13 @@ class security_light_action extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 30), // Increased spacing between sections
-            // Commented out the image block
-            // Center(
-            //   child: Image.asset(
-            //     'assets/warning_lights/security.jpg',
-            //     width: 200,
-            //     height: 200,
-            //     fit: BoxFit.cover,
-            //   ),
-            // ),
+            SizedBox(height: 30),
             Center(
-              child: SizedBox(
-                width: 150,
-                height: 150,
-                child: Container(
-                  color: Colors.grey, // Placeholder color
-                  child: Center(
-                    child: Text(
-                      'Security Light',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
+              child: Image.asset(
+                'assets/warning_lights/security.jpg',
+                width: 200,
+                height: 200,
+                fit: BoxFit.cover,
               ),
             ),
             SizedBox(height: 24),

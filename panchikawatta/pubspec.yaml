@@ -22,14 +22,5 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-  # assets:
-    # - assets/warning_lights/oil.jpg
-    # - assets/warning_lights/abs.jpg
-    # - assets/warning_lights/brake.jpg
-    # - assets/warning_lights/engine_temp.jpg
-    # - assets/warning_lights/power_steering.jpg
-    # - assets/warning_lights/security.jpg
-    # - assets/warning_lights/tpms.jpg
-    # - assets/warning_lights/washer_fluid.jpg
-    # - assets/warning_lights/check_engine.jpg
-    # - assets/warning_lights/seat_belt.jpg
+  assets:
+    - assets/warning_lights/
