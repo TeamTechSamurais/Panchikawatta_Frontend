@@ -2,7 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
-import 'package:panchikawatta/screens/filter_sort.dart';
+//import 'package:panchikawatta/screens/filter_sort.dart';
+import 'package:panchikawatta/screens/wishlist.dart';
 
 // ignore: camel_case_types
 class search_page extends StatelessWidget {
@@ -33,7 +34,7 @@ class search_page extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => FilterSortScreen(),
+                builder: (context) => WishlistScreen(),
               ),
             );
           },
