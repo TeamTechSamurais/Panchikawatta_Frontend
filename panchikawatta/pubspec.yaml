@@ -13,7 +13,6 @@ dependencies:
   cupertino_icons: ^1.0.6
   image_picker: ^1.1.2
 
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -22,5 +21,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-  assets:
-    - assets/warning_lights/
+
+assets:
+   - assets/images/
+   - assets/warning_lights/
