@@ -1,27 +1,29 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:momin/ui/Bottom_Bar/Screens/Buy_Screen.dart';
+// ignore_for_file: camel_case_types, prefer_const_literals_to_create_immutables, prefer_const_constructors
 
-class FirstScreen extends StatefulWidget {
-  const FirstScreen({super.key});
+import 'package:flutter/material.dart';
+import 'package:panchikawatta/screens/buy_screen.dart';
+import 'package:panchikawatta/screens/filter_sort.dart';
+
+class search_page extends StatefulWidget {
+  const search_page({super.key});
 
   @override
-  State<FirstScreen> createState() => _FirstScreenState();
+  State<search_page> createState() => _search_pageState();
 }
 
-class _FirstScreenState extends State<FirstScreen> {
+class _search_pageState extends State<search_page> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        leading: Icon(
+        leading: const Icon(
           Icons.arrow_back_rounded,
           size: 30,
         ),
         elevation: 0,
         actions: [
-          Row(
+          const Row(
             children: [
               Column(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -55,7 +57,7 @@ class _FirstScreenState extends State<FirstScreen> {
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             width: 5,
           )
         ],
@@ -68,32 +70,36 @@ class _FirstScreenState extends State<FirstScreen> {
             children: [
               TextFormField(
                 decoration: InputDecoration(
-                    prefixIcon: Icon(
+                    prefixIcon: const Icon(
                       Icons.search,
                       color: Color(0xffFF5C01),
                       size: 30,
                     ),
                     filled: true,
-                    fillColor: Color(0xffFAFAFA),
-                    hintStyle: TextStyle(
+                    fillColor: const Color(0xffFAFAFA),
+                    hintStyle: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w300,
                         color: Colors.black),
                     hintText: "Search",
                     enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(5),
-                        borderSide: BorderSide(color: Color(0xffFAFAFA))),
+                        borderSide: const BorderSide(color: Color(0xffFAFAFA))),
                     focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(5),
-                        borderSide: BorderSide(color: Color(0xffFAFAFA)))),
+                        borderSide:
+                            const BorderSide(color: Color(0xffFAFAFA)))),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 8,
               ),
               Row(
                 children: [
-                  Image.asset(
-                      height: 20, width: 15, 'assets/Location_icon.png'),
+                  Icon(
+                    Icons.location_on_rounded,
+                    color: Color(0xffFF5C01),
+                    size: 25,
+                  ),
                   SizedBox(
                     width: 5,
                   ),
@@ -105,89 +111,100 @@ class _FirstScreenState extends State<FirstScreen> {
                         color: Color(0xffFF5C01)),
                   ),
                   Spacer(),
-                  Text(
-                    'Filter & sort',
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xffFF5C01)),
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Icon(
-                    Icons.grid_view_outlined,
-                    color: Color(0xffFF5C01),
-                    size: 23,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => FilterSortScreen()),
+                      );
+                    },
+                    child: Row(
+                      children: [
+                        Text(
+                          'Filter & sort',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xffFF5C01),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Icon(
+                          Icons.grid_view_outlined,
+                          color: Color(0xffFF5C01),
+                          size: 23,
+                        ),
+                      ],
+                    ),
                   )
                 ],
               ),
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.04,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 8,
               ),
-              Container(
-height: MediaQuery.of(context).size.height,
+              SizedBox(
+                height: MediaQuery.of(context).size.height,
                 width: double.infinity,
                 child: GridView.builder(
-                  itemCount: 8,
-                  physics: NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10
-
-                    ),
+                    itemCount: 8,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10),
                     itemBuilder: (context, i) {
                       return InkWell(
                         onTap: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => BuyScreen()));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const BuyScreen()));
                         },
                         child: Container(
-
                           width: 82,
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
-                              color: Color(0xffEBEBEB)
-                          ),
+                              color: const Color(0xffEBEBEB)),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Image.asset(
-                                  height: 73,
-                                  width: 81,
-                                  'assets/engine_image.png'),
-                              Text(
+                              Image.asset('assets/engine_image.jpg',
+                                  height: 73, width: 81),
+                              const Text(
                                 'Toyota CHR',
                                 style: TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w400,
                                     color: Colors.black),
                               ),
-                              Text(
+                              const Text(
                                 'Rs. 850,000.00',
                                 style: TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w400,
                                     color: Colors.black),
                               ),
-                              Text(
+                              const Text(
                                 '2014',
                                 style: TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w400,
                                     color: Colors.black),
                               ),
-                              Text(
+                              const Text(
                                 'Hybrid',
                                 style: TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w400,
                                     color: Colors.black),
                               ),
-
                             ],
                           ),
                         ),
@@ -201,49 +218,3 @@ height: MediaQuery.of(context).size.height,
     );
   }
 }
-// Container(
-// height: 218,
-// width: 82,
-// decoration: BoxDecoration(
-// borderRadius: BorderRadius.circular(15),
-// color: Color(0xffEBEBEB)
-// ),
-// child: Column(
-// mainAxisAlignment: MainAxisAlignment.center,
-// children: [
-// Image.asset(
-// height: 73,
-// width: 81,
-// 'assets/engine_image.png'),
-// Text(
-// 'Toyota CHR',
-// style: TextStyle(
-// fontSize: 15,
-// fontWeight: FontWeight.w400,
-// color: Colors.black),
-// ),
-// Text(
-// 'Rs. 850,000.00',
-// style: TextStyle(
-// fontSize: 15,
-// fontWeight: FontWeight.w400,
-// color: Colors.black),
-// ),
-// Text(
-// '2014',
-// style: TextStyle(
-// fontSize: 15,
-// fontWeight: FontWeight.w400,
-// color: Colors.black),
-// ),
-// Text(
-// 'Hybrid',
-// style: TextStyle(
-// fontSize: 15,
-// fontWeight: FontWeight.w400,
-// color: Colors.black),
-// ),
-//
-// ],
-// ),
-// );
