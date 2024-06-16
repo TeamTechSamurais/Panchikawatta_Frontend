@@ -54,9 +54,7 @@ class _InputFieldsState extends State<InputFields>{
             icon: widget.suffixIcon!,
           ) : null,
         ),
-
         validator: widget.validator,
-
       ),
     );
   }

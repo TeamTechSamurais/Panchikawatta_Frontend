@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:panchikawatta/screens/profile_page.dart';
 import 'firebase_options.dart';
+import 'package:panchikawatta/screens/add_vehicle_details.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
