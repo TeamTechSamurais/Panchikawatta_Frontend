@@ -5,12 +5,16 @@ class InputFields extends StatefulWidget {
   final double width1;
   final Icon? suffixIcon;   //This is for give an icon when needed
   final FormFieldValidator<String>? validator;    //This is for do validations when needed
+  final TextEditingController? cont; //for the chat app
+  final FocusNode? focusNode; //for the search functionality in the chat app
 
   InputFields({
     required this.hintText,
     required this.width1,
     this.suffixIcon,
     this.validator,
+    this.cont,
+    this.focusNode,
   });
 
   @override
@@ -32,6 +36,8 @@ class _InputFieldsState extends State<InputFields>{
             _textFieldValue = value;
           });
         },
+        controller: widget.cont,
+        focusNode: widget.focusNode,
         decoration: InputDecoration(
           hintText: widget.hintText,
           hintStyle: const TextStyle(fontSize: 16, color: Color(0xCC000000), fontWeight: FontWeight.normal),

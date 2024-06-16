@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
+import 'package:panchikawatta/screens/auth_functions.dart';
 
 class DeleteProfileDialog extends StatelessWidget {
   @override
@@ -36,7 +37,7 @@ class DeleteProfileDialog extends StatelessWidget {
                         minimumSize: Size(MediaQuery.of(context).size.width * 0.38, 40),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
-                          side: const BorderSide(color: Color(0xFFFF5C01)),
+                          // side: const BorderSide(color: Color(0xFFFF5C01)),
                         ),
                       ),
                       child: const Text('No', style: TextStyle(fontSize: 16, color: Color(0xFFFF5C01))),
@@ -97,7 +98,7 @@ class Logout extends StatelessWidget {
                         minimumSize: Size(MediaQuery.of(context).size.width * 0.38, 40),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
-                          side: const BorderSide(color: Color(0xFFFF5C01)),
+                          // side: const BorderSide(color: Color(0xFFFF5C01)),
                         ),
                       ),
                       child: const Text('No', style: TextStyle(fontSize: 16, color: Color(0xFFFF5C01))),
@@ -106,9 +107,7 @@ class Logout extends StatelessWidget {
                   Container(
                     width: MediaQuery.of(context).size.width * 0.30,  // Specify your desired width
                     child: CustomButton(
-                      onPressed: () {
-                        // Add your button press logic here
-                      }, 
+                      onPressed: () => logout(context), //logout happens
                       text: 'Yes'
                     ),
                   ),

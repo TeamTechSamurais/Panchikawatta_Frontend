@@ -92,15 +92,6 @@ class BuyerProfile extends StatelessWidget {
               child: VehicleDetails(),
             ),
 
-            // Column(
-            //   children: [
-            //     // Other widgets...
-            //     Expanded(
-            //       child: VehicleDetails(),
-            //     ),
-            //   ],
-            // ),
-
           ],
         ),
       ),
