@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="9dd5d4a2-3959-4096-aed1-341e63543800" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/panchikawatta/android/app/google-services.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/panchikawatta/firebase.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/panchikawatta/lib/firebase_options.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/panchikawatta/lib/screens/chat_screen.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/panchikawatta/lib/screens/login_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/panchikawatta/android/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/panchikawatta/android/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/panchikawatta/android/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/panchikawatta/android/settings.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/panchikawatta/lib/components/drop_down_input_fields.dart" beforeDir="false" afterPath="$PROJECT_DIR$/panchikawatta/lib/components/drop_down_input_fields.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/panchikawatta/lib/components/input_fields.dart" beforeDir="false" afterPath="$PROJECT_DIR$/panchikawatta/lib/components/input_fields.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/panchikawatta/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/panchikawatta/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/panchikawatta/lib/screens/buyer_profile.dart" beforeDir="false" afterPath="$PROJECT_DIR$/panchikawatta/lib/screens/buyer_profile.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/panchikawatta/lib/screens/delete_and_edit_my_profile.dart" beforeDir="false" afterPath="$PROJECT_DIR$/panchikawatta/lib/screens/delete_and_edit_my_profile.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/panchikawatta/lib/screens/edit_profile_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/panchikawatta/lib/screens/edit_profile_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/panchikawatta/lib/screens/image_picker.dart" beforeDir="false" afterPath="$PROJECT_DIR$/panchikawatta/lib/screens/image_picker.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/panchikawatta/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/panchikawatta/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/panchikawatta/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/panchikawatta/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/panchikawatta/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/panchikawatta/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/panchikawatta/windows/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/panchikawatta/windows/flutter/generated_plugin_registrant.cc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/panchikawatta/windows/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/panchikawatta/windows/flutter/generated_plugins.cmake" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2hrp4bupp2nav46SnzwSdPTJZsa" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "Merging user__profile__management",
+    "last_opened_file_path": "C:/Users/USER/Desktop/fltr/Panchikawatta_Frontend-1",
+    "settings.editor.selected.configurable": "preferences.updates",
+    "show.migrate.to.gradle.popup": "false"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="9dd5d4a2-3959-4096-aed1-341e63543800" name="Changes" comment="" />
+      <created>1718361863661</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1718361863661</updated>
+    </task>
+    <servers />
+  </component>
+</project>
