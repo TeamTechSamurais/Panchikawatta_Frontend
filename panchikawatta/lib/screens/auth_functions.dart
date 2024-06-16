@@ -1,25 +1,26 @@
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:panchikawatta/screens/Registration_successs.dart';
 import 'package:panchikawatta/screens/login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
-Future<UserCredential?> createAccount(String name, String email, String password, String? imagePath) async {
-  FirebaseAuth _auth = FirebaseAuth.instance;
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  FirebaseStorage _storage = FirebaseStorage.instance;
+FirebaseAuth _auth = FirebaseAuth.instance;
+FirebaseFirestore _firestore = FirebaseFirestore.instance;
+FirebaseStorage _storage = FirebaseStorage.instance;
 
-  try{
-    UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-      email: email, password: password);
-      
+Future<UserCredential?> createAccount(String username, String password, String email, String? imagePath) async {
+  try {  
+        print("Attempting to create user with email: $email");
+
+    UserCredential userCredential = await _auth.createUserWithEmailAndPassword(email: email, password: password);
     User? user = userCredential.user;
 
-    if (user != null){
-      print("Account created successfully");
+    if (user != null) {
+      print("User is successfully created");
 
-      user.updateProfile(displayName: name);  // Update the user's display name (this is a method from the Firebase Auth package
+       await user.updateDisplayName(username);  // Update the user's display name (this is a method from the Firebase Auth package
 
       String? downloadUrl;
       if (imagePath != null) {
@@ -33,44 +34,44 @@ Future<UserCredential?> createAccount(String name, String email, String password
 
       // send user data to the firebase cloud firestore database
       await _firestore.collection("users").doc(_auth.currentUser?.uid).set({
-        "name": name,
+        "name": username,
         "email": email,
         "profile_picture": downloadUrl,
       });
 
       return userCredential;
-    }else{
-      print("Account creation failed");
+    } else {
+      print("Some error happend");
       return userCredential;
     }
-  }catch (e){
+  } catch (e) {
     print(e);
     return null;
   }
 }
 
 
-Future<UserCredential?> login(String email, String password) async {
-  FirebaseAuth _auth = FirebaseAuth.instance;
+// Future<UserCredential?> login(String email, String password) async {
+//   FirebaseAuth _auth = FirebaseAuth.instance;
 
-  try{
-    UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-      email: email, password: password);
+//   try{
+//     UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+//       email: email, password: password);
       
-    User? user = userCredential.user;
+//     User? user = userCredential.user;
 
-    if (user != null){
-      print("Login successful");
-      return userCredential;
-    }else{
-      print("Login failed");
-      return userCredential;
-    }
-  }catch (e){
-    print(e);
-    return null;
-  }
-} 
+//     if (user != null){
+//       print("Login successful");
+//       return userCredential;
+//     }else{
+//       print("Login failed");
+//       return userCredential;
+//     }
+//   }catch (e){
+//     print(e);
+//     return null;
+//   }
+// } 
 
 
 Future<UserCredential?> logout(BuildContext context) async {
@@ -78,7 +79,7 @@ Future<UserCredential?> logout(BuildContext context) async {
 
   try{
     await _auth.signOut().then((value) {
-      Navigator.push(context, MaterialPageRoute(builder: (_) => Login()));
+      Navigator.push(context, MaterialPageRoute(builder: (_) => login()));
     });
     print("Logout successful");
     return null;

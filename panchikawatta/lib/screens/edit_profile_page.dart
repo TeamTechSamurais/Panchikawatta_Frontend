@@ -6,7 +6,7 @@ import 'package:panchikawatta/screens/auth_functions.dart';
 import 'package:panchikawatta/screens/chat_screen.dart';
 import 'dart:io';
 import 'package:panchikawatta/screens/image_picker.dart';
-import 'package:panchikawatta/screens/login.dart';
+import 'package:panchikawatta/screens/profile_page.dart';
 
 class EditProfilePage extends StatefulWidget {
   @override
@@ -31,13 +31,13 @@ class _EditProfilePageState extends State<EditProfilePage>{
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black, size: 28),
-          onPressed: () {
-            // Navigate to the add vehicle page
-            Navigator.pop(context);
-          },
-        ),
+        // leading: IconButton(
+        //   icon: const Icon(Icons.arrow_back, color: Colors.black, size: 28),
+        //   onPressed: () {
+        //     // Navigate to the add vehicle page
+        //     Navigator.pop(context);
+        //   },
+        // ),
         title: const Text('Edit Profile', style: TextStyle(color: Color(0xFFFF5C01), fontSize: 28)),
       ), 
 
@@ -140,7 +140,7 @@ class _EditProfilePageState extends State<EditProfilePage>{
                           }
                           return null;
                         },
-                        cont: _name,
+                        controller: _name,
                       ),
 
                       const SizedBox(height: 15),
@@ -164,7 +164,7 @@ class _EditProfilePageState extends State<EditProfilePage>{
                           }
                           return null;
                         },
-                        cont: _password,
+                        controller: _password,
                       ),
 
                       const SizedBox(height: 15),
@@ -185,7 +185,7 @@ class _EditProfilePageState extends State<EditProfilePage>{
                         },
                         hintText: 'Email', 
                         width1: 0.8,
-                        cont: _email,
+                        controller: _email,
                       ),
 
                       const SizedBox(height: 15),
@@ -271,47 +271,34 @@ class _EditProfilePageState extends State<EditProfilePage>{
                         onPressed: () {
                           // // Navigate to the add vehicle page
                           // submitForm();
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(builder: (context) => ChatScreen()),
-                          // );
-                          if (_name.text.isNotEmpty &&
-                              _email.text.isNotEmpty &&
-                              _password.text.isNotEmpty) {
-                                setState(() {
-                                  isLoading = true;
-                                });
+                          
+                        //   if (_name.text.isNotEmpty &&
+                        //       _email.text.isNotEmpty &&
+                        //       _password.text.isNotEmpty) {
+                        //         setState(() {
+                        //           isLoading = true;
+                        //         });
 
-                                createAccount(_name.text, _email.text, _password.text, imagePath).then((user) {
-                                  if (user != null) {
-                                    setState(() {
-                                      isLoading = false;
-                                    });
-                                    print("Account created successfully");
-                                    Navigator.push(context, MaterialPageRoute(builder: (_) => ChatScreen()));
-                                  } else {
-                                    setState(() {
-                                      isLoading = false;
-                                    });
-                                    print("Account creation failed");
-                                  }
-                                });
-                          } else {
-                            _showFillMessage("Please fill all the fields");
-                          }
+                        //         createAccount(_name.text, _email.text, _password.text, imagePath).then((user) {
+                        //           if (user != null) {
+                        //             setState(() {
+                        //               isLoading = false;
+                        //             });
+                        //             print("Account created successfully");
+                        //             Navigator.push(context, MaterialPageRoute(builder: (_) => ChatScreen()));
+                        //           } else {
+                        //             setState(() {
+                        //               isLoading = false;
+                        //             });
+                        //             print("Account creation failed");
+                        //           }
+                        //         });
+                        //   } else {
+                        //     _showFillMessage("Please fill all the fields");
+                        //   }
                         }, 
                         text: 'Save',
                       ),
-
-                      CustomButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => Login()),
-                          );
-                        }, 
-                        text: 'login',
-                      )
 
                     ],
                   ),

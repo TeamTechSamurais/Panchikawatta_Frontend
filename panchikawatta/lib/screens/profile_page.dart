@@ -122,19 +122,30 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
               dividerColor: Colors.transparent,
             ),
 
+            // Container(
+            //   height: 2000, // You can adjust this value as needed
+            //   child: TabBarView(
+            //     controller: _tabController,
+            //     children: [
+            //       Expanded(
+            //         child: BuyerProfile(),
+            //       ),
+            //       SellerProfile(),],
+            //   ),
+            // ),
+
             Container(
               height: 2000, // You can adjust this value as needed
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  Expanded(
-                    child: BuyerProfile(),
-                  ),
-                  SellerProfile(),],
+                  BuyerProfile(),
+                  SellerProfile(),
+                ],
               ),
             ),
 
-             SizedBox(height: 20),
+            SizedBox(height: 20),
 
           ],
         ),

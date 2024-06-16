@@ -145,7 +145,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   hintText: 'Search..', 
                   width1: 0.8,
                   focusNode: _searchfocusNode,
-                  cont: _searchController,
+                  controller: _searchController,
                 ),
               ),
             ],
