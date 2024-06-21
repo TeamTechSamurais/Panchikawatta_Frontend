@@ -2,10 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/add_image.dart';
-import 'package:panchikawatta/components/checkbox.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/components/input_fields.dart';
 import 'package:panchikawatta/screens/adPost2.dart';
+import 'package:panchikawatta/screens/post_success.dart';
 
 class AdPost1 extends StatefulWidget {
   const AdPost1({super.key});
@@ -176,7 +176,8 @@ class _AdPost1State extends State<AdPost1> {
                         Add_Image(size: 70, color: Color(0xFF999999)),
                         Add_Image(size: 70, color: Color(0xFF999999)),
                       ],
-                    )
+                    ),
+                    SizedBox(height: 10),
                   ],
                 ),
               ),
@@ -200,28 +201,25 @@ class _AdPost1State extends State<AdPost1> {
                       hintText: 'Price',
                       width1: 1,
                     ),
-                    SizedBox(height: 10),
-                    Row(children: [
-                      CustomCheckbox(),
-                      Text(
-                        'Negotioble',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ])
+                    SizedBox(height: 20),
                   ],
                 ),
               ),
               Center(
                 child: CustomButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => AdPost2(key: UniqueKey())),
-                    );
+                    if (_selectedType == 'Services') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => PostSuccess()),
+                      );
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AdPost2(key: UniqueKey())),
+                      );
+                    }
                   },
                   text: 'Next',
                 ),
