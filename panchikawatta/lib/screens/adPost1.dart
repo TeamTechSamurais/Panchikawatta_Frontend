@@ -1,11 +1,15 @@
-// ignore_for_file: file_names, camel_case_types, library_private_types_in_public_api
+// ignore_for_file: library_private_types_in_public_api, avoid_print, use_build_context_synchronously
 
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:panchikawatta/components/add_image.dart';
+import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/components/input_fields.dart';
 import 'package:panchikawatta/screens/adPost2.dart';
 import 'package:panchikawatta/screens/post_success.dart';
+import 'package:panchikawatta/components/add_image.dart';
 
 class AdPost1 extends StatefulWidget {
   const AdPost1({super.key});
@@ -16,6 +20,42 @@ class AdPost1 extends StatefulWidget {
 
 class _AdPost1State extends State<AdPost1> {
   String _selectedType = 'Spare Parts';
+  final List<XFile?> _images = List<XFile?>.filled(4, null);
+
+  void _setImage(int index, XFile? image) {
+    setState(() {
+      _images[index] = image;
+    });
+  }
+
+  Future<void> _uploadImages() async {
+    final uri = Uri.parse('http://10.0.2.2:8000/upload');
+    final request = http.MultipartRequest('POST', uri);
+    for (var image in _images) {
+      if (image != null) {
+        request.files.add(
+          http.MultipartFile.fromBytes(
+            'images',
+            File(image.path).readAsBytesSync(),
+            filename: image.name,
+          ),
+        );
+      }
+    }
+
+    request.fields['title'] = 'Your Ad Title';
+    request.fields['description'] = 'Your Ad Description';
+    request.fields['price'] = '1000';
+
+    final response = await request.send();
+    if (response.statusCode == 201) {
+      final responseBody = await response.stream.bytesToString();
+      final jsonResponse = jsonDecode(responseBody);
+      print('Upload successful: $jsonResponse');
+    } else {
+      print('Upload failed with status: ${response.statusCode}');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -156,28 +196,18 @@ class _AdPost1State extends State<AdPost1> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ],
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEBEBEB),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                padding: const EdgeInsets.all(10),
-                child: const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                    const SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Add_Image(size: 70, color: Color(0xFF999999)),
-                        Add_Image(size: 70, color: Color(0xFF999999)),
-                        Add_Image(size: 70, color: Color(0xFF999999)),
-                        Add_Image(size: 70, color: Color(0xFF999999)),
-                      ],
+                      children: List.generate(4, (index) {
+                        return AddImage(
+                          size: 70,
+                          color: const Color(0xFF999999),
+                          onImageSelected: (image) => _setImage(index, image),
+                        );
+                      }),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                   ],
                 ),
               ),
@@ -207,7 +237,8 @@ class _AdPost1State extends State<AdPost1> {
               ),
               Center(
                 child: CustomButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    await _uploadImages();
                     if (_selectedType == 'Services') {
                       Navigator.push(
                         context,
@@ -223,7 +254,7 @@ class _AdPost1State extends State<AdPost1> {
                   },
                   text: 'Next',
                 ),
-              )
+              ),
             ],
           ),
         ),

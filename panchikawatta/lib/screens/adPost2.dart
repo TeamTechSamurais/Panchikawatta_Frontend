@@ -18,14 +18,14 @@ class AdPost2 extends StatefulWidget {
   _AdPost2State createState() => _AdPost2State();
 }
 
-List<String> makes = [
-  'Toyota',
-  'Nissan',
-  'Audi',
-  'BMW',
-  'Mercedes',
-  'Honda',
-];
+// List<String> makes = [
+//   'Toyota',
+//   'Nissan',
+//   'Audi',
+//   'BMW',
+//   'Mercedes',
+//   'Honda',
+// ];
 List<String> models = [
   'Corolla',
   'Vitz',
@@ -121,9 +121,8 @@ class _AdPost2State extends State<AdPost2> {
                             width: 100,
                           ),
                           Expanded(
-                            child: VehicleMake(
+                            child: VehicleMakesDropdown(
                               selectedMake: _selectedMake,
-                              makes: makes, // List of vehicle makes
                               onChanged: (String? make) {
                                 setState(() {
                                   _selectedMake = make;
