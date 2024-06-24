@@ -2,6 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
+import 'package:panchikawatta/dropdowns/condition.dart';
+import 'package:panchikawatta/dropdowns/district.dart';
+import 'package:panchikawatta/dropdowns/origin.dart';
+import 'package:panchikawatta/dropdowns/province.dart';
+import 'package:panchikawatta/dropdowns/vehicle_make.dart';
+import 'package:panchikawatta/dropdowns/vehicle_model.dart';
 import 'package:panchikawatta/screens/search_page.dart';
 
 class FilterSortScreen extends StatefulWidget {
@@ -17,25 +23,30 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
   String? selectedVehicleMake;
   String? selectedModel;
   String? selectedOrigin;
+  String? selectedMinYear;
+  String? selectedMaxYear;
 
-  final List<String> provinces = ['Province1', 'Province2', 'Province3'];
-  final List<String> districts = ['District1', 'District2', 'District3'];
-  final List<String> vehicleMakes = ['Make1', 'Make2', 'Make3'];
-  final List<String> models = ['Model1', 'Model2', 'Model3'];
-  final List<String> origins = ['Origin1', 'Origin2', 'Origin3'];
+  final List<String> origins = ['Japan', 'UK', 'Germany', 'USA', 'India'];
   final List<String> conditions = ['New', 'Used', 'Reconditioned'];
   final List<String> fuelTypes = ['Petrol', 'Diesel', 'Hybrid', 'Electric'];
 
   final TextEditingController minPriceController = TextEditingController();
   final TextEditingController maxPriceController = TextEditingController();
-  final TextEditingController minYearController = TextEditingController();
-  final TextEditingController maxYearController = TextEditingController();
 
   Set<String> selectedConditions = {};
   Set<String> selectedFuelTypes = {};
 
+  get minYearController => null;
+
+  get maxYearController => null;
+
   @override
   Widget build(BuildContext context) {
+    List<String> models = selectedVehicleMake != null &&
+            vehicleMakeToModels.containsKey(selectedVehicleMake)
+        ? vehicleMakeToModels[selectedVehicleMake]!
+        : [];
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -51,40 +62,28 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
         padding: const EdgeInsets.all(20.0),
         child: ListView(
           children: [
-            // Text('Location', style: TextStyle(fontSize: 16)),
             Row(
               children: [
                 Expanded(
-                  child: DropdownButtonFormField<String>(
-                    value: selectedProvince,
-                    decoration: InputDecoration(labelText: 'Province'),
-                    items: provinces.map((province) {
-                      return DropdownMenuItem<String>(
-                        value: province,
-                        child: Text(province),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
+                  child: ProvinceDropdown(
+                    selectedProvince: selectedProvince,
+                    onChanged: (String? province) {
                       setState(() {
-                        selectedProvince = value;
+                        selectedProvince = province;
+                        selectedDistrict =
+                            null; // Reset district when province changes
                       });
                     },
                   ),
                 ),
                 SizedBox(width: 16),
                 Expanded(
-                  child: DropdownButtonFormField<String>(
-                    value: selectedDistrict,
-                    decoration: InputDecoration(labelText: 'District'),
-                    items: districts.map((district) {
-                      return DropdownMenuItem<String>(
-                        value: district,
-                        child: Text(district),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
+                  child: DistrictDropdown(
+                    selectedDistrict: selectedDistrict,
+                    selectedProvince: selectedProvince,
+                    onChanged: (String? district) {
                       setState(() {
-                        selectedDistrict = value;
+                        selectedDistrict = district;
                       });
                     },
                   ),
@@ -92,58 +91,35 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
               ],
             ),
             SizedBox(height: 16),
-            // Text('Vehicle Make'),
-            DropdownButtonFormField<String>(
-              value: selectedVehicleMake,
-              decoration: InputDecoration(labelText: 'Vehicle Make'),
-              items: vehicleMakes.map((make) {
-                return DropdownMenuItem<String>(
-                  value: make,
-                  child: Text(make),
-                );
-              }).toList(),
-              onChanged: (value) {
+            VehicleMake(
+              selectedMake: selectedVehicleMake,
+              onChanged: (String? make) {
                 setState(() {
-                  selectedVehicleMake = value;
+                  selectedVehicleMake = make;
+                  selectedModel = null; // Reset model when make changes
                 });
               },
             ),
             SizedBox(height: 16),
-            // Text('Model'),
-            DropdownButtonFormField<String>(
-              value: selectedModel,
-              decoration: InputDecoration(labelText: 'Model'),
-              items: models.map((model) {
-                return DropdownMenuItem<String>(
-                  value: model,
-                  child: Text(model),
-                );
-              }).toList(),
-              onChanged: (value) {
+            VehicleModel(
+              selectedModel: selectedModel,
+              models: models,
+              onChanged: (String? model) {
                 setState(() {
-                  selectedModel = value;
+                  selectedModel = model;
                 });
               },
             ),
             SizedBox(height: 16),
-            // Text('Origin'),
-            DropdownButtonFormField<String>(
-              value: selectedOrigin,
-              decoration: InputDecoration(labelText: 'Origin'),
-              items: origins.map((origin) {
-                return DropdownMenuItem<String>(
-                  value: origin,
-                  child: Text(origin),
-                );
-              }).toList(),
-              onChanged: (value) {
+            OriginDropdown(
+              selectedOrigin: selectedOrigin,
+              onChanged: (String? origin) {
                 setState(() {
-                  selectedOrigin = value;
+                  selectedOrigin = origin;
                 });
               },
             ),
             SizedBox(height: 16),
-            // Text('Price'),
             Row(
               children: [
                 Expanded(
@@ -166,25 +142,13 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
               ],
             ),
             SizedBox(height: 16),
-            Text('Condition'),
-            Wrap(
-              spacing: 8,
-              children: conditions.map((condition) {
-                return ChoiceChip(
-                  label: Text(condition),
-                  selected: selectedConditions.contains(condition),
-                  selectedColor: Color.fromARGB(255, 248, 159, 112),
-                  onSelected: (selected) {
-                    setState(() {
-                      if (selected) {
-                        selectedConditions.add(condition);
-                      } else {
-                        selectedConditions.remove(condition);
-                      }
-                    });
-                  },
-                );
-              }).toList(),
+            ConditionDropdown(
+              selectedConditions: selectedConditions,
+              onChanged: (Set<String> conditions) {
+                setState(() {
+                  selectedConditions = conditions;
+                });
+              },
             ),
             SizedBox(height: 16),
             Text('Fuel'),
@@ -208,7 +172,6 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
               }).toList(),
             ),
             SizedBox(height: 16),
-            Text('Year'),
             Row(
               children: [
                 Expanded(
@@ -242,10 +205,10 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
                         selectedVehicleMake = null;
                         selectedModel = null;
                         selectedOrigin = null;
+                        selectedMinYear = null;
+                        selectedMaxYear = null;
                         minPriceController.clear();
                         maxPriceController.clear();
-                        minYearController.clear();
-                        maxYearController.clear();
                         selectedConditions.clear();
                         selectedFuelTypes.clear();
                       });

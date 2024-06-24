@@ -88,6 +88,7 @@ class _BuyScreenState extends State<BuyScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(height: 10),
                 Center(
                   child: SizedBox(
                     width: double.infinity,
@@ -145,7 +146,7 @@ class _BuyScreenState extends State<BuyScreen> {
                         IconButton(
                           icon: const Icon(
                             Icons.phone_rounded,
-                            size: 36,
+                            size: 30,
                             color: Colors.black,
                           ),
                           onPressed: () {
@@ -156,7 +157,7 @@ class _BuyScreenState extends State<BuyScreen> {
                         IconButton(
                           icon: const Icon(
                             Icons.message_rounded,
-                            size: 36,
+                            size: 30,
                             color: Colors.black,
                           ),
                           onPressed: () {
@@ -172,7 +173,7 @@ class _BuyScreenState extends State<BuyScreen> {
           ),
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -190,26 +191,6 @@ class _BuyScreenState extends State<BuyScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Row(
-                          children: [
-                            Text(
-                              'Part or Accessory Type: ',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.black,
-                              ),
-                            ),
-                            Text(
-                              'Engine',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
-                        ),
                         SizedBox(
                             height: MediaQuery.of(context).size.height * 0.015),
                         const Row(

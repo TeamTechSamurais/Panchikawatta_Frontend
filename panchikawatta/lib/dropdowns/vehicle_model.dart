@@ -5,14 +5,10 @@ import 'package:flutter/material.dart';
 class VehicleModel extends StatefulWidget {
   final String? selectedModel;
   final List<String> models;
-  final void Function(String?) onChanged;
+  final Function(String?)? onChanged;
 
-  const VehicleModel({
-    super.key,
-    required this.selectedModel,
-    required this.models,
-    required this.onChanged,
-  });
+  const VehicleModel(
+      {super.key, this.selectedModel, required this.models, this.onChanged});
 
   @override
   _VehicleModelState createState() => _VehicleModelState();
@@ -21,28 +17,30 @@ class VehicleModel extends StatefulWidget {
 class _VehicleModelState extends State<VehicleModel> {
   @override
   Widget build(BuildContext context) {
-    return DropdownButtonFormField<String>(
+    return DropdownButton<String>(
       value: widget.selectedModel,
-      decoration: InputDecoration(
-        labelText: 'Select',
-        filled: true,
-        fillColor: const Color(0xFFEBEBEB),
-        enabledBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Color(0xFFEBEBEB), width: 1.0),
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Color(0xFFFF5c01), width: 1.0),
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-      ),
-      items: widget.models.map((model) {
+      hint: const Text('Model'),
+      items: widget.models.map((String model) {
         return DropdownMenuItem<String>(
           value: model,
           child: Text(model),
         );
       }).toList(),
       onChanged: widget.onChanged,
+      isExpanded: true,
     );
   }
 }
+
+Map<String, List<String>> vehicleMakeToModels = {
+  'Toyota': ['Corolla', 'Vitz', 'Prius', 'Hilux', 'Land Cruiser'],
+  'Honda': ['Civic', 'Fit', 'Accord', 'CR-V', 'HR-V'],
+  'Nissan': ['Leaf', 'Sunny', 'Juke', 'X-Trail', 'Navara'],
+  'Suzuki': ['Alto', 'Swift', 'Wagon R', 'Baleno', 'Vitara'],
+  'Hyundai': ['Elantra', 'Santa Fe', 'Tucson', 'i10', 'Sonata'],
+  'Mitsubishi': ['Lancer', 'Outlander', 'Pajero', 'Mirage', 'Montero'],
+  'Mazda': ['Demio', 'Axela', 'CX-5', 'Atenza', 'CX-3'],
+  'Kia': ['Picanto', 'Sportage', 'Sorento', 'Rio', 'Cerato'],
+  'BMW': ['3 Series', '5 Series', 'X1', 'X3', 'X5'],
+  'Mercedes-Benz': ['C-Class', 'E-Class', 'A-Class', 'GLE', 'GLB'],
+};
