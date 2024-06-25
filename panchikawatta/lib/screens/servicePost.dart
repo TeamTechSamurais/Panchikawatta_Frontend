@@ -11,15 +11,15 @@ import 'package:panchikawatta/screens/adPost2.dart';
 import 'package:panchikawatta/screens/post_success.dart';
 import 'package:panchikawatta/components/add_image.dart';
 
-class AdPost1 extends StatefulWidget {
-  const AdPost1({super.key});
+class ServicePost extends StatefulWidget {
+  const ServicePost({super.key});
 
   @override
-  _AdPost1State createState() => _AdPost1State();
+  _ServicePostState createState() => _ServicePostState();
 }
 
-class _AdPost1State extends State<AdPost1> {
-  final String _selectedType = 'Spare Parts';
+class _ServicePostState extends State<ServicePost> {
+  final String _selectedType = 'Services';
   final List<XFile?> _images = List<XFile?>.filled(4, null);
 
   void _setImage(int index, XFile? image) {
@@ -199,12 +199,11 @@ class _AdPost1State extends State<AdPost1> {
                     } else {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => AdPost2(key: UniqueKey())),
+                        MaterialPageRoute(builder: (context) => PostSuccess()),
                       );
                     }
                   },
-                  text: 'Next',
+                  text: 'Post Ad',
                 ),
               ),
             ],

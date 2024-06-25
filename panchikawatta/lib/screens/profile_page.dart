@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/screens/adPost1.dart';
+import 'package:panchikawatta/screens/adType.dart';
 import 'package:panchikawatta/screens/ad_details_services.dart';
 import 'package:panchikawatta/screens/ad_details_sparepart.dart';
 import 'package:panchikawatta/screens/buyer_profile.dart';
@@ -79,8 +80,7 @@ class ProfilePage extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => AdPost1(key: UniqueKey())),
+                      MaterialPageRoute(builder: (context) => AdType()),
                     );
                   },
                   text: 'Post Ad',
