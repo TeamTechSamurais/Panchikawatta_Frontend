@@ -7,7 +7,14 @@ class OriginDropdown extends StatelessWidget {
   OriginDropdown(
       {super.key, required this.selectedOrigin, required this.onChanged});
 
-  final List<String> origins = ['Japan', 'UK', 'Germany', 'USA', 'India'];
+  final List<String> origins = [
+    'Any',
+    'Japan',
+    'UK',
+    'Germany',
+    'USA',
+    'India'
+  ];
 
   @override
   Widget build(BuildContext context) {

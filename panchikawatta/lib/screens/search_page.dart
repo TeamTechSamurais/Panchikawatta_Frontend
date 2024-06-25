@@ -234,13 +234,13 @@ class _search_pageState extends State<search_page> {
                                       sparePart.imageUrl,
                                       height: 73,
                                       width: 81,
-                                      // errorBuilder:
-                                      //     (context, error, stackTrace) {
-                                      //   return Image.asset(
-                                      //       'assets/images/no_image.png',
-                                      //       height: 73,
-                                      //       width: 81);
-                                      // },
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                        return Image.asset(
+                                            'assets/images/no_image.png',
+                                            height: 73,
+                                            width: 81);
+                                      },
                                     ),
                                     Text(
                                       sparePart.title,

@@ -1,9 +1,10 @@
-// ignore_for_file: library_private_types_in_public_api, prefer_const_constructors
+// ignore_for_file: use_super_parameters, library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/dropdowns/condition.dart';
 import 'package:panchikawatta/dropdowns/district.dart';
+import 'package:panchikawatta/dropdowns/fuel.dart';
 import 'package:panchikawatta/dropdowns/origin.dart';
 import 'package:panchikawatta/dropdowns/province.dart';
 import 'package:panchikawatta/dropdowns/vehicle_make.dart';
@@ -11,7 +12,7 @@ import 'package:panchikawatta/dropdowns/vehicle_model.dart';
 import 'package:panchikawatta/screens/search_page.dart';
 
 class FilterSortScreen extends StatefulWidget {
-  const FilterSortScreen({super.key});
+  const FilterSortScreen({Key? key}) : super(key: key);
 
   @override
   _FilterSortScreenState createState() => _FilterSortScreenState();
@@ -26,15 +27,11 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
   String? selectedMinYear;
   String? selectedMaxYear;
 
-  final List<String> origins = ['Japan', 'UK', 'Germany', 'USA', 'India'];
-  final List<String> conditions = ['New', 'Used', 'Reconditioned'];
-  final List<String> fuelTypes = ['Petrol', 'Diesel', 'Hybrid', 'Electric'];
-
   final TextEditingController minPriceController = TextEditingController();
   final TextEditingController maxPriceController = TextEditingController();
 
   Set<String> selectedConditions = {};
-  Set<String> selectedFuelTypes = {};
+  String? selectedFuel;
 
   get minYearController => null;
 
@@ -49,7 +46,7 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Filter and Sort',
           style: TextStyle(
             color: Color(0xFFFF5C01),
@@ -76,7 +73,7 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
                     },
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Expanded(
                   child: DistrictDropdown(
                     selectedDistrict: selectedDistrict,
@@ -90,7 +87,7 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             VehicleMake(
               selectedMake: selectedVehicleMake,
               onChanged: (String? make) {
@@ -100,7 +97,7 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
                 });
               },
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             VehicleModel(
               selectedModel: selectedModel,
               models: models,
@@ -110,7 +107,7 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
                 });
               },
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             OriginDropdown(
               selectedOrigin: selectedOrigin,
               onChanged: (String? origin) {
@@ -119,29 +116,29 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
                 });
               },
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: minPriceController,
                     keyboardType: TextInputType.number,
-                    decoration: InputDecoration(labelText: 'Min Price'),
+                    decoration: const InputDecoration(labelText: 'Min Price'),
                   ),
                 ),
-                SizedBox(width: 16),
-                Text('-'),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
+                const Text('-'),
+                const SizedBox(width: 16),
                 Expanded(
                   child: TextField(
                     controller: maxPriceController,
                     keyboardType: TextInputType.number,
-                    decoration: InputDecoration(labelText: 'Max Price'),
+                    decoration: const InputDecoration(labelText: 'Max Price'),
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ConditionDropdown(
               selectedConditions: selectedConditions,
               onChanged: (Set<String> conditions) {
@@ -150,80 +147,70 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
                 });
               },
             ),
-            SizedBox(height: 16),
-            Text('Fuel'),
-            Wrap(
-              spacing: 8,
-              children: fuelTypes.map((fuel) {
-                return ChoiceChip(
-                  label: Text(fuel),
-                  selected: selectedFuelTypes.contains(fuel),
-                  selectedColor: Color.fromARGB(255, 248, 159, 112),
-                  onSelected: (selected) {
-                    setState(() {
-                      if (selected) {
-                        selectedFuelTypes.add(fuel);
-                      } else {
-                        selectedFuelTypes.remove(fuel);
-                      }
-                    });
-                  },
-                );
-              }).toList(),
+            const SizedBox(height: 16),
+            FuelDropdown(
+              selectedFuel: selectedFuel,
+              onChanged: (String? fuel) {
+                setState(() {
+                  selectedFuel = fuel;
+                });
+              },
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: minYearController,
                     keyboardType: TextInputType.number,
-                    decoration: InputDecoration(labelText: 'Min Year'),
+                    decoration: const InputDecoration(labelText: 'Min Year'),
                   ),
                 ),
-                SizedBox(width: 16),
-                Text('-'),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
+                const Text('-'),
+                const SizedBox(width: 16),
                 Expanded(
                   child: TextField(
                     controller: maxYearController,
                     keyboardType: TextInputType.number,
-                    decoration: InputDecoration(labelText: 'Max Year'),
+                    decoration: const InputDecoration(labelText: 'Max Year'),
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 CustomButton(
-                    onPressed: () {
-                      setState(() {
-                        selectedProvince = null;
-                        selectedDistrict = null;
-                        selectedVehicleMake = null;
-                        selectedModel = null;
-                        selectedOrigin = null;
-                        selectedMinYear = null;
-                        selectedMaxYear = null;
-                        minPriceController.clear();
-                        maxPriceController.clear();
-                        selectedConditions.clear();
-                        selectedFuelTypes.clear();
-                      });
-                    },
-                    text: 'Reset'),
+                  onPressed: () {
+                    setState(() {
+                      selectedProvince = null;
+                      selectedDistrict = null;
+                      selectedVehicleMake = null;
+                      selectedModel = null;
+                      selectedOrigin = null;
+                      selectedMinYear = null;
+                      selectedMaxYear = null;
+                      minPriceController.clear();
+                      maxPriceController.clear();
+                      selectedConditions.clear();
+                      selectedFuel = null; // Clear selected fuel
+                    });
+                  },
+                  text: 'Reset',
+                ),
                 CustomButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => search_page(),
-                        ),
-                      );
-                    },
-                    text: 'Apply')
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const search_page(),
+                      ),
+                    );
+                  },
+                  text: 'Apply',
+                ),
               ],
             ),
           ],

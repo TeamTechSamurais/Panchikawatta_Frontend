@@ -27,12 +27,14 @@ class ApiService {
   }
 
   Future<List<SparePart>> getSpareParts() async {
-    final response = await http.get(Uri.parse('${Utils.baseUrl}/spareparts'));
+    final response =
+        await http.get(Uri.parse('${Utils.baseUrl}/adListing/getSpareParts'));
+
     if (response.statusCode == 200) {
-      List<dynamic> data = json.decode(response.body);
-      return data.map((json) => SparePart.fromJson(json)).toList();
+      final List<dynamic> sparePartsJson = json.decode(response.body);
+      return sparePartsJson.map((json) => SparePart.fromJson(json)).toList();
     } else {
-      throw Exception('Failed to load spare parts');
+      throw Exception('Failed to load spareparts');
     }
   }
 

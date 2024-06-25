@@ -33,6 +33,7 @@ class _VehicleModelState extends State<VehicleModel> {
 }
 
 Map<String, List<String>> vehicleMakeToModels = {
+  'Any': ['Any'],
   'Toyota': ['Corolla', 'Vitz', 'Prius', 'Hilux', 'Land Cruiser'],
   'Honda': ['Civic', 'Fit', 'Accord', 'CR-V', 'HR-V'],
   'Nissan': ['Leaf', 'Sunny', 'Juke', 'X-Trail', 'Navara'],
