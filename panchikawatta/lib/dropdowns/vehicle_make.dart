@@ -2,57 +2,43 @@
 
 import 'package:flutter/material.dart';
 
-class VehicleMakesDropdown extends StatefulWidget {
-  final Function(String?)? onChanged;
+class VehicleMake extends StatefulWidget {
   final String? selectedMake;
+  final Function(String?)? onChanged;
 
-  const VehicleMakesDropdown({super.key, this.onChanged, this.selectedMake});
+  const VehicleMake({super.key, this.selectedMake, this.onChanged});
 
   @override
-  _VehicleMakesDropdownState createState() => _VehicleMakesDropdownState();
+  _VehicleMakeState createState() => _VehicleMakeState();
 }
 
-class _VehicleMakesDropdownState extends State<VehicleMakesDropdown> {
+class _VehicleMakeState extends State<VehicleMake> {
   final List<String> _vehicleMakes = [
+    'Any',
     'Toyota',
     'Honda',
     'Nissan',
-    'Ford',
-    'Chevrolet',
-    'BMW',
-    'Mercedes',
-    'Audi',
-    'Volkswagen',
+    'Suzuki',
     'Hyundai',
+    'Mitsubishi',
+    'Mazda',
+    'Kia',
+    'BMW',
+    'Mercedes-Benz',
   ];
-
-  String? _selectedMake;
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedMake = widget.selectedMake;
-  }
 
   @override
   Widget build(BuildContext context) {
     return DropdownButton<String>(
-      value: _selectedMake,
-      hint: const Text('Select Vehicle Make'),
+      value: widget.selectedMake,
+      hint: const Text('Make'),
       items: _vehicleMakes.map((String make) {
         return DropdownMenuItem<String>(
           value: make,
           child: Text(make),
         );
       }).toList(),
-      onChanged: (String? newValue) {
-        setState(() {
-          _selectedMake = newValue;
-        });
-        if (widget.onChanged != null) {
-          widget.onChanged!(newValue);
-        }
-      },
+      onChanged: widget.onChanged,
       isExpanded: true,
     );
   }

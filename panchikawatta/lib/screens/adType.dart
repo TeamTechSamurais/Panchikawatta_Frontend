@@ -21,7 +21,7 @@ class AdType extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const AdPost1()),
+                  MaterialPageRoute(builder: (context) => AdPost1()),
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -37,25 +37,25 @@ class AdType extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 100),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ServicePost()),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFF5C01),
-                padding: const EdgeInsets.all(40),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-              child: const Text(
-                'Services',
-                style: TextStyle(fontSize: 30, color: Colors.white),
-              ),
-            ),
+            // ElevatedButton(
+            //   onPressed: () {
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(builder: (context) => const ServicePost()),
+            //     );
+            //   },
+            //   style: ElevatedButton.styleFrom(
+            //     backgroundColor: const Color(0xFFFF5C01),
+            //     padding: const EdgeInsets.all(40),
+            //     shape: RoundedRectangleBorder(
+            //       borderRadius: BorderRadius.circular(20),
+            //     ),
+            //   ),
+            //   child: const Text(
+            //     'Services',
+            //     style: TextStyle(fontSize: 30, color: Colors.white),
+            //   ),
+            // ),
           ],
         ),
       ),

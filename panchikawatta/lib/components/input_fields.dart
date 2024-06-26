@@ -6,7 +6,11 @@ class InputFields extends StatefulWidget {
   final String hintText;
   final double width1;
 
-  const InputFields({super.key, required this.hintText, required this.width1});
+  const InputFields(
+      {super.key,
+      required this.hintText,
+      required this.width1,
+      required TextEditingController controller});
 
   @override
   _InputFieldsState createState() => _InputFieldsState();

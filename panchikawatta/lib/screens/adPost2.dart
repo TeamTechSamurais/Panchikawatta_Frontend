@@ -1,69 +1,77 @@
-// ignore_for_file: library_private_types_in_public_api, prefer_const_constructors, file_names
+// ignore_for_file: avoid_print, use_build_context_synchronously, library_private_types_in_public_api
+
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/components/input_fields.dart';
-import 'package:panchikawatta/dropdowns/condition.dart';
-import 'package:panchikawatta/dropdowns/fuel.dart';
+import 'package:panchikawatta/dropdowns/condition_post.dart';
+import 'package:panchikawatta/dropdowns/fuel_post.dart';
 import 'package:panchikawatta/dropdowns/origin.dart';
 import 'package:panchikawatta/dropdowns/vehicle_make.dart';
 import 'package:panchikawatta/dropdowns/vehicle_model.dart';
-import 'package:panchikawatta/screens/adPost1.dart';
 import 'package:panchikawatta/screens/post_success.dart';
+import 'package:panchikawatta/services/api_service.dart';
 
 class AdPost2 extends StatefulWidget {
-  const AdPost2({super.key});
+  final int sparePartId;
+
+  const AdPost2({super.key, required this.sparePartId});
 
   @override
   _AdPost2State createState() => _AdPost2State();
 }
 
-// List<String> makes = [
-//   'Toyota',
-//   'Nissan',
-//   'Audi',
-//   'BMW',
-//   'Mercedes',
-//   'Honda',
-// ];
-List<String> models = [
-  'Corolla',
-  'Vitz',
-  'Q2',
-  '3 Series',
-  'Benz',
-  'Civic',
-];
-List<String> origin = [
-  'Local',
-  'Japan',
-  'UK',
-  'Germany',
-  'USA',
-  'India',
-];
-
-List<String> conditions = [
-  'New',
-  'Used',
-  'Reconditioned',
-];
-
-List<String> fuel = [
-  'Petrol',
-  'Diesel',
-  'Electric',
-  'Hybrid',
-  'Any',
-];
-
 class _AdPost2State extends State<AdPost2> {
-  String? _selectedMake; // Variable to store the selected vehicle make
-  String? _selectedModel; // Variable to store the selected vehicle model
-  String? _selectedOrigin; // Variable to store the selected vehicle origin
-  String?
-      _selectedCondition; // Variable to store the selected vehicle condition
-  String? _selectedFuel; // Variable to store the selected vehicle fuel
+  String? _selectedMake;
+  String? _selectedModel;
+  String? _selectedOrigin;
+  String? _selectedCondition;
+  String? _selectedFuel;
+  final TextEditingController _yearController = TextEditingController();
+
+  Future<void> _uploadSparePartStep2() async {
+    try {
+      final make = _selectedMake;
+      final model = _selectedModel;
+      final origin = _selectedOrigin;
+      final condition = _selectedCondition;
+      final fuel = _selectedFuel;
+      final year = int.tryParse(_yearController.text);
+
+      if (make == null ||
+          model == null ||
+          origin == null ||
+          condition == null ||
+          fuel == null ||
+          year == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please fill all required fields')),
+        );
+        return;
+      }
+
+      final sparePart = await ApiService().postSparePartStep2(
+        sparePartId: widget.sparePartId,
+        make: make,
+        model: model,
+        origin: origin,
+        condition: condition,
+        fuel: fuel,
+        year: year,
+      );
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => PostSuccess()),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to upload spare part details: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,232 +94,101 @@ class _AdPost2State extends State<AdPost2> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                height: 30,
+              const SizedBox(height: 10),
+              const Text(
+                'Make',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
-              Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFAFAFA),
-                  borderRadius: BorderRadius.circular(10),
+              const SizedBox(height: 20),
+              VehicleMake(
+                selectedMake: _selectedMake,
+                onChanged: (String? make) {
+                  setState(() {
+                    _selectedMake = make;
+                  });
+                },
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Model',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              VehicleModel(
+                selectedModel: _selectedModel,
+                models: vehicleMakeToModels[_selectedMake] ?? [],
+                onChanged: (String? model) {
+                  setState(() {
+                    _selectedModel = model;
+                  });
+                },
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Year',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              InputFields(
+                controller: _yearController,
+                hintText: 'Year',
+                width1: 1,
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Origin',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              OriginDropdown(
+                onChanged: (value) {
+                  setState(() {
+                    _selectedOrigin = value;
+                  });
+                },
+                selectedOrigin: _selectedOrigin,
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Condition',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              Condition(
+                onChanged: (value) {
+                  setState(() {
+                    _selectedCondition = value;
+                  });
+                },
+                selectedCondition: _selectedCondition,
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Fuel',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              Fuel(
+                onChanged: (value) {
+                  setState(() {
+                    _selectedFuel = value;
+                  });
+                },
+                selectedFuel: _selectedFuel,
+              ),
+              const SizedBox(height: 20),
+              Center(
+                child: CustomButton(
+                  onPressed: () async {
+                    await _uploadSparePartStep2();
+                  },
+                  text: 'Submit',
                 ),
-                padding:
-                    const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 5, horizontal: 5),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Make',
-                            style: TextStyle(
-                              color: Color(0xFF000000),
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 100,
-                          ),
-                          Expanded(
-                            child: VehicleMakesDropdown(
-                              selectedMake: _selectedMake,
-                              onChanged: (String? make) {
-                                setState(() {
-                                  _selectedMake = make;
-                                });
-                              },
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 5, horizontal: 5),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Model',
-                            style: TextStyle(
-                              color: Color(0xFF000000),
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 95,
-                          ),
-                          Expanded(
-                            child: VehicleModel(
-                              selectedModel: _selectedModel,
-                              models: models, // List of vehicle models
-                              onChanged: (String? model) {
-                                setState(() {
-                                  _selectedModel = model;
-                                });
-                              },
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 5, horizontal: 5),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Origin',
-                            style: TextStyle(
-                              color: Color(0xFF000000),
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 97,
-                          ),
-                          Expanded(
-                            child: Origin(
-                              selectedOrigin: _selectedOrigin,
-                              origin: origin, // List of vehicle models
-                              onChanged: (String? origin) {
-                                setState(() {
-                                  _selectedOrigin = origin;
-                                });
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 5, horizontal: 5),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Condition',
-                            style: TextStyle(
-                              color: Color(0xFF000000),
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 67,
-                          ),
-                          Expanded(
-                            child: Condition(
-                              selectedCondition: _selectedCondition,
-                              condition: conditions, // List of vehicle models
-                              onChanged: (String? origin) {
-                                setState(() {
-                                  _selectedOrigin = origin;
-                                });
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 5, horizontal: 5),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Fuel',
-                            style: TextStyle(
-                              color: Color(0xFF000000),
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 110,
-                          ),
-                          Expanded(
-                            child: Fuel(
-                              selectedFuel: _selectedFuel,
-                              fuel: fuel,
-                              onChanged: (String? fuel) {
-                                setState(() {
-                                  _selectedFuel = fuel;
-                                });
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 5, horizontal: 5),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: const [
-                          Text(
-                            'Year',
-                            style: TextStyle(
-                              color: Color(0xFF000000),
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 105,
-                          ),
-                          Expanded(
-                            child: InputFields(hintText: 'Year', width1: 1),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 40),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        CustomButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => AdPost1()));
-                          },
-                          text: 'Previous',
-                        ),
-                        CustomButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => PostSuccess()));
-                          },
-                          text: 'Post',
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              )
+              ),
             ],
           ),
         ),
