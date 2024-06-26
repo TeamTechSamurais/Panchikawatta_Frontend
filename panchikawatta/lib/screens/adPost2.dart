@@ -1,9 +1,6 @@
 // ignore_for_file: avoid_print, use_build_context_synchronously, library_private_types_in_public_api
 
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/components/input_fields.dart';
 import 'package:panchikawatta/dropdowns/condition_post.dart';
@@ -17,10 +14,11 @@ import 'package:panchikawatta/services/api_service.dart';
 class AdPost2 extends StatefulWidget {
   final int sparePartId;
 
-  const AdPost2({super.key, required this.sparePartId});
+  AdPost2({super.key, required this.sparePartId});
 
   @override
   _AdPost2State createState() => _AdPost2State();
+  final ApiService apiService = ApiService();
 }
 
 class _AdPost2State extends State<AdPost2> {
@@ -31,7 +29,7 @@ class _AdPost2State extends State<AdPost2> {
   String? _selectedFuel;
   final TextEditingController _yearController = TextEditingController();
 
-  Future<void> _uploadSparePartStep2() async {
+  Future<void> _postSparePartStep2() async {
     try {
       final make = _selectedMake;
       final model = _selectedModel;
@@ -51,16 +49,6 @@ class _AdPost2State extends State<AdPost2> {
         );
         return;
       }
-
-      final sparePart = await ApiService().postSparePartStep2(
-        sparePartId: widget.sparePartId,
-        make: make,
-        model: model,
-        origin: origin,
-        condition: condition,
-        fuel: fuel,
-        year: year,
-      );
 
       Navigator.push(
         context,
@@ -184,7 +172,7 @@ class _AdPost2State extends State<AdPost2> {
               Center(
                 child: CustomButton(
                   onPressed: () async {
-                    await _uploadSparePartStep2();
+                    await _postSparePartStep2();
                   },
                   text: 'Submit',
                 ),

@@ -2,9 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
-import 'package:panchikawatta/screens/adPost1.dart';
 import 'package:panchikawatta/screens/adType.dart';
-import 'package:panchikawatta/screens/ad_details_services.dart';
 import 'package:panchikawatta/screens/ad_details_sparepart.dart';
 import 'package:panchikawatta/screens/buyer_profile.dart';
 
@@ -100,6 +98,7 @@ class ProfilePage extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
+                  SizedBox(),
                   Container(
                     alignment: Alignment.centerLeft,
                     child: const Text(
@@ -109,29 +108,6 @@ class ProfilePage extends StatelessWidget {
                         fontSize: 20,
                       ),
                     ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ProfilePage()),
-                      );
-                    },
-                    child: const Text('Spareparts',
-                        style:
-                            TextStyle(fontSize: 18, color: Color(0xFFFF5C01))),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => AdDetailsServices()),
-                      );
-                    },
-                    child: const Text('Services',
-                        style:
-                            TextStyle(fontSize: 18, color: Color(0xFFFF5C01))),
                   ),
                 ],
               ),

@@ -1,18 +1,15 @@
-// ignore_for_file: library_private_types_in_public_api, avoid_print, use_build_context_synchronously, file_names
+// ignore_for_file: use_build_context_synchronously, library_private_types_in_public_api
 
-import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/components/input_fields.dart';
-import 'package:panchikawatta/screens/post_success.dart';
 import 'package:panchikawatta/components/add_image.dart';
+import 'package:panchikawatta/screens/post_success.dart';
 import 'package:panchikawatta/services/api_service.dart';
 
 class ServicePost extends StatefulWidget {
-  const ServicePost({super.key});
+  ServicePost({super.key});
 
   @override
   _ServicePostState createState() => _ServicePostState();
@@ -20,13 +17,42 @@ class ServicePost extends StatefulWidget {
 }
 
 class _ServicePostState extends State<ServicePost> {
-  final String _selectedType = 'Services';
   final List<XFile?> _images = List<XFile?>.filled(1, null);
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _priceController = TextEditingController();
 
   void _setImage(int index, XFile? image) {
     setState(() {
       _images[index] = image;
     });
+  }
+
+  Future<void> _postService() async {
+    try {
+      final title = _titleController.text;
+      final description = _descriptionController.text;
+      final price = int.tryParse(_priceController.text) ?? 0;
+      final image = _images[0];
+
+      if (title.isEmpty || description.isEmpty || price == 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please fill all required fields')),
+        );
+        return;
+      }
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PostSuccess(),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to post service: $e')),
+      );
+    }
   }
 
   @override
@@ -40,7 +66,7 @@ class _ServicePostState extends State<ServicePost> {
           },
         ),
         title: const Text(
-          'Post Ad',
+          'Post Service Ad',
           style: TextStyle(
             color: Color(0xFFFF5C01),
             fontSize: 27,
@@ -72,7 +98,11 @@ class _ServicePostState extends State<ServicePost> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    //const InputFields(hintText: 'Title', width1: 1),
+                    InputFields(
+                      controller: _titleController,
+                      hintText: 'Title',
+                      width1: 1,
+                    ),
                     const SizedBox(height: 20),
                     const Text(
                       'Description',
@@ -83,6 +113,7 @@ class _ServicePostState extends State<ServicePost> {
                     ),
                     const SizedBox(height: 20),
                     TextField(
+                      controller: _descriptionController,
                       decoration: InputDecoration(
                         contentPadding: const EdgeInsets.all(5),
                         border: OutlineInputBorder(
@@ -112,7 +143,6 @@ class _ServicePostState extends State<ServicePost> {
                     const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      //Change no. of images
                       children: List.generate(1, (index) {
                         return AddImage(
                           size: 70,
@@ -122,51 +152,30 @@ class _ServicePostState extends State<ServicePost> {
                       }),
                     ),
                     const SizedBox(height: 20),
+                    // const Text(
+                    //   'Price',
+                    //   style: TextStyle(
+                    //     fontSize: 16,
+                    //     fontWeight: FontWeight.bold,
+                    //   ),
+                    // ),
+                    // const SizedBox(height: 20),
+                    // InputFields(
+                    //   controller: _priceController,
+                    //   hintText: 'Price',
+                    //   width1: 1,
+                    //   keyboardType: TextInputType.number,
+                    // ),
                   ],
                 ),
               ),
-              Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFAFAFA),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                padding: const EdgeInsets.all(10),
-                child: const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Price',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    InputFields(
-                      hintText: 'Price',
-                      width1: 1,
-                    ),
-                    SizedBox(height: 20),
-                  ],
-                ),
-              ),
+              const SizedBox(height: 20),
               Center(
                 child: CustomButton(
                   onPressed: () async {
-                    await _AddImages();
-                    if (_selectedType == 'Services') {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => PostSuccess()),
-                      );
-                    } else {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => PostSuccess()),
-                      );
-                    }
+                    await _postService();
                   },
-                  text: 'Post Ad',
+                  text: 'Next',
                 ),
               ),
             ],
