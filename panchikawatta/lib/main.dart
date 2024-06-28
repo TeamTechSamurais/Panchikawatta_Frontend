@@ -33,7 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final List<Widget> _pages = [
     const search_page(),
     const notification_page(),
-    const AlertPage(),
+    const alert_page(),
     const ProfilePage(),
   ];
 

@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:panchikawatta/components/custom_button.dart';
+import 'package:panchikawatta/screens/adType.dart';
+import 'package:panchikawatta/screens/ad_details_sparepart.dart';
+import 'package:panchikawatta/screens/buyer_profile.dart';
 
 // ignore: camel_case_types
 class ProfilePage extends StatelessWidget {
@@ -23,8 +27,98 @@ class ProfilePage extends StatelessWidget {
           ),
         ),
       ),
-      body: const Center(
-        child: Text('Profile Page Content'),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(height: 20),
+            const CircleAvatar(
+              radius: 70,
+              backgroundImage: AssetImage('assets/images/profileImage.png'),
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Anne Fernando',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => BuyerProfile()),
+                      );
+                    },
+                    child: const Text('        Buyer',
+                        style:
+                            TextStyle(fontSize: 18, color: Color(0xFF757575))),
+                  ),
+                  Text('|'),
+                  TextButton(
+                    onPressed: () {},
+                    child: const Text('Seller        ',
+                        style:
+                            TextStyle(fontSize: 18, color: Color(0xFFFF5C01))),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 15),
+            Padding(
+              padding: EdgeInsets.all(5),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.4,
+                child: CustomButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => AdType()),
+                    );
+                  },
+                  text: 'Post Ad',
+                ),
+              ),
+            ),
+            const SizedBox(height: 15),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: const Divider(
+                color: Color(0x80000000),
+                thickness: 1,
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(left: 10, right: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  SizedBox(),
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    child: const Text(
+                      'My Ads',
+                      style: TextStyle(
+                        color: Color(0xFF000000),
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 1000,
+              child: AdDetailsSpareparts(),
+            ),
+          ],
+        ),
       ),
     );
   }
