@@ -69,7 +69,7 @@ class AdType extends StatelessWidget {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFFF5C01),
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(15),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(25),
                       ),
