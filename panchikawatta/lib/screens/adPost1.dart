@@ -1,7 +1,5 @@
 // ignore_for_file: use_build_context_synchronously, avoid_print, library_private_types_in_public_api
 
-import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:panchikawatta/components/custom_button.dart';
@@ -144,7 +142,7 @@ class _AdPost1State extends State<AdPost1> {
                     ),
                     const SizedBox(height: 20),
                     const Text(
-                      'Add Images',
+                      'Add Image',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,

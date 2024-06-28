@@ -30,13 +30,13 @@ class ProfilePage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             const CircleAvatar(
               radius: 70,
               backgroundImage: AssetImage('assets/images/profileImage.png'),
             ),
-            SizedBox(height: 10),
-            Text(
+            const SizedBox(height: 10),
+            const Text(
               'Anne Fernando',
               style: TextStyle(
                 fontSize: 20,
@@ -60,7 +60,7 @@ class ProfilePage extends StatelessWidget {
                         style:
                             TextStyle(fontSize: 18, color: Color(0xFF757575))),
                   ),
-                  Text('|'),
+                  const Text('|'),
                   TextButton(
                     onPressed: () {},
                     child: const Text('Seller        ',
@@ -70,16 +70,16 @@ class ProfilePage extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
             Padding(
-              padding: EdgeInsets.all(5),
+              padding: const EdgeInsets.all(5),
               child: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.4,
                 child: CustomButton(
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => AdType()),
+                      MaterialPageRoute(builder: (context) => const AdType()),
                     );
                   },
                   text: 'Post Ad',
@@ -95,19 +95,19 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(left: 10, right: 10),
+              padding: const EdgeInsets.only(left: 10, right: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  SizedBox(),
+                  const SizedBox(height: 40),
                   Container(
                     alignment: Alignment.centerLeft,
                     child: const Text(
-                      'My Ads',
+                      'My Ads                    ',
                       style: TextStyle(
-                        color: Color(0xFF000000),
-                        fontSize: 20,
-                      ),
+                          color: Color(0xFF000000),
+                          fontSize: 22,
+                          fontWeight: FontWeight.w500),
                     ),
                   ),
                 ],

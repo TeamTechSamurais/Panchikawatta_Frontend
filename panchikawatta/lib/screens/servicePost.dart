@@ -134,7 +134,7 @@ class _ServicePostState extends State<ServicePost> {
                     ),
                     const SizedBox(height: 20),
                     const Text(
-                      'Add Images',
+                      'Add Image',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
