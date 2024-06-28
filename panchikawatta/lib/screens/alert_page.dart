@@ -13,8 +13,8 @@ import 'package:panchikawatta/screens/security_light_action.dart';
 import 'package:panchikawatta/screens/tire_pressure_action.dart';
 import 'package:panchikawatta/screens/washer_fluid_action.dart';
 
-class alert_page extends StatelessWidget {
-  const alert_page({super.key});
+class AlertPage extends StatelessWidget {
+  const AlertPage({super.key});
 
   @override
   Widget build(BuildContext context) {
