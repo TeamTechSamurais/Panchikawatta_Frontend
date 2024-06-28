@@ -34,7 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
     const search_page(),
     const notification_page(),
     const alert_page(),
-    const profile_page(),
+    const ProfilePage(),
   ];
 
   void _onItemTapped(int index) {
@@ -69,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         selectedItemColor: const Color(0xFFFF5C01),
-        unselectedItemColor: const Color.fromARGB(255, 117, 117, 117),
+        unselectedItemColor: const Color(0xFF757575),
       ),
     );
   }
