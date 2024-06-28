@@ -1,13 +1,12 @@
-// ignore_for_file: prefer_const_constructors, use_super_parameters
-
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/screens/adType.dart';
 import 'package:panchikawatta/screens/ad_details_sparepart.dart';
 import 'package:panchikawatta/screens/buyer_profile.dart';
 
+// ignore: camel_case_types
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({key}) : super(key: key);
+  const ProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +14,9 @@ class ProfilePage extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
         title: const Text(
           'My Profile',
