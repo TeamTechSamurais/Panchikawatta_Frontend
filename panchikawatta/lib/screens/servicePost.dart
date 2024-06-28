@@ -1,24 +1,22 @@
-// ignore_for_file: use_build_context_synchronously, avoid_print, library_private_types_in_public_api
+// ignore_for_file: use_build_context_synchronously, library_private_types_in_public_api
 
-import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/components/input_fields.dart';
-import 'package:panchikawatta/screens/adPost2.dart';
 import 'package:panchikawatta/components/add_image.dart';
+import 'package:panchikawatta/screens/post_success.dart';
 import 'package:panchikawatta/services/api_service.dart';
 
-class AdPost1 extends StatefulWidget {
-  AdPost1({super.key});
+class ServicePost extends StatefulWidget {
+  ServicePost({super.key});
 
   @override
-  _AdPost1State createState() => _AdPost1State();
+  _ServicePostState createState() => _ServicePostState();
   final ApiService apiService = ApiService();
 }
 
-class _AdPost1State extends State<AdPost1> {
+class _ServicePostState extends State<ServicePost> {
   final List<XFile?> _images = List<XFile?>.filled(1, null);
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -30,37 +28,29 @@ class _AdPost1State extends State<AdPost1> {
     });
   }
 
-  Future<void> _postSparePartStep1() async {
+  Future<void> _postService() async {
     try {
       final title = _titleController.text;
       final description = _descriptionController.text;
-      final price = int.tryParse(_priceController.text);
+      final price = int.tryParse(_priceController.text) ?? 0;
       final image = _images[0];
 
-      if (title.isEmpty || description.isEmpty || price == null) {
+      if (title.isEmpty || description.isEmpty || price == 0) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Please fill all required fields')),
         );
         return;
       }
 
-      final sparePart = await widget.apiService.postSparePartStep1(
-        sellerId: 2, // Replace with actual seller ID
-        title: title,
-        description: description,
-        price: price,
-        image: image!,
-      );
-
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => AdPost2(sparePartId: sparePart.id),
+          builder: (context) => PostSuccess(),
         ),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to post ad: $e')),
+        SnackBar(content: Text('Failed to post service: $e')),
       );
     }
   }
@@ -76,7 +66,7 @@ class _AdPost1State extends State<AdPost1> {
           },
         ),
         title: const Text(
-          'Post Ad',
+          'Post Service Ad',
           style: TextStyle(
             color: Color(0xFFFF5C01),
             fontSize: 27,
@@ -162,39 +152,28 @@ class _AdPost1State extends State<AdPost1> {
                       }),
                     ),
                     const SizedBox(height: 20),
+                    // const Text(
+                    //   'Price',
+                    //   style: TextStyle(
+                    //     fontSize: 16,
+                    //     fontWeight: FontWeight.bold,
+                    //   ),
+                    // ),
+                    // const SizedBox(height: 20),
+                    // InputFields(
+                    //   controller: _priceController,
+                    //   hintText: 'Price',
+                    //   width1: 1,
+                    //   keyboardType: TextInputType.number,
+                    // ),
                   ],
                 ),
               ),
-              Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFAFAFA),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Price',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    InputFields(
-                      controller: _priceController,
-                      hintText: 'Price',
-                      width1: 1,
-                    ),
-                    const SizedBox(height: 20),
-                  ],
-                ),
-              ),
+              const SizedBox(height: 20),
               Center(
                 child: CustomButton(
                   onPressed: () async {
-                    await _postSparePartStep1();
+                    await _postService();
                   },
                   text: 'Next',
                 ),

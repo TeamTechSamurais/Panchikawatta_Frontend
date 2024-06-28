@@ -38,7 +38,7 @@ class PostUnsuccess extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const AdPost1()),
+                    MaterialPageRoute(builder: (context) => AdPost1()),
                   );
                 },
               ),
