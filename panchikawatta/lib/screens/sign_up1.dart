@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:http/http.dart' as http;
@@ -47,6 +47,7 @@ class _SignUp1State extends State<sign_up1> {
   final TextEditingController phoneNoController = TextEditingController();
   String? selectedProvince;
   String? selectedDistrict;
+
   @override
   void dispose() {
     usernameController.dispose();
@@ -591,31 +592,17 @@ class _SignUp1State extends State<sign_up1> {
             _showFillMessage(phoneValidationResult.message,
                 'Please enter a valid phone number');
           } else {
-            // If all fields are filled and password is valid, call sign_up1()
-            // createAccount(usernameController.text, passwordController.text, emailController.text, imagePath, _isSigningUp) ;
+            // If all fields are filled and password is valid, call createAccount()
             setState(() {
               _isSigningUp = true;
             });
 
-            // createAccount(usernameController.text.trim(), passwordController.text.trim(), emailController.text.trim(), imagePath).then((user) {
-            //   if (user != null) {
-            //     setState(() {
-            //       _isSigningUp = false;
-            //     });
-            //     Navigator.push(context, MaterialPageRoute(builder: (_) => Registraion_success()));
-            //   } else {
-            //     setState(() {
-            //       _isSigningUp = false;
-            //     });
-            //   }
-            // }) ;
             UserCredential? userCredential = await createAccount(
               usernameController.text.trim(),
               passwordController.text,
               emailController.text.trim(),
               imagePath
             );
-            // User? user = userCredential?.user;
 
             setState(() {
               _isSigningUp = false;
@@ -626,12 +613,22 @@ class _SignUp1State extends State<sign_up1> {
                 context,
                 MaterialPageRoute(builder: (_) => Registraion_success())
               );
+
+              //Call saveUserEmail() to store the email locally.
+              saveUserEmail(emailController.text);
             } else {
               _showFillMessage('Account creation failed');
             }
-            };
-          }
+          };
         }
       }
     }
   }
+}
+
+
+//Save the email locally
+Future<void> saveUserEmail(String email) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.setString('userEmail', email);
+}

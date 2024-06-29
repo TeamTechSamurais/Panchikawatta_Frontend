@@ -1,8 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:panchikawatta/screens/api_service.dart';
 import 'package:panchikawatta/screens/buyer_profile.dart';
 import 'package:panchikawatta/screens/delete_and_edit_my_profile.dart';
 import 'package:panchikawatta/screens/edit_profile_page.dart';
 import 'package:panchikawatta/screens/seller_profile.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -11,11 +14,15 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStateMixin{
   late TabController _tabController;
+  Future<Map<String, dynamic>>? _user;
+  String? profilePictureUrl;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _fetchUser();
   }
 
   @override
@@ -24,19 +31,58 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     super.dispose();
   }
 
+  Future<void> _fetchUser() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? email = prefs.getString('userEmail');
+
+    if (email != null) {
+      final querySnapshot = await _firestore
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .get();
+
+      setState(() {
+        _user = ApiServices.getUserByEmail(email);
+
+        if (querySnapshot.docs.isNotEmpty) {
+          final doc = querySnapshot.docs.first;
+          if (doc['profile_picture'] != null) {
+            profilePictureUrl = doc['profile_picture']; // Assuming 'profilePicture' is the field name
+          } else {
+            profilePictureUrl = null;
+          }
+        }
+      });
+
+    } else {
+      // Handle the case where the email is not found
+      return showDialog(
+        context: context, 
+        builder: (BuildContext) {
+          return AlertDialog(
+            // title: const Text('Error'),
+            content: const Text('You do not have an account. Please sign up.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        }
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black, size: 28),
-          onPressed: () {
-            // Navigate to the previous page
-            Navigator.pop(context);
-          },
-        ),
-        title: const Text('My Profile', style: TextStyle(color: Color(0xFFFF5C01), fontSize: 28)),
+        automaticallyImplyLeading: false,
+        title: const Text('My Profile', style: TextStyle(color: Color(0xFFFF5C01), fontSize: 28, fontWeight: FontWeight.bold)),
         actions: [
           PopupMenuButton<String>(
             icon: const Icon(Icons.settings, color: Colors.black, size: 28),
@@ -88,68 +134,79 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
         ],
       ),
 
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            const Center(
-              child: CircleAvatar(
-                radius: 80,
-                backgroundImage: AssetImage('lib/assets/profilePicture.jpg',),
-              ),
-            ),
-
-            const SizedBox(height: 25),
-
-            const Center(
-              child: Text('Anne_Fernando82', style: TextStyle(fontSize: 18,),)
-            ),
-
-            const SizedBox(height: 25),
-
-            TabBar(
-              controller: _tabController,
-              tabs: [
-                  _individualTab('Buyer',),
-                  _individualTab('Seller'),
-              ],
-              labelColor: Color(0xFFFF5C01),
-              unselectedLabelColor: Color(0x80000000),
-              indicatorColor: Colors.transparent,
-              indicatorSize: TabBarIndicatorSize.tab,
-              labelPadding: EdgeInsets.all(0),
-              indicatorPadding: EdgeInsets.all(0),
-              dividerColor: Colors.transparent,
-            ),
-
-            // Container(
-            //   height: 2000, // You can adjust this value as needed
-            //   child: TabBarView(
-            //     controller: _tabController,
-            //     children: [
-            //       Expanded(
-            //         child: BuyerProfile(),
-            //       ),
-            //       SellerProfile(),],
-            //   ),
-            // ),
-
-            Container(
-              height: 2000, // You can adjust this value as needed
-              child: TabBarView(
-                controller: _tabController,
+      body: FutureBuilder<Map<String, dynamic>>(
+        future: _user,
+        builder: (context, snapshot) {
+          if (_user == null) {
+            return const Center(
+              child: CircularProgressIndicator( ),
+            );
+          } else if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          } else {
+            final user = snapshot.data!;
+            return SingleChildScrollView(
+              child: Column(
                 children: [
-                  BuyerProfile(),
-                  SellerProfile(),
+                  const SizedBox(height: 20),
+
+                  Center(
+                    child: CircleAvatar(
+                      radius: 80,
+                      backgroundImage: profilePictureUrl != null ? NetworkImage(profilePictureUrl!) : null,
+                      child: profilePictureUrl == null ? const Icon(Icons.person, size: 80,) : null
+                    ),
+                  ),
+
+                  const SizedBox(height: 25),
+
+                  Center(
+                    child: Text('${user['userName']}', style: const TextStyle(fontSize: 18,),)
+                  ),
+
+                  const SizedBox(height: 25),
+
+                  TabBar(
+                    controller: _tabController,
+                    tabs: [
+                        _individualTab('Buyer',),
+                        _individualTab('Seller'),
+                    ],
+                    labelColor: Color(0xFFFF5C01),
+                    unselectedLabelColor: Color(0x80000000),
+                    indicatorColor: Colors.transparent,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    labelPadding: EdgeInsets.all(0),
+                    indicatorPadding: EdgeInsets.all(0),
+                    dividerColor: Colors.transparent,
+                  ),
+
+                  Container(
+                    height: 2000, // You can adjust this value as needed
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        BuyerProfile(),
+                        SellerProfile(),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
                 ],
               ),
-            ),
-
-            SizedBox(height: 20),
-
-          ],
-        ),
-      ),
+            );
+          }
+        //}
+        },
+      )
     );
   }
 

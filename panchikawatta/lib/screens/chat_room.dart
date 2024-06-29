@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 class ChatRoom extends StatelessWidget {
   final Map<String, dynamic> userMap;
   final String chatRoomId;
+  final String user;
 
-  ChatRoom({required this.userMap, required this.chatRoomId});
+  ChatRoom({required this.userMap, required this.chatRoomId, required this.user});
 
   final TextEditingController _message = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -16,20 +17,36 @@ class ChatRoom extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
+    // addChatRoomId();
+
     return Scaffold(
       appBar: AppBar(
-        // leading: CircleAvatar(
-        //             backgroundImage: results[index]['profile_picture'] == null 
-        //               ? null 
-        //               : NetworkImage(results[index]['profile_picture']),
-        //             child: results[index]['profile_picture'] == null 
-        //               ? Icon(Icons.person) 
-        //               : null,
-        //           ),,
-        title: Text(userMap['name'], style: TextStyle(color: Color(0xFFFF5C01), fontSize: 25)),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black, size: 28),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: Row (
+          children: [
+            CircleAvatar(
+              radius: 20,
+              backgroundImage: userMap['profile_picture'] == null 
+                ? null 
+                : NetworkImage(userMap['profile_picture']!),
+              child: userMap['profile_picture'] == null 
+                ? const Icon(Icons.person) 
+                : null,
+            ),
+
+            const SizedBox(width: 10),
+            
+            Text(userMap['name'], style: const TextStyle(color: Color(0xFFFF5C01), fontSize: 25)),
+          ],
+        ),
         actions: [
           IconButton(
-            icon:  Icon(Icons.more_vert, color: Colors.black, size: 28),
+            icon:  const Icon(Icons.more_vert, color: Colors.black, size: 28),
             onPressed: () {
               // Display the input field for search
             },
@@ -71,12 +88,8 @@ class ChatRoom extends StatelessWidget {
                   }
                 }),
               ),
-
-            Container(
-              height: size.height / 10,
-              width: size.width,
-              alignment: Alignment.center,
-              child: Container(
+            
+              Container(
                 height: size.height / 14,
                 width: size.width / 1.1,
                 child: Row(
@@ -85,7 +98,7 @@ class ChatRoom extends StatelessWidget {
 
                     Container(
                       height: size.height / 10,
-                      width: size.width / 1.3,
+                      width: size.width / 1.4,
                       child: TextField(
                         controller: _message,
                         decoration: InputDecoration(
@@ -107,7 +120,6 @@ class ChatRoom extends StatelessWidget {
                   ],
                 ),
               ),
-            ),
           ],
         ),
       ),
@@ -118,7 +130,7 @@ class ChatRoom extends StatelessWidget {
   void onSendMessage() async {
     if(_message.text.isNotEmpty) {
       Map<String, dynamic> message = {
-        'sendby' : _auth.currentUser!.displayName,
+        'sendby' : _auth.currentUser!.uid,
         'message': _message.text,
         'time' : FieldValue.serverTimestamp(),
       };
@@ -130,16 +142,43 @@ class ChatRoom extends StatelessWidget {
         .add(message);
 
       _message.clear();
+
+      // Add the chatRoomId to the user's document when a message is sent
+      addChatRoomId();
+
     } else {
       print('Enter a message to send');
     }
+  }
+
+  // Function to add chat room id
+  void addChatRoomId() async {
+    String uid = _auth.currentUser!.uid;
+    String otherUid = user;
+
+    DocumentReference userDoc1 = _firestore.collection('users').doc(uid);
+    DocumentReference userDoc2 = _firestore.collection('users').doc(otherUid);
+
+    userDoc1.update({
+      'chatRooms': FieldValue.arrayUnion([
+        {'otherUid' : user,
+        'chatRoomId' : chatRoomId}
+      ])
+    });
+
+    userDoc2.update({
+      'chatRooms': FieldValue.arrayUnion([
+        {'otherUid' : uid,
+        'chatRoomId' : chatRoomId}
+      ])
+    });
   }
 
   // Widget to display messages
   Widget messages(Size size, Map<String,dynamic> map ) {
     return Container(
       width: size.width,
-      alignment: map['sendby'] == _auth.currentUser!.displayName 
+      alignment: map['sendby'] == _auth.currentUser!.uid 
         ? Alignment.centerRight 
         : Alignment.centerLeft,
 
@@ -147,7 +186,7 @@ class ChatRoom extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
         margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
         decoration: BoxDecoration(
-          color: map['sendby'] == _auth.currentUser!.displayName 
+          color: map['sendby'] == _auth.currentUser!.uid 
             ? Color(0xFFFCB891) 
             : Colors.grey[300],
           borderRadius: BorderRadius.circular(10),

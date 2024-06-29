@@ -24,9 +24,7 @@ class _DropdownInputFieldState extends State<DropdownInputField> {
   @override
   void initState() {
     super.initState();
-    // if (widget.dropdownItems.isNotEmpty) {
-      // _dropdownValue = widget.dropdownItems[0];
-    // }
+    _dropdownValue = widget.dropdownItems.contains(widget.initialValue) ? widget.initialValue : null;
   }
 
   @override
@@ -37,11 +35,12 @@ class _DropdownInputFieldState extends State<DropdownInputField> {
         child: DropdownButtonFormField<String>(
           value: _dropdownValue,
           hint: Text(widget.hintText),
+          isExpanded: true,
           items: widget.dropdownItems.map((String value) {
             return DropdownMenuItem<String>(
               value: value,
               child: DefaultTextStyle(
-                style: const TextStyle(fontSize: 16, color: Color(0xCC000000), fontWeight: FontWeight.normal),
+                style: const TextStyle(fontSize: 16, color: Color(0xCC000000)),
                 child: Text(value),
               )
             );
@@ -54,10 +53,17 @@ class _DropdownInputFieldState extends State<DropdownInputField> {
             _formKey.currentState!.validate();
           },
           decoration: const InputDecoration(
-            border: InputBorder.none, 
+            //borderRadius: BorderRadius.all(Radius.circular(10)),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+              borderSide: BorderSide.none,
+            ),
+            filled: true,
+            fillColor: Color.fromARGB(255, 241, 239, 237)
           ),
         ),
       ),
     );
   }
 }
+
