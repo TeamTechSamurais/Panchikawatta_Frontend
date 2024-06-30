@@ -1,4 +1,4 @@
-import 'dart:async';
+ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/global/common/toast.dart';
 import 'package:panchikawatta/main.dart';
@@ -8,6 +8,7 @@ import 'package:panchikawatta/screens/sign_up1.dart';
 import 'package:panchikawatta/user_auth/firebase_auth_implementation/firebase_auth_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:http/http.dart' as http;
 
 class login extends StatefulWidget {
   @override
@@ -21,7 +22,7 @@ class _LoginState extends State<login> {
   final FirebaseAuthServices _auth = FirebaseAuthServices();
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController usernameController = TextEditingController();
+ 
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   // TextEditingController _email = TextEditingController();    //shashini
@@ -30,7 +31,7 @@ class _LoginState extends State<login> {
 
   @override
   void dispose() {
-    usernameController.dispose();
+ 
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
@@ -68,7 +69,7 @@ class _LoginState extends State<login> {
                   ],
                 ),
               ),
-              SizedBox(height: 30),
+              SizedBox(height: 10),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
                 child: Image.asset(
@@ -77,13 +78,24 @@ class _LoginState extends State<login> {
                   width: 200,
                 ),
               ),
+              SizedBox(height: 2),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
+                child: Text(
+                  "Welcome to Panchikawatta",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 15, // Adjust the font size here
+                  ),
+                ),
+              ),
               SizedBox(height: 10),
               TextFieldContainer(
                 child: TextField(
-                  controller: usernameController,
+                  controller: emailController,
                   cursorColor: Colors.black,
                   decoration: InputDecoration(
-                    hintText: "Username",
+                    hintText: "Email",
                     border: InputBorder.none,
                   ),
                 ),
@@ -99,16 +111,7 @@ class _LoginState extends State<login> {
                   ),
                 ),
               ),
-              TextFieldContainer(
-                child: TextField(
-                  controller: emailController,
-                  cursorColor: Colors.black,
-                  decoration: InputDecoration(
-                    hintText: "Email",
-                    border: InputBorder.none,
-                  ),
-                ),
-              ),
+              
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -149,10 +152,12 @@ class _LoginState extends State<login> {
                     padding: EdgeInsets.symmetric(vertical: 15, horizontal: 40),
                     backgroundColor: const Color(0xFFFF5C01),
                   ),
-                  child: _isSigning ? CircularProgressIndicator(color:Colors.white):Text(
-                    "Login",
-                    style: TextStyle(color: Colors.white),
-                  ),
+                  child: _isSigning
+                      ? CircularProgressIndicator(color: Colors.white)
+                      : Text(
+                          "Login",
+                          style: TextStyle(color: Colors.white),
+                        ),
                 ),
               ),
               Row(
@@ -196,30 +201,60 @@ class _LoginState extends State<login> {
     setState(() {
       _isSigning = true;
     });
-    String username = usernameController.text;
-    String email = emailController.text;
-    String password = passwordController.text;
 
-    User? user = await _auth.signInWithEmailAndPassword(email, password);
+    String email = emailController.text.trim();
+    String password = passwordController.text.trim();
+
+    User? user = await _auth.signInWithEmailAndPassword(email,password);
 
     setState(() {
       _isSigning = false;
     });
-    
+
     if (user != null) {
-      showToast(message: " yor are  successfully signed in");
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MyHomePage(),
-        ),
-      );
+      if (user.emailVerified) {
+        showToast(message: "You are successfully signed in");
+
+        // Generate and save JWT token locally
+        
+      
+          // Navigate to home page after successful login
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MyHomePage(),
+            ),
+          );
+         
+      } else {
+        showToast(message: "Please verify your email before login");
+      }
     } else {
-      showToast(message: "Invalid input");
+      showToast(message: "Invalid email or password");
     }
   }
 
-   
+  Future<String?> _generateJwtToken(User user) async {
+    try {
+      // Get the Firebase ID token
+      String? idToken = await user.getIdToken();
+  print('Received idToken token: $idToken');
+      // Call your Node.js server to generate JWT token
+      final response = await http.post(
+        Uri.parse('https://10.0.2.2:8000/users/generateJwtToken'),
+        body: {'idToken': idToken},
+      );
+
+      if (response.statusCode == 201) {
+        return response .body; // Assuming your server returns the whole response body as JWT token
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Error generating JWT token: $e');
+      return null;
+    }
+  }
 }
 
 class TextFieldContainer extends StatelessWidget {
@@ -231,7 +266,7 @@ class TextFieldContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+      margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
       padding: EdgeInsets.symmetric(horizontal: 30, vertical: 5),
       width: size.width * 0.9,
       decoration: BoxDecoration(

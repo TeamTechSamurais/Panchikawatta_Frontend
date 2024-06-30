@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/global/common/toast.dart';
 
@@ -25,7 +25,7 @@ class FirebaseAuthServices {
   
 }
 Future<User?> signInWithEmailAndPassword(
-      String email, String Password) async {
+     String email, String Password) async {
     try {
       UserCredential credential = await _auth.signInWithEmailAndPassword(
           email: email, password: Password);
@@ -34,11 +34,24 @@ Future<User?> signInWithEmailAndPassword(
         if(e.code == 'user-not-found'|| e.code == 'wrong-password') {
         showToast(message:'Invalid email or password');
       }
-    else{
-      showToast(message:'An error occurred: ${e.code}');
-    }
+    
     }
     return null;
   
-}}
+}
+    Future<bool> sendEmailVerification(User user, BuildContext context) async {
+    try {
+      await user.sendEmailVerification();
+      return true;
+    } catch (e) {
+      print("Failed to send verification email: $e");
+      return false;
+    }
+
+  }
+Future<bool> isEmailVerified(User user) async {
+    await user.reload();
+    return user.emailVerified;
+  }
+}
  

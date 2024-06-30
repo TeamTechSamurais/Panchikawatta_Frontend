@@ -1,18 +1,17 @@
-import 'dart:async';
-import 'dart:convert';
+ import 'dart:async';
 import 'dart:io';
-import 'dart:math';
-
+import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:http/http.dart' as http;
+import 'package:panchikawatta/components/drop_down_input_fields.dart';
+import 'package:panchikawatta/main.dart';
 import 'package:panchikawatta/screens/Registration_successs.dart';
 import 'package:panchikawatta/screens/auth_functions.dart';
 import 'package:panchikawatta/screens/login.dart';
-import 'package:panchikawatta/screens/sign_up2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:panchikawatta/screens/sign_up2.dart';
 import 'package:panchikawatta/user_auth/firebase_auth_implementation/firebase_auth_services.dart';
 
 class EmailValidationResult {
@@ -36,20 +35,23 @@ class sign_up1 extends StatefulWidget {
 
 class _SignUp1State extends State<sign_up1> {
   final FirebaseAuthServices _auth = FirebaseAuthServices();
+
   String? imagePath;
   bool _isSigningUp = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
-  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController userNameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneNoController = TextEditingController();
-  String? selectedProvince;
-  String? selectedDistrict;
+  String? selectedprovince;
+  String? selecteddistrict;
   @override
   void dispose() {
-    usernameController.dispose();
+    userNameController.dispose();
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
@@ -82,6 +84,13 @@ class _SignUp1State extends State<sign_up1> {
     );
   }
 
+  String? validateConfirmPassword(String value) {
+    if (value != passwordController.text) {
+      return 'Passwords do not match';
+    }
+    return null;
+  }
+
   String? validatePassword(String value) {
     // Password must contain at least one uppercase letter, one lowercase letter, one digit, one special character, and have a minimum length of 5 characters
     String pattern =
@@ -105,7 +114,8 @@ class _SignUp1State extends State<sign_up1> {
 
   Future<EmailValidationResult> isEmailValid(String email) async {
     try {
-      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+$') //r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$'
+      if (!RegExp(
+              r'^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$') //r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$'
           .hasMatch(email)) {
         return EmailValidationResult(false, 'Invalid email format');
       }
@@ -121,6 +131,9 @@ class _SignUp1State extends State<sign_up1> {
     if (value.length != 10 || !RegExp(r'^[0-9]+$').hasMatch(value)) {
       return PhoneNumberValidationResult(
           false, 'Phone number must be exactly 10 digits');
+    } else if (RegExp(r'[A-Za-z]').hasMatch(value)) {
+      return PhoneNumberValidationResult(
+          false, 'Phone number must not contain letters');
     }
     return PhoneNumberValidationResult(true, 'Phone number is valid');
   }
@@ -312,7 +325,7 @@ class _SignUp1State extends State<sign_up1> {
                 ),
                 TextFieldContainer(
                   child: TextFormField(
-                    controller: usernameController,
+                    controller: userNameController,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         _showFillMessage("Please enter a username");
@@ -342,6 +355,24 @@ class _SignUp1State extends State<sign_up1> {
                     obscureText: true,
                     decoration: InputDecoration(
                       hintText: "Password",
+                      border: InputBorder.none,
+                    ),
+                  ),
+                ),
+                TextFieldContainer(
+                  child: TextFormField(
+                    controller: confirmPasswordController,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        _showFillMessage("Please confirm your password");
+                        return null;
+                      }
+                      return validateConfirmPassword(value);
+                    },
+                    obscureText: true,
+                    cursorColor: Colors.black,
+                    decoration: InputDecoration(
+                      hintText: "Confirm Password",
                       border: InputBorder.none,
                     ),
                   ),
@@ -405,23 +436,15 @@ class _SignUp1State extends State<sign_up1> {
                           border: InputBorder.none, // Set the hint text here
                         ),
                         isExpanded: true,
-                        value: selectedProvince, // Use the selected value
+                        value: selectedprovince, // Use the selected value
                         onChanged: (String? newValue) {
                           setState(() {
-                            selectedProvince =
+                            selectedprovince =
                                 newValue; // Update the selected province
                           });
                         },
                         items: <String>[
-                          'Western',
-                          'Central',
-                          'Southern',
-                          'Northern',
-                          'Eastern',
-                          'North Western',
-                          'North Central',
-                          'Uva',
-                          'Sabaragamuwa',
+                          'Western','Central','Southern','Northern', 'Eastern','NorthWestern','NorthCentral', 'Uva', 'Sabaragamuwa',
                         ].map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
@@ -444,39 +467,17 @@ class _SignUp1State extends State<sign_up1> {
                           border: InputBorder.none, // Set the hint text here
                         ),
                         isExpanded: true,
-                        value: selectedDistrict, // Use the selected value
+                        value: selecteddistrict, // Use the selected value
                         onChanged: (String? newValue) {
                           setState(() {
-                            selectedDistrict =
+                            selecteddistrict =
                                 newValue; // Update the selected district
                           });
                         },
                         items: <String>[
-                          'Colombo',
-                          'Gampaha',
-                          'Kalutara',
-                          'Kandy',
-                          'Matale',
-                          'Nuwara Eliya',
-                          'Galle',
-                          'Matara',
-                          'Hambantota',
-                          'Jaffna',
-                          'Killinochchi',
-                          'Mannar',
-                          'Vavuniya',
-                          'Mulaitivu',
-                          'Batticaloa',
-                          'Ampara',
-                          'Trincomalee',
-                          'Kurunegala',
-                          'Puttalam',
-                          'Anuradhapura',
-                          'Polonnaruwa',
-                          'Badulla',
-                          'Monaragala',
-                          'Ratnapura',
-                          'Kegalle'
+                          'Colombo','Gampaha','Kalutara','Kandy','Matale','Nuwara Eliya','Galle','Matara','Hambantota','Jaffna',
+                          'Killinochchi','Mannar','Vavuniya','Mulaitivu', 'Batticaloa', 'Ampara', 'Trincomalee', 'Kurunegala',
+                           'Puttalam', 'Anuradhapura', 'Polonnaruwa', 'Badulla', 'Monaragala','Ratnapura', 'Kegalle'
                         ].map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
@@ -494,7 +495,8 @@ class _SignUp1State extends State<sign_up1> {
                     ),
                   ],
                 ),
-                SizedBox(height: 20),
+                 
+                SizedBox(height: 10),
                 Container(
                   width: size.width * 0.3,
                   child: ClipRRect(
@@ -521,7 +523,7 @@ class _SignUp1State extends State<sign_up1> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Padding(
-                      padding: EdgeInsets.symmetric(vertical: 30),
+                      padding: EdgeInsets.symmetric(vertical: 20),
                       child: Text(
                         "Already have an Account?",
                         style: TextStyle(
@@ -564,12 +566,13 @@ class _SignUp1State extends State<sign_up1> {
     // Check if any field is empty
     if (firstNameController.text.isEmpty ||
         lastNameController.text.isEmpty ||
-        usernameController.text.isEmpty ||
+        userNameController.text.isEmpty ||
         passwordController.text.isEmpty ||
+        confirmPasswordController.text.isEmpty ||
         emailController.text.isEmpty ||
         phoneNoController.text.isEmpty ||
-        selectedProvince == null ||
-        selectedDistrict == null) {
+        selectedprovince == null ||
+        selecteddistrict == null) {
       _showFillMessage("Please fill all required fields");
     } else {
       // Check password validity
@@ -577,61 +580,159 @@ class _SignUp1State extends State<sign_up1> {
       if (passwordError != null) {
         _showFillMessage(passwordError);
       } else {
-        // Perform email validation asynchronously
-        EmailValidationResult result = await isEmailValid(emailController.text);
-        if (!result.isValid) {
-          // Show validation message if email is not valid
-          _showFillMessage(result.message, 'Please enter a valid email');
-        } else {
-          // Custom phone number validation
-          PhoneNumberValidationResult phoneValidationResult =
-              validatePhoneNumber(phoneNoController.text);
-          if (!phoneValidationResult.isValid) {
-            // Show validation message if phone number is not valid
-            _showFillMessage(phoneValidationResult.message,
-                'Please enter a valid phone number');
+        String? confirmpassword =
+            validateConfirmPassword(confirmPasswordController.text);
+          if (confirmPasswordController.text != passwordController.text) {
+    _showFillMessage(" confirm Password  not match");
+    return;
+  } else {
+          // Perform email validation asynchronously
+          EmailValidationResult result =
+              await isEmailValid(emailController.text);
+          if (!result.isValid) {
+            // Show validation message if email is not valid
+            _showFillMessage(result.message, 'Please enter a valid email');
           } else {
-            // If all fields are filled and password is valid, call sign_up1()
-            // createAccount(usernameController.text, passwordController.text, emailController.text, imagePath, _isSigningUp) ;
-            setState(() {
-              _isSigningUp = true;
-            });
-
-            // createAccount(usernameController.text.trim(), passwordController.text.trim(), emailController.text.trim(), imagePath).then((user) {
-            //   if (user != null) {
-            //     setState(() {
-            //       _isSigningUp = false;
-            //     });
-            //     Navigator.push(context, MaterialPageRoute(builder: (_) => Registraion_success()));
-            //   } else {
-            //     setState(() {
-            //       _isSigningUp = false;
-            //     });
-            //   }
-            // }) ;
-            UserCredential? userCredential = await createAccount(
-              usernameController.text.trim(),
-              passwordController.text,
-              emailController.text.trim(),
-              imagePath
-            );
-            // User? user = userCredential?.user;
-
-            setState(() {
-              _isSigningUp = false;
-            });
-
-            if (userCredential != null) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => Registraion_success())
-              );
+            // Custom phone number validation
+            PhoneNumberValidationResult phoneValidationResult =
+                validatePhoneNumber(phoneNoController.text);
+            if (!phoneValidationResult.isValid) {
+              // Show validation message if phone number is not valid
+              _showFillMessage(phoneValidationResult.message,
+                  'Please enter a valid phone number');
             } else {
-              _showFillMessage('Account creation failed');
+              // If all fields are filled and password is valid, call sign_up1()
+              // createAccount(usernameController.text, passwordController.text, emailController.text, imagePath, _isSigningUp) ;
+              setState(() {
+                _isSigningUp = true;
+              });
+//  Map<String, dynamic> userData = {
+//                                   'firstName': firstNameController.text.trim(),
+//                                   'lastName': lastNameController.text.trim(),
+//                                   'userName': userNameController.text.trim(),
+//                                   'email': emailController.text.trim(),
+//                                   'phoneNo': phoneNoController.text.trim(),
+//                                   'password': passwordController.text.trim(),
+//                                   'district': selecteddistrict,
+//                                   'province':selectedprovince,
+//                                   // Add other necessary fields here
+//                                 };
+
+//                                 try {
+//                                   var response = await http.post(
+//                                     Uri.parse('http://10.0.2.2:8000/api/auth/'),
+//                                     headers: {
+//                                       'Content-Type': 'application/json; charset=UTF-8',
+//                                     },
+//                                     body: jsonEncode(userData),
+//                                   );
+// } catch (e) {
+//                                   print('Error: $e');
+//                                   _showFillMessage(
+//                                     'Error registering user. Please try again later.',
+
+//                                   );
+//                                 }
+              // createAccount(usernameController.text.trim(), passwordController.text.trim(), emailController.text.trim(), imagePath).then((user) {
+              //   if (user != null) {
+              //     setState(() {
+              //       _isSigningUp = false;
+              //     });
+              //     Navigator.push(context, MaterialPageRoute(builder: (_) => Registraion_success()));
+              //   } else {
+              //     setState(() {
+              //       _isSigningUp = false;
+              //     });
+              //   }
+              // }) ;
+              UserCredential? userCredential = await createAccount(
+                  userNameController.text.trim(),
+                  passwordController.text,
+                  emailController.text.trim(),
+                  imagePath);
+              // User? user = userCredential?.user;
+
+              setState(() {
+                _isSigningUp = false;
+              });
+              if (userCredential != null) {
+                // Send email verification and show message
+                bool emailSent = await _auth.sendEmailVerification(
+                    userCredential.user!, context);
+
+                if (userCredential != null) {
+                  // Show dialog informing user to check their email for verification
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text("Verification Email Sent"),
+                        content: Text(
+                          'A verification email has been sent to ${userCredential.user!.email}. Please check your inbox to verify your email address.',
+                        ),
+                        actions: <Widget>[
+                          TextButton(
+                            child: Text('OK'),
+                            onPressed: () async {
+                              Map<String, dynamic> userData = {
+                                'firstName': firstNameController.text.trim(),
+                                'lastName': lastNameController.text.trim(),
+                                'userName': userNameController.text.trim(),
+                                'email': emailController.text.trim(),
+                                'phoneNo': phoneNoController.text.trim(),
+                                'password': passwordController.text.trim(),
+                                'district': selecteddistrict,
+                                'province': selectedprovince,
+                                // Add other necessary fields here
+                              };
+
+                              try {
+                                var response = await http.post(
+                                  Uri.parse('http://10.0.2.2:8000/api/auth/'),
+                                  headers: {
+                                    'Content-Type':
+                                        'application/json; charset=UTF-8',
+                                  },
+                                  body: jsonEncode(userData),
+                                );
+                                if (response.statusCode == 200) {
+                                  final responseData =
+                                      jsonDecode(response.body);
+                                  final userId = responseData['userId'];
+                                  Navigator.of(context).pop(); // Close dialog
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => Registraion_success(
+                                              userId: userId,
+                                            )), // Navigate to success screen
+                                  );
+                                }
+                              } catch (e) {
+                                print('Error: $e');
+                                _showFillMessage(
+                                  'Error registering user. Please try again later.',
+                                );
+                              }
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                } else {
+                  // Handle case where email verification failed to send
+                  _showFillMessage('Failed to send verification email');
+                }
+              } else {
+                // Handle case where account creation failed
+                _showFillMessage('The email addreess is already in use');
+              }
             }
-            };
+            ;
           }
         }
       }
     }
   }
+}

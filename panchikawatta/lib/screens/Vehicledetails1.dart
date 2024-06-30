@@ -1,52 +1,434 @@
-import 'dart:async';
+ //  import 'dart:io'; // Import dart:io for File handling
+// import 'package:flutter/material.dart';
+// import 'package:intl/intl.dart';
+// import 'package:image_picker/image_picker.dart';
+// import 'package:panchikawatta/screens/Vehicledetails2.dart';
+// import 'package:panchikawatta/components/custom_button.dart';
+// import 'package:panchikawatta/components/input_fields.dart';
+
+// class Vehicledetails1 extends StatefulWidget {
+//   @override
+//   _AddVehicleDetailsState createState() => _AddVehicleDetailsState();
+// }
+
+// class _AddVehicleDetailsState extends State<Vehicledetails1> {
+//   final TextEditingController licenseRenewalDateController = TextEditingController();
+//   final TextEditingController insuranceRenewalDateController = TextEditingController();
+//   final TextEditingController firstNameController = TextEditingController();
+//   final ImagePicker _picker = ImagePicker();
+//   String? selectedPhotoPath; // Variable to store the selected photo path
+
+//   List<String> vehicleTypes = ['Car', 'Truck', 'SUV']; // Example vehicle types
+//   String selectedType = 'Car'; // Default selected type
+
+//   List<String> vehicleMakes = ['Toyota', 'Honda', 'Ford']; // Example vehicle makes
+//   String selectedMake = 'Toyota'; // Default selected make
+
+//   List<String> vehicleModels = ['Camry', 'Accord', 'F-150']; // Example vehicle models
+//   String selectedModel = 'Camry'; // Default selected model
+
+//   Future<void> _uploadFromGallery() async {
+//     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+//     if (pickedFile != null) {
+//       setState(() {
+//         selectedPhotoPath = pickedFile.path;
+//       });
+//     }
+//   }
+
+//   Future<void> _takePhoto() async {
+//     final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+//     if (pickedFile != null) {
+//       setState(() {
+//         selectedPhotoPath = pickedFile.path;
+//       });
+//     }
+//   }
+
+//   Future<void> _selectDate(BuildContext context, TextEditingController controller) async {
+//     final DateTime? pickedDate = await showDatePicker(
+//       context: context,
+//       initialDate: DateTime.now(),
+//       firstDate: DateTime(2000),
+//       lastDate: DateTime(2101),
+//     );
+//     if (pickedDate != null) {
+//       setState(() {
+//         controller.text = DateFormat('dd/MM/yyyy').format(pickedDate);
+//       });
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     Size size = MediaQuery.of(context).size;
+//     Map<String, String?>? data = ModalRoute.of(context)!.settings.arguments as Map<String, String?>?;
+
+//     String fname = data?['firstname'] ?? '';
+//     String lname = data?['lastname'] ?? '';
+//     String username = data?['username'] ?? '';
+//     String password = data?['password'] ?? '';
+//     String email = data?['email'] ?? '';
+//     String phoneno = data?['phoneno'] ?? '';
+//     String? district = data?['district'];
+//     String? province = data?['province'];
+//     return Scaffold(
+//       appBar: AppBar(
+//         leading: IconButton(
+//           icon: const Icon(Icons.arrow_back, color: Colors.black, size: 28),
+//           onPressed: () {
+//             Navigator.pop(context);
+//           },
+//         ),
+//         title: const Text('Vehicle Details', style: TextStyle(color: Color(0xFFFF5C01), fontSize: 28)),
+//       ),
+//       body: SingleChildScrollView(
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             Center(
+//               child: Container(
+//                 height: 150,
+//                 width: 200,
+//                 child: Stack(
+//                   children: [
+//                     if (selectedPhotoPath != null)
+//                       Positioned.fill(
+//                         child: Image.file(
+//                           File(selectedPhotoPath!),
+//                           fit: BoxFit.cover,
+//                         ),
+//                       )
+//                     else
+//                       Positioned.fill(
+//                         child: Image.asset(
+//                           'lib/src/img/vehicleDetails.jpeg',
+//                           fit: BoxFit.cover,
+//                         ),
+//                       ),
+//                     Positioned(
+//                       bottom: -20,
+//                       right: -10,
+//                       child: Padding(
+//                         padding: const EdgeInsets.all(10.0),
+//                         child: IconButton(
+//                           icon: Icon(Icons.file_upload, color: Colors.black, size: 30),
+//                           onPressed: () {
+//                             showDialog(
+//                               context: context,
+//                               builder: (BuildContext context) {
+//                                 return AlertDialog(
+//                                   title: Text("Upload Options"),
+//                                   content: Column(
+//                                     mainAxisSize: MainAxisSize.min,
+//                                     children: <Widget>[
+//                                       ListTile(
+//                                         leading: Icon(Icons.photo_library),
+//                                         title: Text('Upload from Gallery'),
+//                                         onTap: () {
+//                                           Navigator.pop(context);
+//                                           _uploadFromGallery();
+//                                         },
+//                                       ),
+//                                       ListTile(
+//                                         leading: Icon(Icons.camera_alt),
+//                                         title: Text('Take a Photo'),
+//                                         onTap: () {
+//                                           Navigator.pop(context);
+//                                           _takePhoto();
+//                                         },
+//                                       ),
+//                                     ],
+//                                   ),
+//                                 );
+//                               },
+//                             );
+//                           },
+//                         ),
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//             ),
+//             const SizedBox(height: 20),
+//             Padding(
+//               padding: EdgeInsets.fromLTRB(
+//                 MediaQuery.of(context).size.width * 0.1, // left
+//                 0, // top
+//                 MediaQuery.of(context).size.width * 0.1, // right
+//                 0, // bottom
+//               ),
+//               child: Container(
+//                 width: MediaQuery.of(context).size.width * 0.8,
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: [
+//                     InputFields(hintText: 'Vehicle Name', width1: 0.5),
+//                     const SizedBox(height: 15),
+//                     Row(
+//                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                       children: [
+//                         Expanded(
+//                           child: InputFields(
+//                             hintText: 'Type',
+//                             width1: 0.38,
+//                             suffixIcon: Icon(
+//                               Icons.arrow_drop_down,
+//                               color: Colors.black,
+//                             ),
+//                           ),
+//                         ),
+//                         const SizedBox(width: 10),
+//                         Expanded(
+//                           child: InputFields(
+//                             hintText: 'Make',
+//                             width1: 0.38,
+//                             suffixIcon: Icon(
+//                               Icons.arrow_drop_down,
+//                               color: Colors.black,
+//                             ),
+//                           ),
+//                         ),
+//                       ],
+//                     ),
+//                     const SizedBox(height: 15),
+//                     Row(
+//                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                       children: [
+//                         Expanded(
+//                           child: InputFields(
+//                             hintText: 'Model',
+//                             width1: 0.38,
+//                             suffixIcon: Icon(
+//                               Icons.arrow_drop_down,
+//                               color: Colors.black,
+//                             ),
+//                           ),
+//                         ),
+//                         const SizedBox(width: 10),
+//                         Expanded(
+//                           child: InputFields(hintText: 'Year', width1: 0.38),
+//                         ),
+//                       ],
+//                     ),
+//                     const SizedBox(height: 15),
+//                     SizedBox(
+//                       width: MediaQuery.of(context).size.width * 0.8,
+//                       child: const Divider(
+//                         color: Colors.black,
+//                         thickness: 1,
+//                       ),
+//                     ),
+//                     const SizedBox(height: 15),
+//                     const Text(
+//                       'License Renewal Date',
+//                       style: TextStyle(
+//                         fontSize: 16,
+//                         color: Color(0xFF000000),
+//                         fontWeight: FontWeight.normal,
+//                       ),
+//                     ),
+//                     InputFields(
+//                       controller: licenseRenewalDateController,
+//                       hintText: 'DD/MM/YY',
+//                       width1: 0.8,
+//                       suffixIcon: Icon(
+//                         Icons.calendar_today,
+//                         color: Colors.grey,
+//                         size: 24,
+//                       ),
+//                       onPressed: () => _selectDate(context, licenseRenewalDateController),
+//                     ),
+//                     const SizedBox(height: 15),
+//                     const Text(
+//                       'Vehicle insurance renewal date',
+//                       style: TextStyle(
+//                         fontSize: 16,
+//                         color: Color(0xFF000000),
+//                         fontWeight: FontWeight.normal,
+//                       ),
+//                     ),
+//                     InputFields(
+//                       controller: insuranceRenewalDateController,
+//                       hintText: 'DD/MM/YY',
+//                       width1: 0.8,
+//                       suffixIcon: Icon(
+//                         Icons.calendar_today,
+//                         color: Colors.grey,
+//                         size: 24,
+//                       ),
+//                       onPressed: () => _selectDate(context, insuranceRenewalDateController),
+//                     ),
+//                     const SizedBox(height: 40),
+//                     Row(
+//                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                       children: [
+//                         CustomButton(
+//                           onPressed: () {
+//                             Navigator.push(
+//                               context,
+//                               MaterialPageRoute(
+//                                 builder: (context) => Vehicledetails2(
+//                                   selectedPhotoPath: selectedPhotoPath,
+//                                   usernameController: TextEditingController(),
+//                                   passwordController: TextEditingController(),
+//                                   emailController: TextEditingController(),
+//                                 ),
+//                                 settings: RouteSettings(
+//                                   arguments: {'firstname': firstNameController.text},
+//                                 ),
+//                               ),
+//                             );
+//                           },
+//                           text: 'Skip',
+//                         ),
+//                         CustomButton(
+//                           onPressed: () {
+//                             Navigator.push(
+//                               context,
+//                               MaterialPageRoute(
+//                                 builder: (context) => Vehicledetails2(
+//                                   selectedPhotoPath: selectedPhotoPath,
+//                                   usernameController: TextEditingController(),
+//                                   passwordController: TextEditingController(),
+//                                   emailController: TextEditingController(),
+//                                 ),
+//                               ),
+//                             );
+//                           },
+//                           text: fname,
+//                         ),
+//                       ],
+//                     ), // Input fields and other widgets...
+//                   ],
+//                 ),
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
-
-import 'package:http/http.dart' as http;
-
-
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:panchikawatta/components/custom_button.dart';
-import 'package:panchikawatta/components/input_fields.dart';
-import 'package:panchikawatta/screens/Vehicledetails2.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:panchikawatta/screens/sign_up1.dart';
-import 'package:panchikawatta/screens/sign_up2.dart';
+import 'package:panchikawatta/screens/Vehicledetails2.dart';
+import 'package:panchikawatta/components/custom_button.dart';
+import 'package:panchikawatta/components/input_fields.dart';
+import 'package:http/http.dart' as http;
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:panchikawatta/screens/auth_functions.dart';
+
+Map<String, List<String>> vehicleMakes = {
+  'Car': ['Toyota', 'Honda', 'Nissan'],
+  'Motorcycle': ['Honda', 'Yamaha', 'Suzuki'],
+  'Three-Wheeler (Tuk Tuk)': ['Bajaj', 'Piaggio', 'TVS'],
+  'Truck': ['Ford', 'Chevrolet', 'Dodge'],
+  'Bus': ['Volvo', 'Mercedes-Benz', 'MAN'],
+  'Van': ['Ford Transit', 'Mercedes-Benz Sprinter', 'Toyota Hiace'],
+  'SUV': ['Jeep', 'Ford', 'Land Rover'],
+  'Pickup Truck': ['Ford F-150', 'Chevrolet Silverado', 'Toyota Tacoma'],
+};
+
+Map<String, List<String>> vehicleModels = {
+  'Toyota': ['Corolla', 'Camry', 'Rav4'],
+  'Honda': ['Civic', 'Accord', 'CR-V'],
+  'Nissan': ['Altima', 'Sentra', 'Rogue'],
+  'Ford': ['Fusion', 'Escape', 'Explorer'],
+  'Chevrolet': ['Malibu', 'Equinox', 'Tahoe'],
+  'Dodge': ['Charger', 'Durango', 'Ram 1500'],
+  'Jeep': ['Wrangler', 'Grand Cherokee', 'Cherokee'],
+  'Land Rover': ['Range Rover', 'Discovery', 'Defender'],
+};
+
+List<String> vehicleTypes = [
+  'Car',
+  'Motorcycle',
+  'Three-Wheeler (Tuk Tuk)',
+  'Truck',
+  'Bus',
+  'Van',
+  'SUV',
+  'Pickup Truck',
+  'Convertible',
+  'Hatchback',
+];
 
 class Vehicledetails1 extends StatefulWidget {
+  final int userId;
+  final int vehicleId;
+  Vehicledetails1({required this.userId, this.vehicleId = 0});
+
   @override
   _AddVehicleDetailsState createState() => _AddVehicleDetailsState();
 }
 
 class _AddVehicleDetailsState extends State<Vehicledetails1> {
-  final TextEditingController licenseRenewalDateController = TextEditingController();
-  final TextEditingController insuranceRenewalDateController = TextEditingController();
-  final TextEditingController firstNameController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
-  String? selectedPhotoPath; // Variable to store the selected photo path
+  //String? selectedPhotoPath;
+  String? selectedtype;
+  String? selectedmake;
+  String? selectedmodel;
+  String? imagePath;
+  TextEditingController yearController = TextEditingController();
+  TextEditingController licenceDateController = TextEditingController();
+  TextEditingController insuranceDateController = TextEditingController();
+
+  void _showFillMessage(String message, [String? emailError]) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Fill Required Field"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(message),
+              if (emailError != null) Text(emailError),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   Future<void> _uploadFromGallery() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
-        selectedPhotoPath = pickedFile.path;
+        imagePath = pickedFile.path;
       });
+      await uploadVehiclePhoto(widget.userId.toString(), imagePath!);
     }
   }
 
   Future<void> _takePhoto() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.camera);
     if (pickedFile != null) {
-      setState(() {
-        selectedPhotoPath = pickedFile.path;
+      setState(() async {
+        imagePath = pickedFile.path;
+        await uploadVehiclePhoto(widget.userId.toString(), imagePath!);
       });
     }
   }
 
-  Future<void> _selectDate(BuildContext context, TextEditingController controller) async {
+  Future<void> _selectDate(
+      BuildContext context, TextEditingController controller) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -60,28 +442,27 @@ class _AddVehicleDetailsState extends State<Vehicledetails1> {
     }
   }
 
+  // Validate all required fields
+
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    Map<String,String?>? data = ModalRoute.of(context)!.settings.arguments as Map<String, String?>?;
-
-    String fname = data?['firstname'] ?? '';
-    String lname = data?['lastname'] ?? '';
-    String username = data?['username'] ?? '';  
-    String password = data?['password'] ?? '';
-    String email = data?['email'] ?? '';
-    String phoneno = data?['phoneno'] ?? '';
-    String? district = data?['district'];
-    String? province = data?['province'];
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black, size: 28),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+        // leading: IconButton(
+        //   icon: const Icon(Icons.arrow_back, color: Colors.black, size: 28),
+        //   onPressed: () {
+        //     Navigator.pop(context);
+        //   },
+        // ),
+        automaticallyImplyLeading: false,
+        title: Padding(
+          padding:
+              const EdgeInsets.only(left: 80.0), // Adjust the value as needed
+          child: const Text(
+            'Vehicle Details',
+            style: TextStyle(color: Color(0xFFFF5C01), fontSize: 28),
+          ),
         ),
-        title: const Text('Vehicle Details', style: TextStyle(color: Color(0xFFFF5C01), fontSize: 28)),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -93,10 +474,10 @@ class _AddVehicleDetailsState extends State<Vehicledetails1> {
                 width: 200,
                 child: Stack(
                   children: [
-                    if (selectedPhotoPath != null)
+                    if (imagePath != null)
                       Positioned.fill(
                         child: Image.file(
-                          File(selectedPhotoPath!),
+                          File(imagePath!),
                           fit: BoxFit.cover,
                         ),
                       )
@@ -113,7 +494,8 @@ class _AddVehicleDetailsState extends State<Vehicledetails1> {
                       child: Padding(
                         padding: const EdgeInsets.all(10.0),
                         child: IconButton(
-                          icon: Icon(Icons.file_upload, color: Colors.black, size: 30),
+                          icon: Icon(Icons.file_upload,
+                              color: Colors.black, size: 30),
                           onPressed: () {
                             showDialog(
                               context: context,
@@ -165,21 +547,91 @@ class _AddVehicleDetailsState extends State<Vehicledetails1> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    InputFields(hintText: 'Vehicle Name', width1: 0.5),
                     const SizedBox(height: 15),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        InputFields(hintText: 'Type', width1: 0.38, suffixIcon: const Icon(Icons.expand_more, size: 30, color: Color(0xCC000000))),
-                        InputFields(hintText: 'Make', width1: 0.38, suffixIcon: const Icon(Icons.expand_more, size: 30, color: Color(0xCC000000))),
+                        // Dropdown for Type
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.4,
+                          child: DropdownButton<String>(
+                            isExpanded: true,
+                            value: selectedtype,
+                            hint: Text('Type'),
+                            onChanged: (value) {
+                              setState(() {
+                                selectedtype = value;
+                                selectedmake =
+                                    null; // Reset selected make when type changes
+                              });
+                            },
+                            items: vehicleTypes.map((type) {
+                              return DropdownMenuItem<String>(
+                                value: type,
+                                child: Text(type),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.4,
+                          child: DropdownButton<String>(
+                            isExpanded: true,
+                            value: selectedmake,
+                            hint: Text('Make'),
+                            onChanged: (value) {
+                              setState(() {
+                                selectedmake = value;
+                                selectedmodel =
+                                    null; // Reset selected model when make changes
+                              });
+                            },
+                            items: selectedtype != null &&
+                                    vehicleMakes[selectedtype!] != null
+                                ? vehicleMakes[selectedtype!]!.map((make) {
+                                    return DropdownMenuItem<String>(
+                                      value: make,
+                                      child: Text(make),
+                                    );
+                                  }).toList()
+                                : [],
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 15),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        InputFields(hintText: 'Model', width1: 0.38, suffixIcon: const Icon(Icons.expand_more, size: 30, color: Color(0xCC000000))),
-                        InputFields(hintText: 'Year', width1: 0.38),
+                        // Dropdown for Model
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.4,
+                          child: DropdownButton<String>(
+                            isExpanded: true,
+                            value: selectedmodel,
+                            hint: Text('Model'),
+                            onChanged: (value) {
+                              setState(() {
+                                selectedmodel = value;
+                              });
+                            },
+                            items: selectedmake != null &&
+                                    vehicleModels[selectedmake!] != null
+                                ? vehicleModels[selectedmake!]!.map((model) {
+                                    return DropdownMenuItem<String>(
+                                      value: model,
+                                      child: Text(model),
+                                    );
+                                  }).toList()
+                                : [],
+                          ),
+                        ),
+
+                        InputFields(
+                          controller: yearController,
+                          hintText: 'year',
+                          width1: 0.38,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 15),
@@ -187,7 +639,7 @@ class _AddVehicleDetailsState extends State<Vehicledetails1> {
                       width: MediaQuery.of(context).size.width * 0.8,
                       child: const Divider(
                         color: Colors.black,
-                        thickness: 1,
+                        thickness: 0.5,
                       ),
                     ),
                     const SizedBox(height: 15),
@@ -200,7 +652,7 @@ class _AddVehicleDetailsState extends State<Vehicledetails1> {
                       ),
                     ),
                     InputFields(
-                      controller: licenseRenewalDateController,
+                      controller: licenceDateController,
                       hintText: 'DD/MM/YY',
                       width1: 0.8,
                       suffixIcon: Icon(
@@ -208,7 +660,8 @@ class _AddVehicleDetailsState extends State<Vehicledetails1> {
                         color: Colors.grey,
                         size: 24,
                       ),
-                      onPressed: () => _selectDate(context, licenseRenewalDateController),
+                      onPressed: () =>
+                          _selectDate(context, licenceDateController),
                     ),
                     const SizedBox(height: 15),
                     const Text(
@@ -220,7 +673,7 @@ class _AddVehicleDetailsState extends State<Vehicledetails1> {
                       ),
                     ),
                     InputFields(
-                      controller: insuranceRenewalDateController,
+                      controller: insuranceDateController,
                       hintText: 'DD/MM/YY',
                       width1: 0.8,
                       suffixIcon: Icon(
@@ -228,7 +681,8 @@ class _AddVehicleDetailsState extends State<Vehicledetails1> {
                         color: Colors.grey,
                         size: 24,
                       ),
-                      onPressed: () => _selectDate(context, insuranceRenewalDateController),
+                      onPressed: () =>
+                          _selectDate(context, insuranceDateController),
                     ),
                     const SizedBox(height: 40),
                     Row(
@@ -236,41 +690,83 @@ class _AddVehicleDetailsState extends State<Vehicledetails1> {
                       children: [
                         CustomButton(
                           onPressed: () {
+                            int vehicleId = widget.vehicleId;
+                            final userId = widget.userId;
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => Vehicledetails2( selectedPhotoPath: selectedPhotoPath,
-        usernameController: TextEditingController(),
-        passwordController: TextEditingController(),
-        emailController: TextEditingController(),
-        ),
-                                 settings: RouteSettings(
-                                  arguments: {
-                                  
-                                       'firstname': firstNameController.text,
-                                  
-                                }),
-                               ),
+                              MaterialPageRoute(
+                                  builder: (context) => Vehicledetails2(
+                                      vehicleId: vehicleId, userId: userId)),
                             );
-                            
                           },
                           text: 'Skip',
                         ),
                         CustomButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => Vehicledetails2(selectedPhotoPath: selectedPhotoPath, 
-        usernameController: TextEditingController(),
-        passwordController: TextEditingController(),
-        emailController: TextEditingController(),
+  onPressed: () async {
+    if (yearController.text.isEmpty &&
+        selectedtype == null &&
+        selectedmake == null &&
+        selectedmodel == null &&
+        licenceDateController.text.isEmpty &&
+        insuranceDateController.text.isEmpty) {
+      _showFillMessage("Please fill in all  any  field to save details");
+    } else {
+      // Proceed with saving the data
+      Map<String, dynamic> userData = {
+        'userId': widget.userId,
+        'type': selectedtype,
+        'make': selectedmake,
+        'model': selectedmodel,
+        'year': int.tryParse(yearController.text.trim()) ?? 0,
+        'licenceDate': licenceDateController.text.trim(),
+        'insuranceDate': insuranceDateController.text.trim(),
+        // Add other necessary fields here
+      };
 
-        )),
-                            );
-                          },
-                          text:fname,
-                        ),
+      try {
+        var response = await http.post(
+          Uri.parse('http://10.0.2.2:8000/users/cv'),
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(userData),
+        );
+        
+        if (response.statusCode == 201) {
+          final responseData = jsonDecode(response.body);
+          int vehicleId = responseData['vehicleId'];
+          final userId = widget.userId;
+          // If server returns 201 Created response, navigate to success screen
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Vehicledetails2(
+                vehicleId: vehicleId,
+                userId: userId,
+              ),
+            ),
+          );
+        } else {
+          // Handle other HTTP status codes if needed
+          _showFillMessage("Error: ${response.statusCode}");
+        }
+      } catch (e) {
+        print('Error: $e');
+        _showFillMessage(
+          'Error registering vehicle. Please try again later.',
+        );
+      }
+    }
+
+    if (imagePath != null) {
+      await uploadVehiclePhoto(widget.userId.toString(), imagePath!);
+    }
+  },
+  text: 'Save',
+),
+
                       ],
-                    ),// Input fields and other widgets...
+                    ),
                   ],
                 ),
               ),
@@ -279,5 +775,37 @@ class _AddVehicleDetailsState extends State<Vehicledetails1> {
         ),
       ),
     );
+  }
+}
+
+Future<void> uploadVehiclePhoto(String userid, String imagePath) async {
+  try {
+    File file = File(imagePath);
+    TaskSnapshot snapshot = await FirebaseStorage.instance
+        .ref('vehicle_photos/$userid/${file.path.split('/').last}')
+        .putFile(file);
+
+    // Get the download URL of the uploaded image
+    String downloadUrl = await snapshot.ref.getDownloadURL();
+
+    // Update the user document if it exists, otherwise set it
+    final userDocRef =
+        FirebaseFirestore.instance.collection("users").doc(userid);
+
+    final userDocSnapshot = await userDocRef.get();
+    if (!userDocSnapshot.exists) {
+      // Handle case where user document doesn't exist (if needed)
+      print("User document with userId $userid does not exist.");
+      return;
+    }
+
+    // Update the document with the vehicle photo URL
+    await userDocRef.update({
+      "vehicle_photo": downloadUrl,
+    });
+
+    print("Vehicle photo uploaded successfully");
+  } catch (e) {
+    print("Error uploading vehicle photo: $e");
   }
 }

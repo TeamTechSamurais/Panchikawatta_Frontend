@@ -1,9 +1,7 @@
-import 'dart:async';
+ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-
-
 
 import 'package:http/http.dart' as http;
 import 'package:panchikawatta/screens/Vehicledetails2.dart';
@@ -13,34 +11,120 @@ import 'package:flutter/material.dart';
 import 'package:panchikawatta/screens/Vehicledetails1.dart';
 
 class sign_up2 extends StatefulWidget {
+  final int userId;
+  sign_up2({required this.userId});
   @override
   State<StatefulWidget> createState() {
     return _SignUp2State();
   }
 }
 
+class PhoneNumberValidationResult {
+  final bool isValid;
+  final String message;
+
+  PhoneNumberValidationResult(this.isValid, this.message);
+}
+
 class _SignUp2State extends State<sign_up2> {
   String? imagePath;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController Business_NameController = TextEditingController();
-  final TextEditingController Business_AddressController = TextEditingController();
-  final TextEditingController Business_contact_noController = TextEditingController();
-  final TextEditingController Business_descriptionController = TextEditingController();
-  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController businessNameController = TextEditingController();
+  final TextEditingController businessAddressController =
+      TextEditingController();
+  final TextEditingController businessPhoneNoController =
+      TextEditingController();
+  final TextEditingController businessDescriptionController =
+      TextEditingController();
+  PhoneNumberValidationResult? phoneValidationResult;
+  bool isFormFilled = false;
+  @override
+  void initState() {
+    super.initState();
+
+    businessNameController.addListener(_updateFormFilledStatus);
+    businessAddressController.addListener(_updateFormFilledStatus);
+    businessPhoneNoController.addListener(_updateFormFilledStatus);
+    businessDescriptionController.addListener(_updateFormFilledStatus);
+  }
+
+  @override
+  void dispose() {
+    businessNameController.removeListener(_updateFormFilledStatus);
+    businessAddressController.removeListener(_updateFormFilledStatus);
+    businessPhoneNoController.removeListener(_updateFormFilledStatus);
+    businessDescriptionController.removeListener(_updateFormFilledStatus);
+
+    businessNameController.dispose();
+    businessAddressController.dispose();
+    businessPhoneNoController.dispose();
+    businessDescriptionController.dispose();
+    super.dispose();
+  }
+
+  void _updateFormFilledStatus() {
+    setState(() {
+      isFormFilled = businessNameController.text.trim().isNotEmpty ||
+          businessAddressController.text.trim().isNotEmpty ||
+          businessPhoneNoController.text.trim().isNotEmpty ||
+          businessDescriptionController.text.trim().isNotEmpty;
+    });
+  }
+
+  PhoneNumberValidationResult validatePhoneNumber(String value) {
+    // Phone number must be exactly 10 digits
+    if (RegExp(r'[A-Za-z]').hasMatch(value)) {
+      return PhoneNumberValidationResult(
+          false, 'Phone number must not contain letters');
+    }
+    if (value.length != 10 || !RegExp(r'^[0-9]+$').hasMatch(value)) {
+      return PhoneNumberValidationResult(
+          false, 'Phone number must be exactly 10 digits');
+    }
+    return PhoneNumberValidationResult(true, 'Phone number is valid');
+  }
+
+  void _showFillMessage(String message, [String? emailError]) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Fill Required Field"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(message),
+              if (emailError != null) Text(emailError),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     Map<String, String?>? data =
-        ModalRoute.of(context)!.settings.arguments as Map<String,String?>?;
- 
-    String fname = data?['firstname'] ?? '';
-    String lname = data?['lastname'] ?? '';
-    String username = data?['username'] ?? '';  
-    String password = data?['password'] ?? '';
-    String email = data?['email'] ?? '';
-    String phoneno = data?['phoneno'] ?? '';
-    String? district = data?['district'];
-    String? province = data?['province'];
+        ModalRoute.of(context)!.settings.arguments as Map<String, String?>?;
+
+    // String fname = data?['firstname'] ?? '';
+    // String lname = data?['lastname'] ?? '';
+    // String username = data?['username'] ?? '';
+    // String password = data?['password'] ?? '';
+    // String email = data?['email'] ?? '';
+    // String phoneno = data?['phoneno'] ?? '';
+    // String? district = data?['district'];
+    // String? province = data?['province'];
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -53,12 +137,12 @@ class _SignUp2State extends State<sign_up2> {
                 padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                 child: Row(
                   children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Icon(Icons.arrow_back),
-                    ),
+                    // GestureDetector(
+                    //   onTap: () {
+                    //     Navigator.pop(context);
+                    //   },
+                    //   child: Icon(Icons.arrow_back),
+                    // ),
                     SizedBox(width: 10),
                     Text(
                       "Fill your Profile",
@@ -83,10 +167,9 @@ class _SignUp2State extends State<sign_up2> {
                   ),
                 ),
               ),
-              
               TextFieldContainer(
                 child: TextField(
-                  controller: Business_NameController,
+                  controller: businessNameController,
                   cursorColor: Colors.black,
                   decoration: InputDecoration(
                     hintText: "Business Name",
@@ -96,7 +179,7 @@ class _SignUp2State extends State<sign_up2> {
               ),
               TextFieldContainer(
                 child: TextField(
-                  controller: Business_AddressController,
+                  controller: businessAddressController,
                   cursorColor: Colors.black,
                   decoration: InputDecoration(
                     hintText: "Business Address",
@@ -105,19 +188,34 @@ class _SignUp2State extends State<sign_up2> {
                 ),
               ),
               TextFieldContainer(
-                child: TextField(
+                child: TextFormField(
+                  controller: businessPhoneNoController,
+                  validator: (value) {
+                    if (value != null && value.isNotEmpty) {
+                      // Custom phone number validation
+                      PhoneNumberValidationResult validationResult =
+                          validatePhoneNumber(value);
+                      if (!validationResult.isValid) {
+                        // Display error message for invalid phone number
+                        return validationResult.message;
+                      }
+                    }
+                    return null; // Return null if no validation error
+                  },
                   cursorColor: Colors.black,
-                  controller: Business_contact_noController,
+                  keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
-                    hintText: "Business contact no",
+                    hintText: "Phone (+94)",
                     border: InputBorder.none,
                   ),
                 ),
               ),
+              
               TextFieldContainer(
                 child: TextField(
                   cursorColor: Colors.black,
-                  controller: Business_descriptionController,
+                  controller: businessDescriptionController,
+                  maxLines: 5,
                   decoration: InputDecoration(
                     hintText: "Business description",
                     border: InputBorder.none,
@@ -134,15 +232,17 @@ class _SignUp2State extends State<sign_up2> {
                       borderRadius: BorderRadius.circular(29),
                       child: TextButton(
                         onPressed: () {
+                          final userId = widget.userId;
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) =>
-                                    Vehicledetails1()),  
+                                    Vehicledetails1(userId: userId)),
                           );
                         },
                         style: ButtonStyle(
-                          padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                          padding:
+                              MaterialStateProperty.all<EdgeInsetsGeometry>(
                             EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                           ),
                           backgroundColor: MaterialStateProperty.all<Color>(
@@ -161,28 +261,81 @@ class _SignUp2State extends State<sign_up2> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(29),
                       child: TextButton(
-                        onPressed: () {
-                         
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => Vehicledetails1(), 
-                                
-                                settings: RouteSettings(
-                                  arguments: {
-                                  'Business_Name': Business_NameController.text,
-                                  'Business_Address': Business_AddressController.text,
-                                  'Business_contact_no': Business_contact_noController.text,
-                                  'Business_contact_no': Business_descriptionController.text,
-                                  'firstname': firstNameController.text,
-                                 
-                                }),
-                              ),
-                            );
-                          
-                        },
+                        onPressed: isFormFilled
+                            ? () async {
+                                onPressed:
+                                isFormFilled
+                                    ? () async {
+                                        if (businessPhoneNoController.text
+                                            .trim()
+                                            .isEmpty) {
+                                          _showFillMessage(
+                                              'Please enter a phone number');
+                                          return;
+                                        }
+
+                                        PhoneNumberValidationResult
+                                            validationResult =
+                                            validatePhoneNumber(
+                                                businessPhoneNoController.text
+                                                    .trim());
+
+                                        if (!validationResult.isValid) {
+                                          _showFillMessage(
+                                              validationResult.message);
+                                          return;
+                                        }
+                                      }
+                                    : null;
+
+                                Map<String, dynamic> userData = {
+                                  'userId': widget.userId,
+
+                                  'businessName':
+                                      businessNameController.text.trim(),
+                                  'businessAddress':
+                                      businessAddressController.text.trim(),
+                                  'businessPhoneNo':
+                                      businessPhoneNoController.text.trim(),
+                                  'businessDescription':
+                                      businessDescriptionController.text.trim(),
+
+                                  // Add other necessary fields here
+                                };
+
+                                try {
+                                  var response = await http.post(
+                                    Uri.parse('http://10.0.2.2:8000/users/b'),
+                                    headers: {
+                                      'Content-Type':
+                                          'application/json; charset=UTF-8',
+                                    },
+                                    body: jsonEncode(userData),
+                                  );
+
+                                  final responseData =
+                                      jsonDecode(response.body);
+                                  final userId = responseData['userId'];
+                                  // If server returns 200 OK response, navigate to success screen
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          Vehicledetails1(userId: userId),
+                                    ),
+                                  );
+                                } catch (e) {
+                                  print('Error: $e');
+                                  _showFillMessage(
+                                    'Error! Please try again later.',
+                                  );
+                                }
+                                // Call function to save vehicle details
+                              }
+                            : null,
                         style: ButtonStyle(
-                          padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                          padding:
+                              MaterialStateProperty.all<EdgeInsetsGeometry>(
                             EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                           ),
                           backgroundColor: MaterialStateProperty.all<Color>(
@@ -205,3 +358,202 @@ class _SignUp2State extends State<sign_up2> {
     );
   }
 }
+
+// import 'dart:async';
+// import 'dart:convert';
+
+// import 'dart:io';
+// import 'dart:math';
+
+// import 'package:http/http.dart' as http;
+// import 'package:flutter/material.dart';
+// import 'package:fluttertoast/fluttertoast.dart';
+// import 'package:panchikawatta/components/custom_button.dart';
+// import 'package:panchikawatta/components/text_fields_widget.dart';
+// import 'package:panchikawatta/screens/Vehicledetails1.dart';
+// import 'package:panchikawatta/rest/rest_api.dart';
+
+// class sign_up2 extends StatefulWidget {
+//   @override
+//   _SignUp2State createState() => _SignUp2State();
+// }
+
+// class _SignUp2State extends State<sign_up2> {
+//   String? imagePath;
+//   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+//   final TextEditingController BusinessNameController = TextEditingController();
+//   final TextEditingController BusinessAddressController =
+//       TextEditingController();
+//   final TextEditingController BusinessContactnoController =
+//       TextEditingController();
+//   final TextEditingController BusinessDescriptionController =
+//       TextEditingController();
+//   void _savebusinessDetails() {
+//     // Validate all required fields
+//     if (BusinessNameController.text.isNotEmpty ||
+//         BusinessAddressController.text.isNotEmpty ||
+//         BusinessContactnoController.text.isNotEmpty ||
+//         BusinessDescriptionController.text.isNotEmpty) {
+//       dosave(
+//         BusinessNameController.text,
+//         BusinessAddressController.text,
+//         BusinessContactnoController.text,
+//         BusinessDescriptionController.text,
+//       );
+//       // Show an alert or message indicating fields are empty
+//       Navigator.push(
+//         context,
+//         MaterialPageRoute(builder: (context) => Vehicledetails1()),
+//       );
+//     } else {
+//       // Proceed with saving the data (navigate to the next screen or save to backend)
+//       showDialog(
+//         context: context,
+//         builder: (BuildContext context) {
+//           return AlertDialog(
+//             title: Text("Missing Information"),
+//             content: Text("Please fill in  fields to save."),
+//             actions: [
+//               TextButton(
+//                 onPressed: () {
+//                   Navigator.of(context).pop();
+//                 },
+//                 child: Text("OK"),
+//               ),
+//             ],
+//           );
+//         },
+//       );
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     Size size = MediaQuery.of(context).size;
+
+//     return Scaffold(
+//       body: SingleChildScrollView(
+//         child: Container(
+//           padding: EdgeInsets.symmetric(horizontal: 25),
+//           child: Column(
+//             children: <Widget>[
+//               SizedBox(height: 40),
+//               Padding(
+//                 padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+//                 child: Row(
+//                   children: [
+
+//                     SizedBox(width: 10),
+//                     Text(
+//                       "Fill your Profile",
+//                       style: TextStyle(
+//                         color: Color(0xFFFF5C01),
+//                         fontSize: 28,
+//                         fontWeight: FontWeight.w600,
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//               SizedBox(height: 20),
+//               Padding(
+//                 padding: EdgeInsets.symmetric(vertical: 30, horizontal: 10),
+//                 child: Text(
+//                   "If you want to sell, fill this out",
+//                   style: TextStyle(
+//                     color: Color(0xFF000000),
+//                     fontSize: 18,
+//                     fontWeight: FontWeight.w400,
+//                   ),
+//                 ),
+//               ),
+//               TextFieldContainer(
+//                 child: TextField(
+//                   controller: BusinessNameController,
+//                   cursorColor: Colors.black,
+//                   decoration: InputDecoration(
+//                     hintText: "Business Name",
+//                     border: InputBorder.none,
+//                   ),
+//                 ),
+//               ),
+//               TextFieldContainer(
+//                 child: TextField(
+//                   controller: BusinessAddressController,
+//                   cursorColor: Colors.black,
+//                   decoration: InputDecoration(
+//                     hintText: "Business Address",
+//                     border: InputBorder.none,
+//                   ),
+//                 ),
+//               ),
+//               TextFieldContainer(
+//                 child: TextField(
+//                   cursorColor: Colors.black,
+//                   controller: BusinessContactnoController,
+//                   decoration: InputDecoration(
+//                     hintText: "Business contact no",
+//                     border: InputBorder.none,
+//                   ),
+//                 ),
+//               ),
+//               TextFieldContainer(
+//                 child: TextField(
+//                   cursorColor: Colors.black,
+//                   controller: BusinessDescriptionController,
+//                   decoration: InputDecoration(
+//                     hintText: "Business description",
+//                     border: InputBorder.none,
+//                   ),
+//                 ),
+//               ),
+//               SizedBox(height: 30),
+//               Row(
+//                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                 children: [
+//                   CustomButton(
+//                     onPressed: () {
+//                       Navigator.push(
+//                         context,
+//                         MaterialPageRoute(
+//                             builder: (context) => Vehicledetails1()),
+//                       );
+//                     },
+//                     text: 'Skip',
+//                   ),
+//                   CustomButton(
+//                     onPressed: () async {
+//                       _savebusinessDetails();
+
+//                       // Call function to save vehicle details
+//                     },
+//                     text: 'Save',
+//                   ),
+//                 ],
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   void dosave(
+//     String businessName,
+//     String businessAddress,
+//     String businessContactno,
+//     String businessDescription,
+//   ) async {
+//     var res = await saveBusiness(
+//         businessName, businessAddress, businessContactno, businessDescription);
+
+//     print(res.toString());
+//     Navigator.push(
+//       context,
+//       MaterialPageRoute(builder: (context) => Vehicledetails1()),
+//     );
+//   }
+
+//   saveBusiness(String businessName, String businessAddress,
+//       String businessContactno, String businessDescription) {}
+// }

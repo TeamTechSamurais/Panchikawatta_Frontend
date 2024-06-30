@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/screens/chat_screen.dart';
 import 'package:panchikawatta/screens/sign_up1.dart';
@@ -18,6 +18,7 @@ class _search_pageState extends State<search_page> {
     return Scaffold(
 
       appBar: AppBar(
+        // automaticallyImplyLeading: false,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -30,7 +31,9 @@ class _search_pageState extends State<search_page> {
                     child: Text('Sign Out'),
                     onTap: () {
                       FirebaseAuth.instance.signOut();
-                      Navigator.pushNamed(context, "login");  
+                       WidgetsBinding.instance.addPostFrameCallback((_) {
+                      Navigator.pushNamed(context, "SplashScreen");  
+                       });
                     },
                   ),
                   PopupMenuItem(
@@ -43,12 +46,7 @@ class _search_pageState extends State<search_page> {
                       );
                     },
                   ),
-                  PopupMenuItem(
-                    child: Text('SignIn'),
-                    onTap: () {
-                      Navigator.pushNamed(context, "login");
-                    },
-                  ),
+                   
                 ],
               ),
             ),

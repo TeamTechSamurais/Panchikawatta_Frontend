@@ -1,5 +1,8 @@
+ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+ 
+ 
 import 'package:panchikawatta/screens/profile_page.dart';
 import 'firebase_options.dart';
 import 'package:panchikawatta/screens/SplashScreen.dart';
@@ -7,35 +10,40 @@ import 'screens/search_page.dart';
 import 'screens/notification_page.dart';
 import 'screens/alert_page.dart';
 import 'package:panchikawatta/screens/login.dart';
-
-Future main() async {
+ 
+ import 'package:panchikawatta/global/common/toast.dart';
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  _initializeFirebase();
-  runApp( MyApp());
+  await _initializeFirebase();
+  runApp(const MyApp());
 }
 
-
-// void main() async {                                   //dinithi
-//   WidgetsFlutterBinding.ensureInitialized();
-//   await Firebase.initializeApp(
-//     options: DefaultFirebaseOptions.currentPlatform,
-//   );
-//   runApp(const MyApp());
-// }
-
-// ignore: use_key_in_widget_constructors
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  User? user;
+
+  @override
+  void initState() {
+    super.initState();
+    user = FirebaseAuth.instance.currentUser;
+    print(user?.uid.toString());
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/',
+      home: user != null ? const MyHomePage() : const SplashScreen(),
       routes: {
-        '/': (context) => SplashScreen(),
-        'login': (context) => login(), // Define the login route here
+        'SplashScreen': (context) => const SplashScreen(),
+        'login': (context) => login(),
+        // Define the login route here
       },
     );
   }
@@ -58,7 +66,20 @@ class _MyHomePageState extends State<MyHomePage> {
     ProfilePage(),
   ];
 
-  void _onItemTapped(int index) {
+final List<Widget> _guestPages = [
+    const search_page(),
+  ];
+
+   void _onItemTapped(int index) {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user == null && index != 0) {
+      // Show a message or do nothing if the user is not logged in and tries to access other pages
+       showToast(
+        message: "Please log in to access this page.");
+      return;
+    }
+
     setState(() {
       _selectedIndex = index;
     });
@@ -66,8 +87,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+       User? user = FirebaseAuth.instance.currentUser;
+    List<Widget> pages = user != null ? _pages : _guestPages;
     return Scaffold(
-      
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -98,8 +120,8 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 // Initialize Firebase
-_initializeFirebase() async{
+Future<void> _initializeFirebase() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-} 
+}

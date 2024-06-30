@@ -20,37 +20,59 @@ class _ForgetPassword1State extends State<ForgetPassword1> {
     super.dispose();
   }
 
-  Future<void> _resetPassword() async {
-  try {
-    await FirebaseAuth.instance.sendPasswordResetEmail(email: _emailController.text.trim());
-    
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          content: Text('Password reset link sent! Check your email.'),
-        );
-      },
-    );
+  Future<void> _resetPassword() async {try {
+  String email = _emailController.text.trim();
 
-    // Navigate to forgetpassword2.dart after sending the password reset email
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => forget_password3()),
-    );
-  } on FirebaseAuthException catch (e) {
-    print(e);
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          content: Text(e.message.toString()),
-        );
-      },
+  if (email.isEmpty) {
+    throw FirebaseAuthException(
+      code: 'invalid-email',
+      message: 'Please enter an email address.',
     );
   }
-}
+
+  // Send password reset email using Firebase Authentication
+  await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
  
+  // Show success dialog
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        content: Text('Password reset link sent! Check your email.'),
+        
+      );
+      
+    },
+    
+  );
+await Future.delayed(Duration(seconds: 4));
+   Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => login()),
+    );
+
+} on FirebaseAuthException catch (e) {
+  print(e);
+  String errorMessage = 'An error occurred';
+ 
+  if (e.code == 'invalid-email') {
+    errorMessage = 'Please enter valid email address.';
+  } else {
+    errorMessage = e.message ?? 'Unknown error occurred.';
+  }
+
+ 
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        content: Text(errorMessage),
+      );
+    },
+  );
+}
+}
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;

@@ -1,10 +1,13 @@
-import 'package:panchikawatta/main.dart';
+ import 'package:panchikawatta/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
+import 'package:panchikawatta/screens/sign_up2.dart';
 class Registraion_success extends StatefulWidget {
-  const Registraion_success({Key? key}) : super(key: key);
 
+    final int userId;
+   
+    Registraion_success({Key? key, required this.userId}) : super(key: key);
+ 
   @override
   State<Registraion_success> createState() => _Registraion_successState();
 }
@@ -16,9 +19,10 @@ class _Registraion_successState extends State<Registraion_success>
     super.initState();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     Future.delayed(const Duration(seconds: 5), () {
+         final userId = widget.userId;
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (_) => const MyHomePage(),
+          builder: (_) => sign_up2(userId:userId ),
         ),
       );
     });
