@@ -23,7 +23,7 @@ class OilPressureAction extends StatelessWidget {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(50.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -34,7 +34,7 @@ class OilPressureAction extends StatelessWidget {
                 width: 200,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 50),
             const Text(
               'The oil pressure is low.\n\n'
               '1. Pull over immediately.\n'

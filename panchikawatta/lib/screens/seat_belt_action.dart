@@ -23,7 +23,7 @@ class SeatBeltAction extends StatelessWidget {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(50.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -34,7 +34,7 @@ class SeatBeltAction extends StatelessWidget {
                 width: 200,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 50),
             const Text(
               'You are not wearing the seat belt. Fasten your seat belt immediately to ensure safety.',
               style: TextStyle(fontSize: 18),

@@ -23,7 +23,7 @@ class PowerSteeringAction extends StatelessWidget {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(50.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -34,7 +34,7 @@ class PowerSteeringAction extends StatelessWidget {
                 width: 200,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 50),
             const Text(
               'The power steering system is having an issue.\n\n'
               '1. If your vehicle has \bEPS (Electronic power system)\b, go to a mechanic to have the problem assessed.\n'

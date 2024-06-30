@@ -1,9 +1,9 @@
-// ignore_for_file: avoid_print, camel_case_types
+// ignore_for_file: camel_case_types
 
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/screens/buy_screen.dart';
 import 'package:panchikawatta/screens/filter_sort.dart';
-import 'package:panchikawatta/services/api_services.dart';
+import 'package:panchikawatta/services/get_api_services.dart';
 import 'package:panchikawatta/models/sparepart.dart';
 
 class search_page extends StatefulWidget {
@@ -19,7 +19,7 @@ class _search_pageState extends State<search_page> {
   @override
   void initState() {
     super.initState();
-    _sparepart = ApiService().getSpareParts();
+    _sparepart = GetApiService().getSpareParts();
   }
 
   @override
@@ -27,9 +27,11 @@ class _search_pageState extends State<search_page> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        leading: const Icon(
-          Icons.arrow_back_rounded,
-          size: 30,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded, size: 30),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
         elevation: 0,
         actions: const [
@@ -39,9 +41,7 @@ class _search_pageState extends State<search_page> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  SizedBox(
-                    height: 8,
-                  ),
+                  SizedBox(height: 8),
                   Text(
                     'Buyer',
                     style: TextStyle(
@@ -58,18 +58,14 @@ class _search_pageState extends State<search_page> {
                   ),
                 ],
               ),
-              SizedBox(
-                width: 5,
-              ),
+              SizedBox(width: 5),
               CircleAvatar(
                 radius: 25,
                 backgroundImage: AssetImage('assets/images/profile_image.png'),
               ),
             ],
           ),
-          SizedBox(
-            width: 5,
-          )
+          SizedBox(width: 5),
         ],
       ),
       body: FutureBuilder<List<SparePart>>(
@@ -201,80 +197,102 @@ class _search_pageState extends State<search_page> {
                     const SizedBox(
                       height: 8,
                     ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height,
-                      width: double.infinity,
-                      child: GridView.builder(
-                          itemCount: snapshot.data!.length,
-                          physics: const NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: 10,
-                                  mainAxisSpacing: 10),
-                          itemBuilder: (context, i) {
-                            var sparePart = snapshot.data![i];
-                            return InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const BuyScreen()));
-                              },
-                              child: Container(
-                                width: 82,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(15),
-                                    color: const Color(0xffEBEBEB)),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Image.network(
-                                      sparePart.imageUrl,
-                                      height: 73,
-                                      width: 81,
-                                      errorBuilder:
-                                          (context, error, stackTrace) {
-                                        return Image.asset(
-                                            'assets/images/no_image.png',
-                                            height: 73,
-                                            width: 81);
-                                      },
-                                    ),
-                                    Text(
-                                      sparePart.title,
-                                      style: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w400,
-                                          color: Colors.black),
-                                    ),
-                                    Text(
-                                      'Rs. ${sparePart.price}',
-                                      style: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w400,
-                                          color: Colors.black),
-                                    ),
-                                    Text(
-                                      '${sparePart.year}',
-                                      style: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w400,
-                                          color: Colors.black),
-                                    ),
-                                    Text(
-                                      sparePart.make,
-                                      style: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w400,
-                                          color: Colors.black),
-                                    ),
-                                  ],
-                                ),
+                    GridView.builder(
+                      shrinkWrap: true,
+                      itemCount: snapshot.data!.length,
+                      physics: const ScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                      ),
+                      itemBuilder: (context, i) {
+                        var sparePart = snapshot.data![i];
+                        print(
+                            'Image URL: ${sparePart.imageUrl}'); // Add this line for debugging
+
+                        // Check if the image URL is valid
+                        final imageUrl = sparePart.imageUrl.isNotEmpty &&
+                                Uri.tryParse(sparePart.imageUrl)
+                                        ?.hasAbsolutePath ==
+                                    true
+                            ? sparePart.imageUrl
+                            : null;
+
+                        return InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    BuyScreen(sparePartId: sparePart.id),
                               ),
                             );
-                          }),
+                          },
+                          child: Container(
+                            width: 82,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                color: const Color(0xffEBEBEB)),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                if (imageUrl != null)
+                                  Image.network(
+                                    imageUrl,
+                                    height: 73,
+                                    width: 81,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      print(
+                                          'Image load error: $error'); // Add this line for debugging
+                                      return Image.asset(
+                                          'assets/images/no_image.png',
+                                          height: 73,
+                                          width: 81);
+                                    },
+                                  )
+                                else
+                                  Image.asset('assets/images/no_image.png',
+                                      height: 73, width: 81),
+                                Text(
+                                  sparePart.title,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                Text(
+                                  'Rs. ${sparePart.price}',
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black),
+                                ),
+                                Text(
+                                  '${sparePart.year}',
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black),
+                                ),
+                                Text(
+                                  sparePart.make,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     )
                   ],
                 ),

@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/screens/profile_page.dart';
+import 'package:panchikawatta/screens/reminders.dart';
 import 'package:panchikawatta/screens/vehicle_details.dart';
 
 class BuyerProfile extends StatelessWidget {
@@ -78,17 +79,21 @@ class BuyerProfile extends StatelessWidget {
               child: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.8,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    // CustomButton(
+                    //   onPressed: () {
+                    //     // Add your button press logic here
+                    //   },
+                    //   text: 'Wishlist',
+                    // ),
                     CustomButton(
                       onPressed: () {
-                        // Add your button press logic here
-                      },
-                      text: 'Wishlist',
-                    ),
-                    CustomButton(
-                      onPressed: () {
-                        // Add your button press logic here
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ReminderScreen()),
+                        );
                       },
                       text: 'Reminders',
                     ),

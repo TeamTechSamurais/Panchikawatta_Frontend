@@ -23,7 +23,7 @@ class BrakeLightAction extends StatelessWidget {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(50.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -34,7 +34,7 @@ class BrakeLightAction extends StatelessWidget {
                 width: 200,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 50),
             const Text(
               'Check the parking brake is still engaged.\n\n'
               '1. If the light persists after releasing brake, there can be a issue in brake system.\n'

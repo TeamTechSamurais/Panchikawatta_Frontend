@@ -17,16 +17,16 @@ class Condition extends StatefulWidget {
 
 class _ConditionState extends State<Condition> {
   final List<String> _conditionOptions = [
-    'Any',
     'New',
     'Used',
+    'Reconditioned',
   ];
 
   @override
   Widget build(BuildContext context) {
     return DropdownButton<String>(
       value: widget.selectedCondition,
-      hint: const Text('Make'),
+      hint: const Text('Condition'),
       items: _conditionOptions.map((String condition) {
         return DropdownMenuItem<String>(
           value: condition,

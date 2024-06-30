@@ -23,7 +23,7 @@ class SecurityLightAction extends StatelessWidget {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(50.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -34,7 +34,7 @@ class SecurityLightAction extends StatelessWidget {
                 width: 200,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 50),
             const Text(
               'There is a problem with the vehicle\'s security system.\n\n'
               '1. If the security light comes on while driving, it\'s important to have the vehicle diagnosed and repaired if necessary.\n'

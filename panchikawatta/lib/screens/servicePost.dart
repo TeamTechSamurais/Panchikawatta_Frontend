@@ -1,26 +1,24 @@
-// ignore_for_file: use_build_context_synchronously, library_private_types_in_public_api
+// ignore_for_file: library_private_types_in_public_api, avoid_print, use_build_context_synchronously, file_names
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:panchikawatta/components/custom_button.dart';
-import 'package:panchikawatta/components/input_fields.dart';
 import 'package:panchikawatta/components/add_image.dart';
 import 'package:panchikawatta/screens/post_success.dart';
-import 'package:panchikawatta/services/api_service.dart';
+import 'package:panchikawatta/services/post_api_service.dart';
 
 class ServicePost extends StatefulWidget {
   ServicePost({super.key});
 
   @override
   _ServicePostState createState() => _ServicePostState();
-  final ApiService apiService = ApiService();
+  final PostApiService apiService = PostApiService();
 }
 
 class _ServicePostState extends State<ServicePost> {
   final List<XFile?> _images = List<XFile?>.filled(1, null);
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _priceController = TextEditingController();
 
   void _setImage(int index, XFile? image) {
     setState(() {
@@ -32,15 +30,30 @@ class _ServicePostState extends State<ServicePost> {
     try {
       final title = _titleController.text;
       final description = _descriptionController.text;
-      final price = int.tryParse(_priceController.text) ?? 0;
       final image = _images[0];
+      const int sellerId = 1; // Replace this with the actual seller ID
 
-      if (title.isEmpty || description.isEmpty || price == 0) {
+      // Debug prints to check the values
+      print('Title: $title');
+      print('Description: $description');
+      print('Image: ${image?.path}');
+
+      if (title.isEmpty || description.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Please fill all required fields')),
         );
         return;
       }
+
+      final response = await widget.apiService.postService(
+        sellerId: sellerId,
+        title: title,
+        description: description,
+        image: image,
+      );
+
+      // Debug print response
+      print('Response: ${response.toString()}');
 
       Navigator.push(
         context,
@@ -49,6 +62,7 @@ class _ServicePostState extends State<ServicePost> {
         ),
       );
     } catch (e) {
+      print('Exception: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to post service: $e')),
       );
@@ -98,10 +112,17 @@ class _ServicePostState extends State<ServicePost> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    InputFields(
+                    TextField(
                       controller: _titleController,
-                      hintText: 'Title',
-                      width1: 1,
+                      decoration: InputDecoration(
+                        hintText: 'Title',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none,
+                        ),
+                        filled: true,
+                        fillColor: const Color(0xFFEBEBEB),
+                      ),
                     ),
                     const SizedBox(height: 20),
                     const Text(
@@ -152,20 +173,6 @@ class _ServicePostState extends State<ServicePost> {
                       }),
                     ),
                     const SizedBox(height: 20),
-                    // const Text(
-                    //   'Price',
-                    //   style: TextStyle(
-                    //     fontSize: 16,
-                    //     fontWeight: FontWeight.bold,
-                    //   ),
-                    // ),
-                    // const SizedBox(height: 20),
-                    // InputFields(
-                    //   controller: _priceController,
-                    //   hintText: 'Price',
-                    //   width1: 1,
-                    //   keyboardType: TextInputType.number,
-                    // ),
                   ],
                 ),
               ),
@@ -175,7 +182,7 @@ class _ServicePostState extends State<ServicePost> {
                   onPressed: () async {
                     await _postService();
                   },
-                  text: 'Next',
+                  text: 'Post Ad',
                 ),
               ),
             ],

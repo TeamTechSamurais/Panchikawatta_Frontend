@@ -1,8 +1,8 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
-import 'package:panchikawatta/screens/adPost1.dart';
 import 'package:panchikawatta/screens/servicePost.dart';
+import 'package:panchikawatta/screens/sparepart_post.dart';
 
 class AdType extends StatelessWidget {
   const AdType({super.key});
@@ -36,7 +36,7 @@ class AdType extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => AdPost1()),
+                        MaterialPageRoute(builder: (context) => AdPost()),
                       );
                     },
                     style: ElevatedButton.styleFrom(

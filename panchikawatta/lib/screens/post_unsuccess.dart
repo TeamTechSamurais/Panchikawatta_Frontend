@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
-import 'package:panchikawatta/screens/adPost1.dart';
+import 'package:panchikawatta/screens/profile_page.dart';
 
 class PostUnsuccess extends StatelessWidget {
   // ignore: use_super_parameters
@@ -38,7 +38,7 @@ class PostUnsuccess extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => AdPost1()),
+                    MaterialPageRoute(builder: (context) => ProfilePage()),
                   );
                 },
               ),

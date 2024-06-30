@@ -23,7 +23,7 @@ class TirePressureAction extends StatelessWidget {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(50.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -34,7 +34,7 @@ class TirePressureAction extends StatelessWidget {
                 width: 200,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 50),
             const Text(
               'The tires are under- or overinflated.\n\n'
               '1. If your vehicle has a tire pressure measuring system,check the pressure of each tire to ensure that it is balanced.\n'

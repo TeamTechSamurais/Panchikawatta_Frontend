@@ -142,7 +142,7 @@ class alert_page extends StatelessWidget {
                     },
                   ),
                   GridBlock(
-                    imagePath: 'assets/warning_lights/washer_fluid.jpg',
+                    imagePath: 'assets/warning_lights/washer.jpg',
                     onPressed: () {
                       Navigator.push(
                         context,

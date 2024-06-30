@@ -23,14 +23,14 @@ class SparePart {
     required this.condition,
     required this.fuel,
     required this.year,
-  }) : imageUrl = imageUrl ?? 'no_image.png';
+  }) : imageUrl = imageUrl ?? 'assets/images/no_image.png';
 
   factory SparePart.fromJson(Map<String, dynamic> json) {
     return SparePart(
-      id: json['id'] ?? 0,
+      id: json['sparePartId'] ?? 0,
       title: json['title'] ?? 'Unknown',
       description: json['description'] ?? 'No description',
-      imageUrl: json['imageUrl'] ?? 'No image',
+      imageUrl: json['imageUrl'] ?? 'assets/images/no_image.png',
       price: json['price'] ?? 0,
       make: json['make'] ?? 'Unknown',
       model: json['model'] ?? 'Unknown',
