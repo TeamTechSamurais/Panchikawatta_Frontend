@@ -33,7 +33,9 @@ class GetApiService {
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonResponse = json.decode(response.body);
-      final SparePart sparePart = SparePart.fromJson(jsonResponse['sparePart']);
+      final SparePart sparePart =
+          SparePart.fromJson(jsonResponse); // Directly map to SparePart
+      print(sparePart);
       return sparePart;
     } else {
       throw Exception('Failed to load spare part');

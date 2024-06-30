@@ -42,13 +42,12 @@ class _BuyScreenState extends State<BuyScreen> {
         elevation: 0,
         backgroundColor: Colors.transparent,
         title: const Text(
-          "Buy",
+          "Details",
           style: TextStyle(
-              color: Color(0xffFF5C01),
-              fontSize: 18,
+              color: Color(0xFFFF5C01),
+              fontSize: 28,
               fontWeight: FontWeight.w500),
         ),
-        centerTitle: true,
         actions: [
           GestureDetector(
             onTap: () {
@@ -59,20 +58,11 @@ class _BuyScreenState extends State<BuyScreen> {
             },
             child: const Icon(
               Icons.favorite_outline,
-              size: 25,
-              color: Colors.black,
+              size: 30,
+              color: Color(0xFFFF5C01),
             ),
           ),
-          const SizedBox(
-            width: 10,
-          ),
-          const CircleAvatar(
-            radius: 20,
-            backgroundImage: AssetImage('assets/images/profile_image.png'),
-          ),
-          const SizedBox(
-            width: 10,
-          )
+          const SizedBox(width: 30)
         ],
       ),
       body: FutureBuilder<SparePart>(
@@ -86,102 +76,250 @@ class _BuyScreenState extends State<BuyScreen> {
             return const Center(child: Text('Spare part not found'));
           } else {
             var sparePart = snapshot.data!;
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Center(
-                      child: Container(
-                          height: 150,
-                          width: double.infinity,
-                          color: Colors.transparent,
-                          child: Swiper(
-                            autoplay: true,
-                            autoplayDelay: 5000,
-                            itemBuilder: (BuildContext context, int index) {
-                              final imageUrl = sparePart.imageUrl;
-                              if (imageUrl == null || imageUrl.isEmpty) {
-                                return Image.asset(
-                                  'assets/images/no_image.png',
-                                  fit: BoxFit.contain,
-                                );
-                              } else {
-                                return Image.network(
-                                  imageUrl,
-                                  fit: BoxFit.contain,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Image.asset(
-                                      'assets/images/no_image.png',
-                                      fit: BoxFit.contain,
-                                    );
-                                  },
-                                );
-                              }
+            return Column(
+              children: [
+                const SizedBox(
+                  height: 30,
+                ),
+                Center(
+                  child: Container(
+                    height: 200,
+                    width: double.infinity,
+                    color: Colors.transparent,
+                    child: Swiper(
+                      // autoplay: true,
+                      // autoplayDelay: 5000,
+                      itemBuilder: (BuildContext context, int index) {
+                        final imageUrl = sparePart.imageUrl;
+                        if (imageUrl == null || imageUrl.isEmpty) {
+                          return Image.asset(
+                            'assets/images/no_image.png',
+                            fit: BoxFit.contain,
+                          );
+                        } else {
+                          return Image.network(
+                            imageUrl,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                'assets/images/no_image.png',
+                                fit: BoxFit.contain,
+                              );
                             },
-                            itemCount:
-                                1, // You can set this to the number of images you have
-                            pagination: const SwiperPagination(
-                              alignment: Alignment.bottomCenter,
-                            ),
-                          )),
+                          );
+                        }
+                      },
+                      itemCount:
+                          1, // You can set this to the number of images you have
+                      pagination: const SwiperPagination(
+                        alignment: Alignment.bottomCenter,
+                      ),
                     ),
-                    const SizedBox(
-                      height: 10,
-                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 40,
+                ),
+                Center(
+                  child: CustomButton(
+                    onPressed: () {
+                      // Add your buy logic here
+                    },
+                    text: '              Buy it Now              ',
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
                     Text(
                       sparePart.title,
                       style: const TextStyle(
                           fontSize: 20,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w500,
                           color: Colors.black),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      'Rs. ${sparePart.price}',
-                      style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.black),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      'Year: ${sparePart.year}',
-                      style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.black),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      'Make: ${sparePart.make}',
-                      style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.black),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    CustomButton(
-                      onPressed: () {
-                        // Add your buy logic here
-                      },
-                      text: 'Buy Now',
                     ),
                   ],
                 ),
-              ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Text(
+                      'Rs. ${sparePart.price}',
+                      style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black),
+                    ),
+                    const SizedBox(width: 50),
+                    GestureDetector(
+                      onTap: () {
+                        // Add code to call the phone number here
+                      },
+                      child: const Icon(
+                        Icons.local_phone_rounded,
+                        color: Color(0xFFFF5C01),
+                        size: 35,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        // Add code to call the phone number here
+                      },
+                      child: const Icon(
+                        Icons.mail_rounded,
+                        color: Color(0xFFFF5C01),
+                        size: 35,
+                      ),
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 30, vertical: 5),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Divider(
+                            color: Colors.grey,
+                            thickness: 1,
+                          ),
+                          Row(
+                            children: [
+                              Text(
+                                ' ${sparePart.make} ',
+                                style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black),
+                              ),
+                              Text(
+                                ' ${sparePart.model}',
+                                style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black),
+                              ),
+                              const SizedBox(
+                                width: 80,
+                              ),
+                              Text(
+                                ' ${sparePart.year}',
+                                style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black),
+                              ),
+                            ],
+                          ),
+                          const Divider(
+                            color: Colors.grey,
+                            thickness: 1,
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: const Color.fromARGB(
+                                      255, 255, 255, 255), // Background color
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(
+                                    color: const Color.fromARGB(255, 0, 0, 0),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Text(
+                                  sparePart.condition,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: const Color.fromARGB(
+                                      255, 255, 255, 255), // Background color
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(
+                                    color: const Color.fromARGB(255, 0, 0, 0),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Text(
+                                  sparePart.fuel,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: const Color.fromARGB(
+                                      255, 255, 255, 255), // Background color
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(
+                                    color: const Color.fromARGB(255, 0, 0, 0),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Text(
+                                  sparePart.origin,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          const Text(
+                            'Description',
+                            style: TextStyle(
+                                fontSize: 21,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFFFF5C01)),
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            sparePart.description,
+                            style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             );
           }
         },
