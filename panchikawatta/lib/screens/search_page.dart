@@ -18,7 +18,7 @@ class _search_pageState extends State<search_page> {
     return Scaffold(
 
       appBar: AppBar(
-        // automaticallyImplyLeading: false,
+         automaticallyImplyLeading: false,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

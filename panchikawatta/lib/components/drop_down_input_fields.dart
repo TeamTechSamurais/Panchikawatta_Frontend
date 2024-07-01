@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+  import 'package:flutter/material.dart';
 
 class DropdownInputField extends StatefulWidget {
   final List<String> dropdownItems;
@@ -10,7 +10,7 @@ class DropdownInputField extends StatefulWidget {
     required this.dropdownItems,
     required this.hintText,
     this.validator,
-    this.initialValue,
+    this.initialValue, String? value,
   });
 
   @override
@@ -24,9 +24,7 @@ class _DropdownInputFieldState extends State<DropdownInputField> {
   @override
   void initState() {
     super.initState();
-    // if (widget.dropdownItems.isNotEmpty) {
-      // _dropdownValue = widget.dropdownItems[0];
-    // }
+    _dropdownValue = widget.initialValue;
   }
 
   @override
@@ -43,7 +41,7 @@ class _DropdownInputFieldState extends State<DropdownInputField> {
               child: DefaultTextStyle(
                 style: const TextStyle(fontSize: 16, color: Color(0xCC000000), fontWeight: FontWeight.normal),
                 child: Text(value),
-              )
+              ),
             );
           }).toList(),
           validator: widget.validator,
@@ -54,7 +52,7 @@ class _DropdownInputFieldState extends State<DropdownInputField> {
             _formKey.currentState!.validate();
           },
           decoration: const InputDecoration(
-            border: InputBorder.none, 
+            border: InputBorder.none,
           ),
         ),
       ),

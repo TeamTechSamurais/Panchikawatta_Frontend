@@ -1,4 +1,5 @@
  import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/global/common/toast.dart';
 import 'package:panchikawatta/main.dart';
@@ -198,55 +199,67 @@ class _LoginState extends State<login> {
   }
 
   void _signIn() async {
-    setState(() {
-      _isSigning = true;
-    });
+  setState(() {
+    _isSigning = true;
+  });
 
-    String email = emailController.text.trim();
-    String password = passwordController.text.trim();
+  String email = emailController.text.trim();
+  String password = passwordController.text.trim();
 
-    User? user = await _auth.signInWithEmailAndPassword(email,password);
+  User? user = await _auth.signInWithEmailAndPassword(email, password);
 
-    setState(() {
-      _isSigning = false;
-    });
+  setState(() {
+    _isSigning = false;
+  });
 
-    if (user != null) {
-      if (user.emailVerified) {
-        showToast(message: "You are successfully signed in");
+  if (user != null) {
+    if (user.emailVerified) {
+      showToast(message: "You are successfully signed in");
 
-        // Generate and save JWT token locally
-        
-      
-          // Navigate to home page after successful login
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MyHomePage(),
-            ),
-          );
-         
+      // Generate JWT token
+      String? jwtToken = await _generateJwtToken(user);
+
+      if (jwtToken != null) {
+        // Save JWT token locally if needed
+        // Example: saveTokenLocally(jwtToken);
+
+        // Navigate to home page after successful login
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MyHomePage(),
+          ),
+        );
       } else {
-        showToast(message: "Please verify your email before login");
+        showToast(message: "Failed to generate JWT token");
       }
     } else {
-      showToast(message: "Invalid email or password");
+      showToast(message: "Please verify your email before login");
     }
+  } else {
+    showToast(message: "Invalid email or password");
   }
+}
 
-  Future<String?> _generateJwtToken(User user) async {
+ Future<String?> _generateJwtToken(User user) async {
     try {
       // Get the Firebase ID token
       String? idToken = await user.getIdToken();
-  print('Received idToken token: $idToken');
+      print('Received idToken token: $idToken');
+
       // Call your Node.js server to generate JWT token
       final response = await http.post(
-        Uri.parse('https://10.0.2.2:8000/users/generateJwtToken'),
-        body: {'idToken': idToken},
+        Uri.parse('http://10.0.2.2:8000/users/generateJwtToken'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({'idToken': idToken}),
       );
 
       if (response.statusCode == 201) {
-        return response .body; // Assuming your server returns the whole response body as JWT token
+        // Assuming your server returns the JWT token in the response body
+        final responseData = jsonDecode(response.body);
+        return responseData['token'];
       } else {
         return null;
       }
@@ -256,6 +269,8 @@ class _LoginState extends State<login> {
     }
   }
 }
+
+
 
 class TextFieldContainer extends StatelessWidget {
   final Widget child;

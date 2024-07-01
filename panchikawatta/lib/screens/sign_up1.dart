@@ -513,7 +513,7 @@ class _SignUp1State extends State<sign_up1> {
                       child: _isSigningUp
                           ? CircularProgressIndicator(color: Colors.white)
                           : Text(
-                              "Next",
+                              "Submit",
                               style: TextStyle(color: Colors.white),
                             ),
                     ),

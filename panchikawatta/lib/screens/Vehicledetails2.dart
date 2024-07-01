@@ -2,6 +2,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
+import 'package:panchikawatta/components/drop_down_input_fields.dart';
 import 'package:panchikawatta/components/input_fields.dart';
 import 'package:panchikawatta/main.dart';
 import 'package:http/http.dart' as http;
@@ -30,8 +31,8 @@ class _Vehicledetails2State extends State<Vehicledetails2> {
   TextEditingController milagePerWeekController = TextEditingController();
 
   TextEditingController lastServiceDateController = TextEditingController();
-  TextEditingController batteryConditionController = TextEditingController();
-
+  //TextEditingController batteryConditionController = TextEditingController();
+ String? selectedBatteryCondition;
   void _showFillMessage(String message, [String? emailError]) {
     showDialog(
       context: context,
@@ -140,10 +141,14 @@ class _Vehicledetails2State extends State<Vehicledetails2> {
                       width1: 0.8,
                     ),
                     const SizedBox(height: 20),
-                    InputFields(
-                      controller: batteryConditionController,
+                    
+                    DropdownInputField(
+                      value: selectedBatteryCondition,
                       hintText: 'Battery Condition',
-                      width1: 0.8,
+                      
+                       dropdownItems: ['Excellent', 'Good', 'Fair', 'Low'],
+                         
+                      
                     ),
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.8,
@@ -213,7 +218,7 @@ class _Vehicledetails2State extends State<Vehicledetails2> {
     // Check if any of the required fields are empty
     if (milagePerWeekController.text.isEmpty &&
         lastServiceDateController.text.isEmpty &&
-        batteryConditionController.text.isEmpty) {
+          selectedBatteryCondition == null) {
       _showFillMessage("Please fill in at least one field to save details");
       return; // Exit function if validation fails
     }
@@ -223,7 +228,7 @@ class _Vehicledetails2State extends State<Vehicledetails2> {
       'vehicleId': widget.vehicleId,
       'mileagePerWeek': mileage,
       'lastServiceDate': lastServiceDateController.text.trim(),
-      'batteryCondition': batteryConditionController.text.trim(),
+       'batteryCondition': selectedBatteryCondition ?? '',
       // Add other necessary fields here
     };
 
