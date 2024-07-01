@@ -205,7 +205,7 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const search_page(),
+                        builder: (context) => const SearchPage(),
                       ),
                     );
                   },

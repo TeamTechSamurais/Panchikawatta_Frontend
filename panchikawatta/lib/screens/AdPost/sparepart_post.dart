@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/components/add_image.dart';
-import 'package:panchikawatta/screens/post_unsuccess.dart';
+import 'package:panchikawatta/screens/AdPost/post_unsuccess.dart';
 import 'package:panchikawatta/services/post_api_service.dart';
 import 'package:panchikawatta/dropdowns/condition_post.dart';
 import 'package:panchikawatta/dropdowns/fuel_post.dart';
 import 'package:panchikawatta/dropdowns/origin.dart';
 import 'package:panchikawatta/dropdowns/vehicle_make.dart';
 import 'package:panchikawatta/dropdowns/vehicle_model.dart';
-import 'package:panchikawatta/screens/post_success.dart';
+import 'package:panchikawatta/screens/AdPost/post_success.dart';
 
 class AdPost extends StatefulWidget {
   AdPost({super.key});
@@ -79,7 +79,7 @@ class _AdPostState extends State<AdPost> {
 
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => PostSuccess()),
+        MaterialPageRoute(builder: (context) => const PostSuccess()),
       );
     } catch (e) {
       Navigator.push(

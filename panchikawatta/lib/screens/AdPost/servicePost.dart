@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/components/add_image.dart';
-import 'package:panchikawatta/screens/post_success.dart';
+import 'package:panchikawatta/screens/AdPost/post_success.dart';
 import 'package:panchikawatta/services/post_api_service.dart';
 
 class ServicePost extends StatefulWidget {
@@ -58,7 +58,7 @@ class _ServicePostState extends State<ServicePost> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => PostSuccess(),
+          builder: (context) => const PostSuccess(),
         ),
       );
     } catch (e) {

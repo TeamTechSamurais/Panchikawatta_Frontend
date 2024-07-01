@@ -41,4 +41,15 @@ class GetApiService {
       throw Exception('Failed to load spare part');
     }
   }
+
+  Future<List<SparePart>> searchSpareparts(String keyword) async {
+    final response = await http
+        .get(Uri.parse('${Utils.baseUrl}/adListing/search?keyword=$keyword'));
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      return data.map((item) => SparePart.fromJson(item)).toList();
+    } else {
+      throw Exception('Failed to load spare parts');
+    }
+  }
 }

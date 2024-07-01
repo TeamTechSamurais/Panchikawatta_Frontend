@@ -2,16 +2,16 @@
 
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/grid_block.dart';
-import 'package:panchikawatta/screens/abs_light_action.dart';
-import 'package:panchikawatta/screens/brake_light_action.dart';
-import 'package:panchikawatta/screens/check_engine_action.dart';
-import 'package:panchikawatta/screens/engine_temp_action.dart';
-import 'package:panchikawatta/screens/oil_pressure_action.dart';
-import 'package:panchikawatta/screens/power_steering_action.dart';
-import 'package:panchikawatta/screens/seat_belt_action.dart';
-import 'package:panchikawatta/screens/security_light_action.dart';
-import 'package:panchikawatta/screens/tire_pressure_action.dart';
-import 'package:panchikawatta/screens/washer_fluid_action.dart';
+import 'package:panchikawatta/screens/QuickHelp/abs_light_action.dart';
+import 'package:panchikawatta/screens/QuickHelp/brake_light_action.dart';
+import 'package:panchikawatta/screens/QuickHelp/check_engine_action.dart';
+import 'package:panchikawatta/screens/QuickHelp/engine_temp_action.dart';
+import 'package:panchikawatta/screens/QuickHelp/oil_pressure_action.dart';
+import 'package:panchikawatta/screens/QuickHelp/power_steering_action.dart';
+import 'package:panchikawatta/screens/QuickHelp/seat_belt_action.dart';
+import 'package:panchikawatta/screens/QuickHelp/security_light_action.dart';
+import 'package:panchikawatta/screens/QuickHelp/tire_pressure_action.dart';
+import 'package:panchikawatta/screens/QuickHelp/washer_fluid_action.dart';
 
 class alert_page extends StatelessWidget {
   const alert_page({super.key});

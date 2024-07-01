@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
-import 'package:panchikawatta/screens/adType.dart';
-import 'package:panchikawatta/screens/ad_details_sparepart.dart';
-import 'package:panchikawatta/screens/buyer_profile.dart';
+import 'package:panchikawatta/screens/AdPost/adType.dart';
+import 'package:panchikawatta/screens/User/ad_details_sparepart.dart';
+import 'package:panchikawatta/screens/User/buyer_profile.dart';
 
 // ignore: camel_case_types
 class ProfilePage extends StatelessWidget {

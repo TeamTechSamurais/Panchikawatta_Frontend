@@ -1,8 +1,8 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
-import 'package:panchikawatta/screens/servicePost.dart';
-import 'package:panchikawatta/screens/sparepart_post.dart';
+import 'package:panchikawatta/screens/AdPost/servicePost.dart';
+import 'package:panchikawatta/screens/AdPost/sparepart_post.dart';
 
 class AdType extends StatelessWidget {
   const AdType({super.key});

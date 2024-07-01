@@ -3,8 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/screens/profile_page.dart';
-import 'package:panchikawatta/screens/reminders.dart';
-import 'package:panchikawatta/screens/vehicle_details.dart';
+import 'package:panchikawatta/screens/User/reminders.dart';
+import 'package:panchikawatta/screens/User/vehicle_details.dart';
 
 class BuyerProfile extends StatelessWidget {
   @override
