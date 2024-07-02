@@ -1,4 +1,4 @@
-// ignore_for_file: use_super_parameters, library_private_types_in_public_api
+// ignore_for_file: use_super_parameters, library_private_types_in_public_api, use_build_context_synchronously, avoid_print
 
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
@@ -10,6 +10,7 @@ import 'package:panchikawatta/dropdowns/province.dart';
 import 'package:panchikawatta/dropdowns/vehicle_make.dart';
 import 'package:panchikawatta/dropdowns/vehicle_model.dart';
 import 'package:panchikawatta/screens/search_page.dart';
+import 'package:panchikawatta/services/get_api_services.dart';
 
 class FilterSortScreen extends StatefulWidget {
   const FilterSortScreen({Key? key}) : super(key: key);
@@ -34,8 +35,35 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
   String? selectedFuel;
 
   get minYearController => null;
-
   get maxYearController => null;
+
+  Future<void> fetchFilteredAds() async {
+    try {
+      final ads = await GetApiService().fetchFilteredAds(
+        province: selectedProvince,
+        district: selectedDistrict,
+        vehicleMake: selectedVehicleMake,
+        model: selectedModel,
+        origin: selectedOrigin,
+        minPrice: minPriceController.text,
+        maxPrice: maxPriceController.text,
+        conditions: selectedConditions.toList(),
+        fuelTypes: selectedFuel != null ? [selectedFuel!] : [],
+        minYear: selectedMinYear,
+        maxYear: selectedMaxYear,
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SearchPage(
+            ads: ads,
+          ),
+        ),
+      );
+    } catch (error) {
+      print('Failed to fetch filtered ads: $error');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -195,20 +223,13 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
                       minPriceController.clear();
                       maxPriceController.clear();
                       selectedConditions.clear();
-                      selectedFuel = null; // Clear selected fuel
+                      selectedFuel = null;
                     });
                   },
                   text: 'Reset',
                 ),
                 CustomButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const SearchPage(),
-                      ),
-                    );
-                  },
+                  onPressed: fetchFilteredAds,
                   text: 'Apply',
                 ),
               ],

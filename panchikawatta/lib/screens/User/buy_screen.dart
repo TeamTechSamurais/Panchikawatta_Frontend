@@ -1,5 +1,3 @@
-// ignore_for_file: unnecessary_null_comparison, unused_import
-
 import 'package:flutter/material.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:panchikawatta/components/custom_button.dart';
@@ -87,50 +85,14 @@ class _BuyScreenState extends State<BuyScreen> {
                   ),
                   Center(
                     child: Container(
-                      height: 350,
+                      height: 300,
                       width: double.infinity,
                       color: Colors.transparent,
                       child: Image.asset(
-                        'assets/images/corolla_headlight.jpeg',
+                        'assets/images/R.png',
                         fit: BoxFit.contain,
                       ),
-                      // child: Swiper(
-                      //   // autoplay: true,
-                      //   // autoplayDelay: 5000,
-                      //   itemBuilder: (BuildContext context, int index) {
-                      //     final imageUrl = sparePart.imageUrl;
-                      //     if (imageUrl == null || imageUrl.isEmpty) {
-                      //       return Image.asset(
-                      //         'assets/images/no_image.png',
-                      //         fit: BoxFit.contain,
-                      //       );
-                      //     } else {
-                      //       return Image.network(
-                      //         imageUrl,
-                      //         fit: BoxFit.contain,
-                      //         errorBuilder: (context, error, stackTrace) {
-                      //           return Image.asset(
-                      //             'assets/images/no_image.png',
-                      //             fit: BoxFit.contain,
-                      //           );
-                      //         },
-                      //       );
-                      //     }
-                      //   },
-                      //   itemCount:
-                      //       1, // You can set this to the number of images you have
-                      //   pagination: const SwiperPagination(
-                      //     alignment: Alignment.bottomCenter,
-                      //   ),
-                      // ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  const Divider(
-                    color: Colors.grey,
-                    thickness: 1.5,
                   ),
                   const SizedBox(
                     height: 10,
@@ -142,6 +104,13 @@ class _BuyScreenState extends State<BuyScreen> {
                       },
                       text: '              Buy it Now              ',
                     ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  const Divider(
+                    color: Colors.grey,
+                    thickness: 1.5,
                   ),
                   const SizedBox(
                     height: 10,
@@ -200,115 +169,195 @@ class _BuyScreenState extends State<BuyScreen> {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 5),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             const Divider(
                               color: Colors.grey,
                               thickness: 1,
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  ' ${sparePart.make} ',
-                                  style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.black),
-                                ),
-                                Text(
-                                  ' ${sparePart.model}',
-                                  style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.black),
-                                ),
-                                const SizedBox(
-                                  width: 100,
-                                ),
-                                Text(
-                                  ' ${sparePart.year}',
-                                  style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.black),
-                                ),
-                              ],
-                            ),
-                            const Divider(
-                              color: Colors.grey,
-                              thickness: 1,
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 5),
-                                  decoration: BoxDecoration(
-                                    color: const Color.fromARGB(
-                                        255, 255, 255, 255), // Background color
-                                    borderRadius: BorderRadius.circular(20),
-                                    border: Border.all(
-                                      color: const Color.fromARGB(255, 0, 0, 0),
-                                      width: 1.5,
+                            Center(
+                              child: Container(
+                                constraints:
+                                    const BoxConstraints(maxWidth: 180),
+                                child: Table(
+                                  columnWidths: const {
+                                    0: FixedColumnWidth(100.0),
+                                    1: FlexColumnWidth(),
+                                  },
+                                  defaultVerticalAlignment:
+                                      TableCellVerticalAlignment.middle,
+                                  children: [
+                                    TableRow(
+                                      children: [
+                                        const Padding(
+                                          padding:
+                                              EdgeInsets.symmetric(vertical: 5),
+                                          child: Text(
+                                            'Make:',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 5),
+                                          child: Text(
+                                            sparePart.make,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                  child: Text(
-                                    sparePart.condition,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400,
-                                      color: Colors.black,
+                                    TableRow(
+                                      children: [
+                                        const Padding(
+                                          padding:
+                                              EdgeInsets.symmetric(vertical: 5),
+                                          child: Text(
+                                            'Model:',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 5),
+                                          child: Text(
+                                            sparePart.model,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                ),
-                                const SizedBox(width: 20),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 5),
-                                  decoration: BoxDecoration(
-                                    color: const Color.fromARGB(
-                                        255, 255, 255, 255), // Background color
-                                    borderRadius: BorderRadius.circular(20),
-                                    border: Border.all(
-                                      color: const Color.fromARGB(255, 0, 0, 0),
-                                      width: 1.5,
+                                    TableRow(
+                                      children: [
+                                        const Padding(
+                                          padding:
+                                              EdgeInsets.symmetric(vertical: 5),
+                                          child: Text(
+                                            'Year:',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 5),
+                                          child: Text(
+                                            sparePart.year.toString(),
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                  child: Text(
-                                    sparePart.fuel,
-                                    style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.black),
-                                  ),
-                                ),
-                                const SizedBox(width: 20),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 5),
-                                  decoration: BoxDecoration(
-                                    color: const Color.fromARGB(
-                                        255, 255, 255, 255), // Background color
-                                    borderRadius: BorderRadius.circular(20),
-                                    border: Border.all(
-                                      color: const Color.fromARGB(255, 0, 0, 0),
-                                      width: 1.5,
+                                    TableRow(
+                                      children: [
+                                        const Padding(
+                                          padding:
+                                              EdgeInsets.symmetric(vertical: 5),
+                                          child: Text(
+                                            'Condition:',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 5),
+                                          child: Text(
+                                            sparePart.condition,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                  child: Text(
-                                    sparePart.origin,
-                                    style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                        color: Colors.black),
-                                  ),
+                                    TableRow(
+                                      children: [
+                                        const Padding(
+                                          padding:
+                                              EdgeInsets.symmetric(vertical: 5),
+                                          child: Text(
+                                            'Fuel:',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 5),
+                                          child: Text(
+                                            sparePart.fuel,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    TableRow(
+                                      children: [
+                                        const Padding(
+                                          padding:
+                                              EdgeInsets.symmetric(vertical: 5),
+                                          child: Text(
+                                            'Origin:',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 5),
+                                          child: Text(
+                                            sparePart.origin,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
-                              ],
+                              ),
                             ),
                             const SizedBox(
                               height: 20,

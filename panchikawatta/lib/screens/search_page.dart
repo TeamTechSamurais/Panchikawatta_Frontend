@@ -5,7 +5,7 @@ import 'package:panchikawatta/services/get_api_services.dart';
 import 'package:panchikawatta/models/sparepart.dart';
 
 class SearchPage extends StatefulWidget {
-  const SearchPage({super.key});
+  const SearchPage({super.key, required ads});
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -223,7 +223,7 @@ class _SearchPageState extends State<SearchPage> {
                             );
                           },
                           child: Container(
-                            width: 82,
+                            width: 85,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
                               color: const Color(0xffEBEBEB),
@@ -234,8 +234,8 @@ class _SearchPageState extends State<SearchPage> {
                                 if (imageUrl != null)
                                   Image.network(
                                     imageUrl,
-                                    height: 73,
-                                    width: 81,
+                                    height: 65,
+                                    width: 75,
                                     errorBuilder: (context, error, stackTrace) {
                                       return Image.asset(
                                         'assets/images/no_image.png',
@@ -250,6 +250,7 @@ class _SearchPageState extends State<SearchPage> {
                                     height: 73,
                                     width: 81,
                                   ),
+                                const SizedBox(height: 10),
                                 Text(
                                   sparePart.title,
                                   textAlign: TextAlign.center,
@@ -259,25 +260,31 @@ class _SearchPageState extends State<SearchPage> {
                                     color: Colors.black,
                                   ),
                                 ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      sparePart.make,
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    const Text('   '),
+                                    Text(
+                                      '${sparePart.year}',
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black),
+                                    ),
+                                  ],
+                                ),
                                 Text(
                                   'Rs. ${sparePart.price}',
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                Text(
-                                  '${sparePart.year}',
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w400,
-                                      color: Colors.black),
-                                ),
-                                Text(
-                                  sparePart.make,
                                   textAlign: TextAlign.center,
                                   style: const TextStyle(
                                     fontSize: 15,
