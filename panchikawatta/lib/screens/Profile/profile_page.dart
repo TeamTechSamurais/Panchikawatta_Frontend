@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:panchikawatta/screens/buyer_profile.dart';
+import 'package:panchikawatta/screens/Profile/buyer_profile.dart';
 import 'package:panchikawatta/screens/delete_and_edit_my_profile.dart';
-import 'package:panchikawatta/screens/edit_profile_page.dart';
+import 'package:panchikawatta/screens/Profile/edit_profile_page.dart';
 import 'package:panchikawatta/screens/seller_profile.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -9,7 +9,8 @@ class ProfilePage extends StatefulWidget {
   _ProfilePageState createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStateMixin{
+class _ProfilePageState extends State<ProfilePage>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -36,7 +37,8 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
             Navigator.pop(context);
           },
         ),
-        title: const Text('My Profile', style: TextStyle(color: Color(0xFFFF5C01), fontSize: 28)),
+        title: const Text('My Profile',
+            style: TextStyle(color: Color(0xFFFF5C01), fontSize: 28)),
         actions: [
           PopupMenuButton<String>(
             icon: const Icon(Icons.settings, color: Colors.black, size: 28),
@@ -80,14 +82,13 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
               ),
               const PopupMenuItem<String>(
                 value: 'Logout',
-                child: Text('Logout', style: TextStyle(color: Color(0xFFFF5C01))),
+                child:
+                    Text('Logout', style: TextStyle(color: Color(0xFFFF5C01))),
               ),
             ],
           ),
-
         ],
       ),
-
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -95,23 +96,31 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
             const Center(
               child: CircleAvatar(
                 radius: 80,
-                backgroundImage: AssetImage('lib/assets/profilePicture.jpg',),
+                backgroundImage: AssetImage(
+                  'lib/assets/profilePicture.jpg',
+                ),
               ),
             ),
 
             const SizedBox(height: 25),
 
             const Center(
-              child: Text('Anne_Fernando82', style: TextStyle(fontSize: 18,),)
-            ),
+                child: Text(
+              'Anne_Fernando82',
+              style: TextStyle(
+                fontSize: 18,
+              ),
+            )),
 
             const SizedBox(height: 25),
 
             TabBar(
               controller: _tabController,
               tabs: [
-                  _individualTab('Buyer',),
-                  _individualTab('Seller'),
+                _individualTab(
+                  'Buyer',
+                ),
+                _individualTab('Seller'),
               ],
               labelColor: Color(0xFFFF5C01),
               unselectedLabelColor: Color(0x80000000),
@@ -146,29 +155,27 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
             ),
 
             SizedBox(height: 20),
-
           ],
         ),
       ),
     );
   }
 
-  
-  
   //A method to create an individual tab. This is created to add a vertical divider between the tabs.
   Widget _individualTab(String text) {
     return Container(
-        height: 50 + MediaQuery
-          .of(context)
-          .padding
-          .bottom,
-        padding: EdgeInsets.all(0),
-        width: double.infinity,
-        decoration:  BoxDecoration(border: Border(right: BorderSide(color: Color(0x80000000), width: 0, style: BorderStyle.solid))),
-        child: Tab(
-            text: text,
-        ),
+      height: 50 + MediaQuery.of(context).padding.bottom,
+      padding: EdgeInsets.all(0),
+      width: double.infinity,
+      decoration: BoxDecoration(
+          border: Border(
+              right: BorderSide(
+                  color: Color(0x80000000),
+                  width: 0,
+                  style: BorderStyle.solid))),
+      child: Tab(
+        text: text,
+      ),
     );
   }
-
 }

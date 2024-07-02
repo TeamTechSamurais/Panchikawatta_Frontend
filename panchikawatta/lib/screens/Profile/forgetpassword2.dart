@@ -1,8 +1,8 @@
-import 'package:panchikawatta/screens/forgetpassword3.dart';
+import 'package:panchikawatta/screens/Profile/forgetpassword3.dart';
 import 'package:panchikawatta/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
-import 'package:panchikawatta/screens/sign_up1.dart';
+import 'package:panchikawatta/screens/SignUp/sign_up1.dart';
 import 'package:panchikawatta/main.dart';
 import 'package:flutter/services.dart';
 
@@ -64,7 +64,7 @@ class _reset1State extends State<forget_password2> {
                           FocusScope.of(context).nextFocus();
                         }
                       },
-                      decoration:const InputDecoration(hintText: "0"),
+                      decoration: const InputDecoration(hintText: "0"),
                       style: Theme.of(context).textTheme.headline6,
                       keyboardType: TextInputType.number,
                       textAlign: TextAlign.center,
@@ -74,7 +74,7 @@ class _reset1State extends State<forget_password2> {
                       ],
                     ),
                   ),
-                    SizedBox(
+                  SizedBox(
                     height: 68,
                     width: 60,
                     child: TextField(
@@ -83,7 +83,7 @@ class _reset1State extends State<forget_password2> {
                           FocusScope.of(context).nextFocus();
                         }
                       },
-                      decoration:const InputDecoration(hintText: "0"),
+                      decoration: const InputDecoration(hintText: "0"),
                       style: Theme.of(context).textTheme.headline6,
                       keyboardType: TextInputType.number,
                       textAlign: TextAlign.center,
@@ -93,7 +93,7 @@ class _reset1State extends State<forget_password2> {
                       ],
                     ),
                   ),
-                    SizedBox(
+                  SizedBox(
                     height: 68,
                     width: 60,
                     child: TextField(
@@ -102,7 +102,7 @@ class _reset1State extends State<forget_password2> {
                           FocusScope.of(context).nextFocus();
                         }
                       },
-                      decoration:const InputDecoration(hintText: "0"),
+                      decoration: const InputDecoration(hintText: "0"),
                       style: Theme.of(context).textTheme.headline6,
                       keyboardType: TextInputType.number,
                       textAlign: TextAlign.center,
@@ -112,7 +112,7 @@ class _reset1State extends State<forget_password2> {
                       ],
                     ),
                   ),
-                    SizedBox(
+                  SizedBox(
                     height: 68,
                     width: 60,
                     child: TextField(
@@ -121,7 +121,7 @@ class _reset1State extends State<forget_password2> {
                           FocusScope.of(context).nextFocus();
                         }
                       },
-                      decoration:const InputDecoration(hintText: "0"),
+                      decoration: const InputDecoration(hintText: "0"),
                       style: Theme.of(context).textTheme.headline6,
                       keyboardType: TextInputType.number,
                       textAlign: TextAlign.center,
@@ -133,7 +133,7 @@ class _reset1State extends State<forget_password2> {
                   ),
                 ],
               ),
-               Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Padding(
@@ -146,9 +146,7 @@ class _reset1State extends State<forget_password2> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () {
-                      
-                    },
+                    onTap: () {},
                     child: MouseRegion(
                       cursor: SystemMouseCursors.click,
                       child: Text(
@@ -181,7 +179,8 @@ class _reset1State extends State<forget_password2> {
                     onPressed: () {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => forget_password3()),
+                        MaterialPageRoute(
+                            builder: (context) => forget_password3()),
                       );
                     },
                     style: ButtonStyle(

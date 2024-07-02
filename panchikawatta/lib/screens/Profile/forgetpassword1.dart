@@ -1,7 +1,7 @@
- import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:panchikawatta/screens/forgetpassword2.dart';
-import 'package:panchikawatta/screens/forgetpassword3.dart';
+import 'package:panchikawatta/screens/Profile/forgetpassword2.dart';
+import 'package:panchikawatta/screens/Profile/forgetpassword3.dart';
 import 'package:panchikawatta/screens/login.dart';
 
 class ForgetPassword1 extends StatefulWidget {
@@ -20,58 +20,54 @@ class _ForgetPassword1State extends State<ForgetPassword1> {
     super.dispose();
   }
 
-  Future<void> _resetPassword() async {try {
-  String email = _emailController.text.trim();
+  Future<void> _resetPassword() async {
+    try {
+      String email = _emailController.text.trim();
 
-  if (email.isEmpty) {
-    throw FirebaseAuthException(
-      code: 'invalid-email',
-      message: 'Please enter an email address.',
-    );
-  }
+      if (email.isEmpty) {
+        throw FirebaseAuthException(
+          code: 'invalid-email',
+          message: 'Please enter an email address.',
+        );
+      }
 
-  // Send password reset email using Firebase Authentication
-  await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
- 
-  // Show success dialog
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        content: Text('Password reset link sent! Check your email.'),
-        
+      // Send password reset email using Firebase Authentication
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+
+      // Show success dialog
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Text('Password reset link sent! Check your email.'),
+          );
+        },
       );
-      
-    },
-    
-  );
-await Future.delayed(Duration(seconds: 4));
-   Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => login()),
-    );
-
-} on FirebaseAuthException catch (e) {
-  print(e);
-  String errorMessage = 'An error occurred';
- 
-  if (e.code == 'invalid-email') {
-    errorMessage = 'Please enter valid email address.';
-  } else {
-    errorMessage = e.message ?? 'Unknown error occurred.';
-  }
-
- 
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        content: Text(errorMessage),
+      await Future.delayed(Duration(seconds: 4));
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => login()),
       );
-    },
-  );
-}
-}
+    } on FirebaseAuthException catch (e) {
+      print(e);
+      String errorMessage = 'An error occurred';
+
+      if (e.code == 'invalid-email') {
+        errorMessage = 'Please enter valid email address.';
+      } else {
+        errorMessage = e.message ?? 'Unknown error occurred.';
+      }
+
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Text(errorMessage),
+          );
+        },
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

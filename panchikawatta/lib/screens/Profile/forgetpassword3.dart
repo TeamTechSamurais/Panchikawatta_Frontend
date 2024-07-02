@@ -1,8 +1,8 @@
-  import 'package:panchikawatta/screens/forgetpassword2.dart';
+import 'package:panchikawatta/screens/Profile/forgetpassword2.dart';
 import 'package:panchikawatta/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
-import 'package:panchikawatta/screens/sign_up1.dart';
+import 'package:panchikawatta/screens/SignUp/sign_up1.dart';
 import 'package:panchikawatta/main.dart';
 
 class forget_password3 extends StatefulWidget {
@@ -13,15 +13,12 @@ class forget_password3 extends StatefulWidget {
 }
 
 class _reset1State extends State<forget_password3> {
-    
-
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
-           
           child: Column(
             children: <Widget>[
               SizedBox(height: 20),
@@ -47,7 +44,7 @@ class _reset1State extends State<forget_password3> {
                   ],
                 ),
               ),
-             SizedBox(height: 20),
+              SizedBox(height: 20),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
                 child: Text(
@@ -59,9 +56,9 @@ class _reset1State extends State<forget_password3> {
                   ),
                 ),
               ),
-               SizedBox(height: 10),
+              SizedBox(height: 10),
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal:20),
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                 child: Text(
                   "Enter New Password",
                   style: TextStyle(
@@ -71,53 +68,48 @@ class _reset1State extends State<forget_password3> {
                   ),
                 ),
               ),
-                SizedBox(height: 10),
-                
+              SizedBox(height: 10),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                 child: TextField(
                   cursorColor: Colors.black,
                   style: TextStyle(color: Colors.black),
                   decoration: InputDecoration(
-                  
                     filled: true,
                     fillColor: Color.fromRGBO(238, 237, 236, 1),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(40),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 40),
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: 10, horizontal: 40),
                   ),
                 ),
               ),
-   SizedBox(height: 20),
-              
-                
-                 Text(
-                  "Enter confirm Password",
-                  style: TextStyle(
-                    color: Color(0xFF000000),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    
-                  ),
+              SizedBox(height: 20),
+              Text(
+                "Enter confirm Password",
+                style: TextStyle(
+                  color: Color(0xFF000000),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
                 ),
-              
-                SizedBox(height: 20),
+              ),
+              SizedBox(height: 20),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                 child: TextField(
                   cursorColor: Colors.black,
                   style: TextStyle(color: Colors.black),
                   decoration: InputDecoration(
-                    
                     filled: true,
                     fillColor: Color.fromRGBO(238, 237, 236, 1),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(40),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 40),
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: 15, horizontal: 40),
                   ),
                 ),
               ),
@@ -148,7 +140,6 @@ class _reset1State extends State<forget_password3> {
                   ),
                 ),
               ),
-        
             ],
           ),
         ),

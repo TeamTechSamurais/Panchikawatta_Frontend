@@ -1,17 +1,17 @@
- import 'dart:async';
+import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:panchikawatta/components/drop_down_input_fields.dart';
 import 'package:panchikawatta/main.dart';
-import 'package:panchikawatta/screens/Registration_successs.dart';
+import 'package:panchikawatta/screens/SignUp/Registration_successs.dart';
 import 'package:panchikawatta/screens/auth_functions.dart';
 import 'package:panchikawatta/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:panchikawatta/screens/sign_up2.dart';
+import 'package:panchikawatta/screens/SignUp/sign_up2.dart';
 import 'package:panchikawatta/user_auth/firebase_auth_implementation/firebase_auth_services.dart';
 
 class EmailValidationResult {
@@ -62,7 +62,7 @@ class _SignUp1State extends State<sign_up1> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Fill Required Field"),
+          title: const Text("Fill Required Field"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,7 +76,7 @@ class _SignUp1State extends State<sign_up1> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text("OK"),
+              child: const Text("OK"),
             ),
           ],
         );
@@ -145,24 +145,25 @@ class _SignUp1State extends State<sign_up1> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 25),
+          padding: const EdgeInsets.symmetric(horizontal: 25),
           child: Form(
             key: _formKey,
             child: Column(
               children: <Widget>[
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                   child: Row(
                     children: [
                       GestureDetector(
                         onTap: () {
                           Navigator.pop(context);
                         },
-                        child: Icon(Icons.arrow_back),
+                        child: const Icon(Icons.arrow_back),
                       ),
-                      SizedBox(width: 10),
-                      Text(
+                      const SizedBox(width: 10),
+                      const Text(
                         "Fill your Profile",
                         style: TextStyle(
                           color: Color(0xFFFF5C01),
@@ -173,9 +174,10 @@ class _SignUp1State extends State<sign_up1> {
                     ],
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 1, horizontal: 30),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 1, horizontal: 30),
                   child: Stack(
                     children: [
                       CircleAvatar(
@@ -226,12 +228,12 @@ class _SignUp1State extends State<sign_up1> {
                                 context: context,
                                 builder: (BuildContext builder) {
                                   return SafeArea(
-                                    child: new Column(
+                                    child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: <Widget>[
-                                        new ListTile(
-                                          leading: new Icon(Icons.camera),
-                                          title: new Text('Take Photo'),
+                                        ListTile(
+                                          leading: const Icon(Icons.camera),
+                                          title: const Text('Take Photo'),
                                           onTap: () async {
                                             Navigator.pop(context);
                                             final XFile? pickedFile =
@@ -245,11 +247,11 @@ class _SignUp1State extends State<sign_up1> {
                                             }
                                           },
                                         ),
-                                        new ListTile(
+                                        ListTile(
                                           leading:
-                                              new Icon(Icons.photo_library),
+                                              const Icon(Icons.photo_library),
                                           title:
-                                              new Text('Choose from Gallery'),
+                                              const Text('Choose from Gallery'),
                                           onTap: () async {
                                             Navigator.pop(context);
                                             final XFile? pickedFile =
@@ -280,7 +282,7 @@ class _SignUp1State extends State<sign_up1> {
                     ],
                   ),
                 ),
-                SizedBox(height: 0.5, width: 40),
+                const SizedBox(height: 0.5, width: 40),
                 Row(
                   children: [
                     Expanded(
@@ -295,7 +297,7 @@ class _SignUp1State extends State<sign_up1> {
                             return null;
                           },
                           cursorColor: Colors.black,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             hintText: "First Name",
                             border: InputBorder.none,
                           ),
@@ -314,7 +316,7 @@ class _SignUp1State extends State<sign_up1> {
                             return null;
                           },
                           cursorColor: Colors.black,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             hintText: "Last Name",
                             border: InputBorder.none,
                           ),
@@ -334,7 +336,7 @@ class _SignUp1State extends State<sign_up1> {
                       return null;
                     },
                     cursorColor: Colors.black,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: "Username",
                       border: InputBorder.none,
                     ),
@@ -353,7 +355,7 @@ class _SignUp1State extends State<sign_up1> {
                     },
                     cursorColor: Colors.black,
                     obscureText: true,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: "Password",
                       border: InputBorder.none,
                     ),
@@ -371,7 +373,7 @@ class _SignUp1State extends State<sign_up1> {
                     },
                     obscureText: true,
                     cursorColor: Colors.black,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: "Confirm Password",
                       border: InputBorder.none,
                     ),
@@ -395,7 +397,7 @@ class _SignUp1State extends State<sign_up1> {
                     },
                     cursorColor: Colors.black,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: "Email",
                       border: InputBorder.none,
                     ),
@@ -420,18 +422,18 @@ class _SignUp1State extends State<sign_up1> {
                     },
                     cursorColor: Colors.black,
                     keyboardType: TextInputType.phone,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: "Phone (+94)",
                       border: InputBorder.none,
                     ),
                   ),
                 ),
-                SizedBox(height: 5),
+                const SizedBox(height: 5),
                 Row(
                   children: [
                     Expanded(
                       child: DropdownButtonFormField<String>(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           hintText: ' Province',
                           border: InputBorder.none, // Set the hint text here
                         ),
@@ -444,7 +446,15 @@ class _SignUp1State extends State<sign_up1> {
                           });
                         },
                         items: <String>[
-                          'Western','Central','Southern','Northern', 'Eastern','NorthWestern','NorthCentral', 'Uva', 'Sabaragamuwa',
+                          'Western',
+                          'Central',
+                          'Southern',
+                          'Northern',
+                          'Eastern',
+                          'NorthWestern',
+                          'NorthCentral',
+                          'Uva',
+                          'Sabaragamuwa',
                         ].map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
@@ -462,7 +472,7 @@ class _SignUp1State extends State<sign_up1> {
                     ),
                     Expanded(
                       child: DropdownButtonFormField<String>(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           hintText: ' District',
                           border: InputBorder.none, // Set the hint text here
                         ),
@@ -475,9 +485,31 @@ class _SignUp1State extends State<sign_up1> {
                           });
                         },
                         items: <String>[
-                          'Colombo','Gampaha','Kalutara','Kandy','Matale','Nuwara Eliya','Galle','Matara','Hambantota','Jaffna',
-                          'Killinochchi','Mannar','Vavuniya','Mulaitivu', 'Batticaloa', 'Ampara', 'Trincomalee', 'Kurunegala',
-                           'Puttalam', 'Anuradhapura', 'Polonnaruwa', 'Badulla', 'Monaragala','Ratnapura', 'Kegalle'
+                          'Colombo',
+                          'Gampaha',
+                          'Kalutara',
+                          'Kandy',
+                          'Matale',
+                          'Nuwara Eliya',
+                          'Galle',
+                          'Matara',
+                          'Hambantota',
+                          'Jaffna',
+                          'Killinochchi',
+                          'Mannar',
+                          'Vavuniya',
+                          'Mulaitivu',
+                          'Batticaloa',
+                          'Ampara',
+                          'Trincomalee',
+                          'Kurunegala',
+                          'Puttalam',
+                          'Anuradhapura',
+                          'Polonnaruwa',
+                          'Badulla',
+                          'Monaragala',
+                          'Ratnapura',
+                          'Kegalle'
                         ].map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
@@ -495,8 +527,7 @@ class _SignUp1State extends State<sign_up1> {
                     ),
                   ],
                 ),
-                 
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Container(
                   width: size.width * 0.3,
                   child: ClipRRect(
@@ -505,14 +536,15 @@ class _SignUp1State extends State<sign_up1> {
                       onPressed: handleNextButtonPressed,
                       style: ButtonStyle(
                         padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                          const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 10),
                         ),
                         backgroundColor: MaterialStateProperty.all<Color>(
                             const Color(0xFFFF5C01)),
                       ),
                       child: _isSigningUp
-                          ? CircularProgressIndicator(color: Colors.white)
-                          : Text(
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text(
                               "Submit",
                               style: TextStyle(color: Colors.white),
                             ),
@@ -522,7 +554,7 @@ class _SignUp1State extends State<sign_up1> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Padding(
+                    const Padding(
                       padding: EdgeInsets.symmetric(vertical: 20),
                       child: Text(
                         "Already have an Account?",
@@ -540,7 +572,7 @@ class _SignUp1State extends State<sign_up1> {
                       },
                       child: MouseRegion(
                         cursor: SystemMouseCursors.click,
-                        child: Text(
+                        child: const Text(
                           "Login",
                           style: TextStyle(
                             color: Color(0xFFFF5C01),
@@ -582,10 +614,10 @@ class _SignUp1State extends State<sign_up1> {
       } else {
         String? confirmpassword =
             validateConfirmPassword(confirmPasswordController.text);
-          if (confirmPasswordController.text != passwordController.text) {
-    _showFillMessage(" confirm Password  not match");
-    return;
-  } else {
+        if (confirmPasswordController.text != passwordController.text) {
+          _showFillMessage(" confirm Password  not match");
+          return;
+        } else {
           // Perform email validation asynchronously
           EmailValidationResult result =
               await isEmailValid(emailController.text);
@@ -666,13 +698,13 @@ class _SignUp1State extends State<sign_up1> {
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        title: Text("Verification Email Sent"),
+                        title: const Text("Verification Email Sent"),
                         content: Text(
                           'A verification email has been sent to ${userCredential.user!.email}. Please check your inbox to verify your email address.',
                         ),
                         actions: <Widget>[
                           TextButton(
-                            child: Text('OK'),
+                            child: const Text('OK'),
                             onPressed: () async {
                               Map<String, dynamic> userData = {
                                 'firstName': firstNameController.text.trim(),

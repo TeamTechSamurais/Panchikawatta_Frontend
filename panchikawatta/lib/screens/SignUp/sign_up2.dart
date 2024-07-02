@@ -1,15 +1,15 @@
- import 'dart:async';
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
 import 'package:http/http.dart' as http;
 import 'package:panchikawatta/components/custom_button.dart';
-import 'package:panchikawatta/screens/Vehicledetails2.dart';
+import 'package:panchikawatta/screens/SignUp/Vehicledetails2.dart';
 import 'package:panchikawatta/screens/login.dart';
-import 'package:panchikawatta/screens/sign_up1.dart';
+import 'package:panchikawatta/screens/SignUp/sign_up1.dart';
 import 'package:flutter/material.dart';
-import 'package:panchikawatta/screens/Vehicledetails1.dart';
+import 'package:panchikawatta/screens/SignUp/Vehicledetails1.dart';
 
 class sign_up2 extends StatefulWidget {
   final int userId;
@@ -211,7 +211,6 @@ class _SignUp2State extends State<sign_up2> {
                   ),
                 ),
               ),
-              
               TextFieldContainer(
                 child: TextField(
                   cursorColor: Colors.black,
@@ -241,9 +240,7 @@ class _SignUp2State extends State<sign_up2> {
                                     Vehicledetails1(userId: userId)),
                           );
                         },
-                        
-                         text:'Skip',
-                           
+                        text: 'Skip',
                       ),
                     ),
                   ),
@@ -349,4 +346,3 @@ class _SignUp2State extends State<sign_up2> {
     );
   }
 }
- 

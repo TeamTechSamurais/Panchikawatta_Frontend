@@ -1,7 +1,7 @@
- import 'package:panchikawatta/main.dart';
+import 'package:panchikawatta/main.dart';
 import 'package:panchikawatta/screens/login.dart';
 import 'package:flutter/material.dart';
-import 'package:panchikawatta/screens/search_page.dart';
+import 'package:panchikawatta/screens/search_page1.dart';
 
 class browse extends StatelessWidget {
   const browse({Key? key});
@@ -18,7 +18,6 @@ class browse extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
             ),
-            
             SizedBox(height: 40),
             Image.asset(
               'lib/src/img/orange logo 1.png',
@@ -76,7 +75,7 @@ class browse extends StatelessWidget {
                   onPressed: () {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) =>MyHomePage()),
+                      MaterialPageRoute(builder: (context) => MyHomePage()),
                     );
                   },
                   style: ButtonStyle(

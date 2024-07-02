@@ -1,10 +1,9 @@
- 
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:panchikawatta/screens/Vehicledetails2.dart';
+import 'package:panchikawatta/screens/SignUp/Vehicledetails2.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/components/input_fields.dart';
 import 'package:http/http.dart' as http;
@@ -390,69 +389,77 @@ class _AddVehicleDetailsState extends State<Vehicledetails1> {
                           text: 'Skip',
                         ),
                         CustomButton(
-  onPressed: () async {
-    if (yearController.text.isEmpty &&
-        selectedtype == null &&
-        selectedmake == null &&
-        selectedmodel == null &&
-        licenceDateController.text.isEmpty &&
-        insuranceDateController.text.isEmpty) {
-      _showFillMessage("Please fill   field to save details");
-    } else {
-      // Proceed with saving the data
-      Map<String, dynamic> userData = {
-        'userId': widget.userId,
-        'type': selectedtype,
-        'make': selectedmake,
-        'model': selectedmodel,
-        'year': int.tryParse(yearController.text.trim()) ?? 0,
-        'licenceDate': licenceDateController.text.trim(),
-        'insuranceDate': insuranceDateController.text.trim(),
-        // Add other necessary fields here
-      };
+                          onPressed: () async {
+                            if (yearController.text.isEmpty &&
+                                selectedtype == null &&
+                                selectedmake == null &&
+                                selectedmodel == null &&
+                                licenceDateController.text.isEmpty &&
+                                insuranceDateController.text.isEmpty) {
+                              _showFillMessage(
+                                  "Please fill   field to save details");
+                            } else {
+                              // Proceed with saving the data
+                              Map<String, dynamic> userData = {
+                                'userId': widget.userId,
+                                'type': selectedtype,
+                                'make': selectedmake,
+                                'model': selectedmodel,
+                                'year':
+                                    int.tryParse(yearController.text.trim()) ??
+                                        0,
+                                'licenceDate':
+                                    licenceDateController.text.trim(),
+                                'insuranceDate':
+                                    insuranceDateController.text.trim(),
+                                // Add other necessary fields here
+                              };
 
-      try {
-        var response = await http.post(
-          Uri.parse('http://10.0.2.2:8000/users/cv'),
-          headers: {
-            'Content-Type': 'application/json; charset=UTF-8',
-          },
-          body: jsonEncode(userData),
-        );
-        
-        if (response.statusCode == 201) {
-          final responseData = jsonDecode(response.body);
-          int vehicleId = responseData['vehicleId'];
-          final userId = widget.userId;
-          // If server returns 201 Created response, navigate to success screen
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Vehicledetails2(
-                vehicleId: vehicleId,
-                userId: userId,
-              ),
-            ),
-          );
-        } else {
-          // Handle other HTTP status codes if needed
-          _showFillMessage("Error: ${response.statusCode}");
-        }
-      } catch (e) {
-        print('Error: $e');
-        _showFillMessage(
-          'Error registering vehicle. Please try again later.',
-        );
-      }
-    }
+                              try {
+                                var response = await http.post(
+                                  Uri.parse('http://10.0.2.2:8000/users/cv'),
+                                  headers: {
+                                    'Content-Type':
+                                        'application/json; charset=UTF-8',
+                                  },
+                                  body: jsonEncode(userData),
+                                );
 
-    if (imagePath != null) {
-      await uploadVehiclePhoto(widget.userId.toString(), imagePath!);
-    }
-  },
-  text: 'Save',
-),
+                                if (response.statusCode == 201) {
+                                  final responseData =
+                                      jsonDecode(response.body);
+                                  int vehicleId = responseData['vehicleId'];
+                                  final userId = widget.userId;
+                                  // If server returns 201 Created response, navigate to success screen
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => Vehicledetails2(
+                                        vehicleId: vehicleId,
+                                        userId: userId,
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  // Handle other HTTP status codes if needed
+                                  _showFillMessage(
+                                      "Error: ${response.statusCode}");
+                                }
+                              } catch (e) {
+                                print('Error: $e');
+                                _showFillMessage(
+                                  'Error registering vehicle. Please try again later.',
+                                );
+                              }
+                            }
 
+                            if (imagePath != null) {
+                              await uploadVehiclePhoto(
+                                  widget.userId.toString(), imagePath!);
+                            }
+                          },
+                          text: 'Save',
+                        ),
                       ],
                     ),
                   ],
@@ -465,5 +472,3 @@ class _AddVehicleDetailsState extends State<Vehicledetails1> {
     );
   }
 }
-
- 

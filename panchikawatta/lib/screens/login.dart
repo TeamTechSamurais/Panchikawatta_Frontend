@@ -1,11 +1,11 @@
- import 'dart:async';
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/global/common/toast.dart';
 import 'package:panchikawatta/main.dart';
 import 'package:panchikawatta/rest/rest_api.dart';
-import 'package:panchikawatta/screens/forgetpassword1.dart';
-import 'package:panchikawatta/screens/sign_up1.dart';
+import 'package:panchikawatta/screens/Profile/forgetpassword1.dart';
+import 'package:panchikawatta/screens/SignUp/sign_up1.dart';
 import 'package:panchikawatta/user_auth/firebase_auth_implementation/firebase_auth_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -23,7 +23,7 @@ class _LoginState extends State<login> {
   final FirebaseAuthServices _auth = FirebaseAuthServices();
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
- 
+
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   // TextEditingController _email = TextEditingController();    //shashini
@@ -32,7 +32,6 @@ class _LoginState extends State<login> {
 
   @override
   void dispose() {
- 
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
@@ -112,7 +111,6 @@ class _LoginState extends State<login> {
                   ),
                 ),
               ),
-              
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -199,49 +197,49 @@ class _LoginState extends State<login> {
   }
 
   void _signIn() async {
-  setState(() {
-    _isSigning = true;
-  });
+    setState(() {
+      _isSigning = true;
+    });
 
-  String email = emailController.text.trim();
-  String password = passwordController.text.trim();
+    String email = emailController.text.trim();
+    String password = passwordController.text.trim();
 
-  User? user = await _auth.signInWithEmailAndPassword(email, password);
+    User? user = await _auth.signInWithEmailAndPassword(email, password);
 
-  setState(() {
-    _isSigning = false;
-  });
+    setState(() {
+      _isSigning = false;
+    });
 
-  if (user != null) {
-    if (user.emailVerified) {
-      showToast(message: "You are successfully signed in");
+    if (user != null) {
+      if (user.emailVerified) {
+        showToast(message: "You are successfully signed in");
 
-      // Generate JWT token
-      String? jwtToken = await _generateJwtToken(user);
+        // Generate JWT token
+        String? jwtToken = await _generateJwtToken(user);
 
-      if (jwtToken != null) {
-        // Save JWT token locally if needed
-        // Example: saveTokenLocally(jwtToken);
+        if (jwtToken != null) {
+          // Save JWT token locally if needed
+          // Example: saveTokenLocally(jwtToken);
 
-        // Navigate to home page after successful login
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MyHomePage(),
-          ),
-        );
+          // Navigate to home page after successful login
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MyHomePage(),
+            ),
+          );
+        } else {
+          showToast(message: "Failed to generate JWT token");
+        }
       } else {
-        showToast(message: "Failed to generate JWT token");
+        showToast(message: "Please verify your email before login");
       }
     } else {
-      showToast(message: "Please verify your email before login");
+      showToast(message: "Invalid email or password");
     }
-  } else {
-    showToast(message: "Invalid email or password");
   }
-}
 
- Future<String?> _generateJwtToken(User user) async {
+  Future<String?> _generateJwtToken(User user) async {
     try {
       // Get the Firebase ID token
       String? idToken = await user.getIdToken();
@@ -269,8 +267,6 @@ class _LoginState extends State<login> {
     }
   }
 }
-
-
 
 class TextFieldContainer extends StatelessWidget {
   final Widget child;
