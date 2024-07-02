@@ -183,13 +183,13 @@ class _SignUp2State extends State<sign_up2> {
                         },
                         style: ButtonStyle(
                           padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                            const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                           ),
                           backgroundColor: MaterialStateProperty.all<Color>(
                             const Color(0xFFFF5C01),
                           ),
                         ),
-                        child: Text(
+                        child: const Text(
                           "Next",
                           style: TextStyle(color: Colors.white),
                         ),

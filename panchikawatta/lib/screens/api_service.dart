@@ -75,4 +75,25 @@ class ApiServices {
       };
     }
   }
+
+
+  static Future <Map<String, dynamic>> getSellerById(int id) async {
+    try {
+      final response = await http.get(Uri.parse('$baseURL/sellers-by-id/$id')).timeout(const Duration(seconds: 10));
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        return {
+          "status": "error",
+          "message": "Seller not found"
+        };
+      }
+    } catch (e) {
+      return {
+        "status": "error",
+        "message": "An error occurred"
+      };
+    }
+  }
 } 

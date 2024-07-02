@@ -110,15 +110,17 @@ void updateUser(
     }
 
     // Update Firestore with new user data
-    await _firestore.collection("users").doc(user.uid).update({
-      "email": newEmail ?? user.email,
-      "name": newUserName ?? data["username"],
-      "profile_picture": downloadUrl ?? data["profile_picture"],
-    });
-    print("Firestore updated");
+    if (newEmail != data["email"] || newUserName != data["username"]) {
+      await _firestore.collection("users").doc(user.uid).update({
+        "email": newEmail ?? user.email,
+        "name": newUserName ?? data["username"],
+        "profile_picture": downloadUrl ?? data["profile_picture"],
+      });
+      print("Firestore updated");
+    }
 
     // Update display name
-    if (newUserName != null && newUserName.isNotEmpty) {
+    if (newUserName != null && newUserName.isNotEmpty && newUserName != user.displayName) {
       await user.updateDisplayName(newUserName);
       print("Display name updated");
     }
@@ -128,7 +130,6 @@ void updateUser(
       "firstName": newFirstName ?? data["firstName"],
       "lastName": newLastName ?? data["lastName"],
       "username": newUserName ?? data["username"],
-      //"password": newPassword ?? password,
       "email": newEmail ?? email,
       "phone": newPhone ?? data["phone"],
       "district": newDistrict ?? data["district"],
@@ -168,6 +169,99 @@ void updateUser(
           return AlertDialog(
             title: Text("Error"),
             content: Text("User data update failed. Please try again."),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+                child: Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
+    });
+  } catch (e) {
+    print("Error: $e");
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Error"),
+          content: Text(e.toString()),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+
+
+
+
+
+
+
+Future deleteUser(BuildContext context) async {
+  User? user = _auth.currentUser;
+  if (user == null) {
+    print("No user is currently signed in.");
+    return;
+  }
+
+  try {
+    // Delete user from Firebase Auth
+    await user.delete();
+    print("User deleted from Firebase Auth");
+
+    // Delete user's profile picture from Firebase Storage
+    await _storage.ref('profile_pictures/${user.uid}').delete();
+
+    // Delete user from Firebase Firestore
+    await _firestore.collection("users").doc(user.uid).delete();
+    print("User deleted from Firestore");
+
+    // Delete user from PostgreSQL
+    Future<Map<String, dynamic>> deleted = ApiServices.deleteUser(user.email!);
+
+    deleted.then((result) {
+      print("User deleted from PostgreSQL");
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Success"),
+            content: const Text("User deleted successfully"),
+            actions: [
+              CustomButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => login()),
+                  );
+                },
+                text: 'OK'
+              ),
+            ],
+          );
+        },
+      );
+    }).catchError((error) {
+      print("User deletion failed: $error");
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Error"),
+            content: const Text("User deletion failed. Please try again."),
             actions: [
               TextButton(
                 onPressed: () {

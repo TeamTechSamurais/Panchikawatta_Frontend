@@ -18,8 +18,8 @@ class EditProfilePage extends StatefulWidget {
 class _EditProfilePageState extends State<EditProfilePage>{
   File? _image; //create a File object to store the image
   bool isLoading = true;
+  bool isUpdating = false;
   String? profilePictureUrl;
-  //Future<Map<String, dynamic>>? _user;
   final formKey = GlobalKey<FormState>();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -36,11 +36,11 @@ class _EditProfilePageState extends State<EditProfilePage>{
   @override
   void initState() {
     super.initState();
-    //print('i am here');
     _fetchUser();
   }
 
   Future<void> _fetchUser() async {
+
     setState(() {
       isLoading = true;
     });
@@ -50,8 +50,6 @@ class _EditProfilePageState extends State<EditProfilePage>{
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       email = prefs.getString('userEmail');
 
-      //print('$email');
-
       if (email != null) {
 
         final querySnapshot = await _firestore
@@ -59,36 +57,30 @@ class _EditProfilePageState extends State<EditProfilePage>{
           .where('email', isEqualTo: email)
           .get();
 
-          //print('object');
-
         if (querySnapshot.docs.isNotEmpty) {
           final doc = querySnapshot.docs.first;
           if (doc['profile_picture'] != null) {
             profilePictureUrl = doc['profile_picture'] as String;
-          } else {
-            profilePictureUrl = null; // Provide a default value or handle it as needed
-          }
+          } 
+          // else {
+          //   profilePictureUrl = null; // Provide a default value or handle it as needed
+          // }
         }
-
-        //print('got data from firebase');
 
         final user = await ApiServices.getUserByEmail(email!);
         
-        //print('Fetched user: $user');
-
         setState(() {
 
           _firstName.text = user['firstName'] ?? '';
           _lastName.text = user['lastName'] ?? '';
           _userName.text = user['userName'] ?? '';
-          // _password.text = user['password'] ?? '';
           _email.text = user['email'] ?? '';
           _phone.text = user['phoneNo'] ?? '';
           _district.text = user['district'] ?? '';
           _province.text = user['province'] ?? '';
           isLoading = false;
         });
-      };
+      }
     } catch (e) {
       print('Error fetching user: $e');
       setState(() {
@@ -100,7 +92,6 @@ class _EditProfilePageState extends State<EditProfilePage>{
 
   @override
   Widget build(BuildContext context) {
-    //String? imagePath = _image?.path; // to send the profile picture to the firestrore
 
     return Scaffold(
       appBar: AppBar(
@@ -110,297 +101,315 @@ class _EditProfilePageState extends State<EditProfilePage>{
 
       body: isLoading? Center(
         child: Container(
-          height: MediaQuery.of(context).size.height / 20,
-          width: MediaQuery.of(context).size.width / 20,
-          child: CircularProgressIndicator(),
+          child: const Center(
+            child: CircularProgressIndicator(color: Color(0xFFFF5C01),),
+          )
         ),
-      ) : 
+      ) 
       
-      SingleChildScrollView(
-              child: Column(
-                children: [
-                  const SizedBox(height: 10),
+      : SingleChildScrollView(
+        child: Column(
+          children: [
+            const SizedBox(height: 10),
 
-                  Center(
-                    child: Container(
-                      height: 150,
-                      width: 160,
-                      child: Stack(
-                        children: [
-                          Positioned.fill(
-                            child:  CircleAvatar(
-                              radius: 80,
-                              backgroundImage: _image != null 
-                                ? FileImage(_image!) as ImageProvider<Object>
-                                : profilePictureUrl != null
-                                  ? NetworkImage(profilePictureUrl!)
-                                  : null, 
-                              child: _image != null && profilePictureUrl != null
-                                ? null 
-                                : Icon(Icons.person, size: 80),
-                            ),
-                          ),
-                          Align(
-                            alignment: Alignment.bottomRight,
-                            child: IconButton(
-                              icon: const Icon(Icons.file_upload, color: Colors.black, size: 30),
-                              onPressed: () async {
-                                final selectedImage = await showDialog <File> (
-                                  context: context, 
-                                  builder: (BuildContext context) {
-                                    return ImagePickerPage();
-                                  },
-                                );
-                                  setState(() {
-                                    _image = selectedImage;
-                                  });
-                              },
-                            ),
-                          ),
-                        ],
+            Center(
+              child: Container(
+                height: 150,
+                width: 160,
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child:  CircleAvatar(
+                        radius: 80,
+                        backgroundImage: _image != null 
+                          ? FileImage(_image!) as ImageProvider<Object>
+                          : profilePictureUrl != null
+                            ? NetworkImage(profilePictureUrl!)
+                            : null, 
+                        child: _image == null && profilePictureUrl == null
+                          ? const Icon(Icons.person, size: 80) 
+                          : null,
                       ),
                     ),
-                  ),
-
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(
-                      MediaQuery.of(context).size.width * 0.1,  // left
-                      0,                                        // top
-                      MediaQuery.of(context).size.width * 0.1,  // right
-                      0,                                        // bottom
-                    ),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.8,
-                      child: Form(
-                        key: formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 20),
-
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                InputFields(
-                                  hintText: 'First Name', 
-                                  width1: 0.38,
-                                  //autofill: _firstName.text,
-                                  validator: (value) {
-                                    if (value!.isEmpty) { 
-                                      _showFillMessage("Please enter your first name"); 
-                                    }
-                                    return null;
-                                  },
-                                  controller: _firstName,
-                                ),
-                                InputFields(
-                                  hintText: 'Last Name', 
-                                  width1: 0.38,
-                                  //autofill: _lastName.text,
-                                  validator: (value) {
-                                    if (value!.isEmpty) { 
-                                      _showFillMessage("Please enter your last name"); 
-                                    }
-                                    return null;
-                                  },
-                                  controller: _lastName,
-                                ),
-                              ],
-                            ),
-
-                            const SizedBox(height: 15),
-
-                            InputFields(
-                              hintText: 'Username', 
-                              width1: 0.8,
-                              //autofill: _userName.text,
-                              validator: (value) {
-                                if (value!.isEmpty) { 
-                                  _showFillMessage("Please enter your Username"); 
-                                }
-                                return null;
-                              },
-                              controller: _userName,
-                            ),
-
-                            const SizedBox(height: 15),
-
-                            InputFields(
-                              validator: (value) {
-                                String emailPattern = r'^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+';    //format: username@domain.extension.
-                                RegExp emailRegex = RegExp(emailPattern);
-
-                                if (value!.isEmpty) { 
-                                  _showFillMessage("Please enter your email address"); 
-                                }
-
-                                if (!emailRegex.hasMatch(value)) {
-                                  return 'Please enter a valid email address';
-                                }
-                                return null;
-                              },
-                              hintText: 'Email', 
-                              width1: 0.8,
-                              controller: _email,
-                              //autofill: _email.text,
-                            ),
-
-                            const SizedBox(height: 15),
-
-                                InputFields(
-                                  hintText: 'Phone no', 
-                                  width1: 0.8, 
-                                  controller: _phone,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      _showFillMessage('Please enter a phone number');
-                                    }
-                                    // Check if the phone number is valid
-                                    final phoneRegExp = RegExp(r'^\d{10}$');
-                                    if (!phoneRegExp.hasMatch(value!)) {
-                                      return 'Please enter a valid phone number';
-                                    }
-                                    return null;
-                                  },
-                                ),
-
-                              
-                            
-
-                            const SizedBox(height: 15),
-
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Flexible(
-                                  child: Container(
-                                  //width: MediaQuery.of(context).size.width * 0.30, // adjust as needed
-                                  color: const Color(0xFFFAFAFA), // to visualize the container
-                                  child: DropdownInputField(  // use the custom DropdownInputField widget
-                                    dropdownItems: ['Ampara', 'Anuradhapura', 'Badulla', 'Batticaloa', 'Colombo', 'Galle', 'Gampaha', 'Hambantota', 'Jaffna', 'Kalutara', 'Kandy', 'Kegalle', 'Kilinochchi', 'Kurunegala', 'Mannar', 'Matale', 'Matara', 'Monaragala', 'Mullaitivu', 'Nuwara Eliya', 'Polonnaruwa', 'Puttalam', 'Ratnapura', 'Trincomalee', 'Vavuniya'],
-                                    hintText: 'District',
-                                    initialValue: _district.text,
-                                    //isExpanded: true,
-                                    validator: (value) {
-                                      if (value!.isEmpty) { 
-                                        _showFillMessage("Please enter your province"); 
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                  ),
-                                ),
-
-                                const SizedBox(width: 10),
-
-                                Flexible (
-                                  child: Container(
-                                  //width: MediaQuery.of(context).size.width * 0.38, // adjust as needed
-                                  color: const Color(0xFFFAFAFA), // to visualize the container
-                                  child: DropdownInputField(  // use the custom DropdownInputField widget
-                                    dropdownItems: ['Central', 'Eastern', 'North Central', 'Northern', 'North Western', 'Sabaragamuwa', 'Southern', 'Uva', 'Western'],
-                                    hintText: 'Province',
-                                    initialValue: _province.text,
-                                    validator: (value) {
-                                      if (value!.isEmpty) { 
-                                        _showFillMessage("Please enter your province"); 
-                                      }
-                                      return null;
-                                    },
-                                    // initialValue: 'Western',
-                                  ),
-                                ),
-                                ),
-                                
-                              ],
-                            ),
-
-                            const SizedBox(height: 15),
-
-                            CustomButton(
-                              onPressed: () {
-                                if (formKey.currentState?.validate() ?? false) {
-
-                                  showDialog(
-                                    context: context, 
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: const Text('Re-Authenticate', style: TextStyle(color: Color(0xFFFF5C01), fontSize: 28)),
-                                        content: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            const Text('Please re-enter your password to save changes'),
-                                            const SizedBox(height: 20),
-                                            InputFields(
-                                              hintText: 'Password',
-                                              width1: 0.8,
-                                              controller: _password,
-                                              validator: (value) {
-                                                if (value == null || value.isEmpty) {
-                                                  return 'Please enter your password';
-                                                }
-                                                return null;
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                        actions: [
-                                          CustomButton(
-                                            onPressed: () {
-
-                                              User? user = _auth.currentUser;
-
-                                              if (user == null) {
-                                                print("No user is currently signed in.");
-                                                return;
-                                              }
-
-                                              AuthCredential credential = EmailAuthProvider.credential(email: email!, password: _password.text);
-                                              user.reauthenticateWithCredential(credential);
-                                              print("Reauthentication successful");
-                                              
-                                              submitForm();
-                                              Navigator.of(context).pop();
-                                            }, 
-                                            text: 'Re-Authenticate',
-                                          )
-                                        ],
-                                      );
-                                    },
-                                  );
-                                }
-                              }, 
-                              text: 'Save',
-                            ),
-
-                          ],
-                        ),
+                          
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: IconButton(
+                        icon: const Icon(Icons.file_upload, color: Colors.black, size: 30),
+                        onPressed: () async {
+                          final selectedImage = await showDialog <File> (
+                            context: context, 
+                            builder: (BuildContext context) {
+                              return ImagePickerPage();
+                            },
+                          );
+                          setState(() {
+                            _image = selectedImage;
+                            if (_image == null) {
+                              profilePictureUrl = null;
+                            }
+                          });
+                        },
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
+
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                MediaQuery.of(context).size.width * 0.1,  // left
+                0,                                        // top
+                MediaQuery.of(context).size.width * 0.1,  // right
+                0,                                        // bottom
+              ),
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+
+                      const SizedBox(height: 20),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          InputFields(
+                            hintText: 'First Name', 
+                            width1: 0.38,
+                            validator: (value) {
+                              if (value!.isEmpty) { 
+                                _showFillMessage("Please enter your first name"); 
+                              }
+                              return null;
+                            },
+                            controller: _firstName,
+                          ),
+
+                          InputFields(
+                            hintText: 'Last Name', 
+                            width1: 0.38,
+                            validator: (value) {
+                              if (value!.isEmpty) { 
+                                _showFillMessage("Please enter your last name"); 
+                              }
+                              return null;
+                            },
+                            controller: _lastName,
+                          ),
+
+                        ],
+                      ),
+
+                      const SizedBox(height: 15),
+
+                      InputFields(
+                        hintText: 'Username', 
+                        width1: 0.8,
+                        validator: (value) {
+                          if (value!.isEmpty) { 
+                            _showFillMessage("Please enter your Username"); 
+                          }
+                          return null;
+                        },
+                        controller: _userName,
+                      ),
+
+                      const SizedBox(height: 15),
+
+                      InputFields(
+                        validator: (value) {
+                          String emailPattern = r'^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+';    //format: username@domain.extension.
+                          RegExp emailRegex = RegExp(emailPattern);
+
+                          if (value!.isEmpty) { 
+                            _showFillMessage("Please enter your email address"); 
+                          }
+
+                          if (!emailRegex.hasMatch(value)) {
+                            return 'Please enter a valid email address';
+                          }
+                          return null;
+                        },
+                        hintText: 'Email', 
+                        width1: 0.8,
+                        controller: _email,
+                      ),
+
+                      const SizedBox(height: 15),
+
+                      InputFields(
+                        hintText: 'Phone no', 
+                        width1: 0.8, 
+                        controller: _phone,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            _showFillMessage('Please enter a phone number');
+                          }
+                          // Check if the phone number is valid
+                          final phoneRegExp = RegExp(r'^\d{10}$');
+                          if (!phoneRegExp.hasMatch(value!)) {
+                            return 'Please enter a valid phone number';
+                          }
+                          return null;
+                        },
+                      ),                            
+
+                      const SizedBox(height: 15),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            child: Container(
+                              color: const Color(0xFFFAFAFA), // to visualize the container
+                              child: DropdownInputField(  // use the custom DropdownInputField widget
+                                dropdownItems: ['Ampara', 'Anuradhapura', 'Badulla', 'Batticaloa', 'Colombo', 'Galle', 'Gampaha', 'Hambantota', 'Jaffna', 'Kalutara', 'Kandy', 'Kegalle', 'Kilinochchi', 'Kurunegala', 'Mannar', 'Matale', 'Matara', 'Monaragala', 'Mullaitivu', 'Nuwara Eliya', 'Polonnaruwa', 'Puttalam', 'Ratnapura', 'Trincomalee', 'Vavuniya'],
+                                hintText: 'District',
+                                initialValue: _district.text,
+                                validator: (value) {
+                                  if (value!.isEmpty) { 
+                                    _showFillMessage("Please enter your province"); 
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(width: 10),
+
+                          Flexible (
+                            child: Container(
+                              color: const Color(0xFFFAFAFA), // to visualize the container
+                              child: DropdownInputField(  // use the custom DropdownInputField widget
+                                dropdownItems: ['Central', 'Eastern', 'North Central', 'Northern', 'North Western', 'Sabaragamuwa', 'Southern', 'Uva', 'Western'],
+                                hintText: 'Province',
+                                initialValue: _province.text,
+                                validator: (value) {
+                                  if (value!.isEmpty) { 
+                                    _showFillMessage("Please enter your province"); 
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                          ),
+                                
+                        ],
+                      ),
+
+                      const SizedBox(height: 15),
+
+                      ElevatedButton(
+                        onPressed: () {
+                          
+                          if (formKey.currentState?.validate() ?? false) {
+
+                            setState(() {
+                              isUpdating = true;
+                            });
+
+                            showDialog(
+                              context: context, 
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Re-Authenticate', style: TextStyle(color: Color(0xFFFF5C01), fontSize: 28)),
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Text('Please re-enter your password to save changes'),
+
+                                      const SizedBox(height: 20),
+
+                                      InputFields(
+                                        hintText: 'Password',
+                                        width1: 0.8,
+                                        controller: _password,
+                                        obscureText: true,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Please enter your password';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                    ],
+                                  ),
+
+                                  actions: [
+                                    CustomButton(
+                                      onPressed: () {
+
+                                        if (_password.text.isEmpty) {
+                                          _showFillMessage('Please enter your password');
+                                          return;
+                                        }
+
+                                        User? user = _auth.currentUser;
+
+                                        if (user == null) {
+                                          print("No user is currently signed in.");
+                                          return;
+                                        }
+
+                                        AuthCredential credential = EmailAuthProvider.credential(email: email!, password: _password.text);
+                                        user.reauthenticateWithCredential(credential);
+                                        print("Reauthentication successful");
+                                              
+                                        submitForm();
+
+                                        Navigator.of(context).pop();
+                                      },
+                                      text: 'Re-Authenticate',
+                                    )
+                                  ],
+                                );
+                              },
+                            );
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFF5C01),
+                          minimumSize: Size(MediaQuery.of(context).size.width * 0.8, 40),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        child: isUpdating
+                          ? const CircularProgressIndicator(color: Color(0xFFFAFAFA))
+                          : const Text('Save Changes', style: TextStyle(fontSize: 16, color: Color(0xFFFAFAFA))),
+                      ),
+
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
-          }
+  }
 
   void submitForm() {
-    
-      // Continue with form submission
-      updateUser(
-                                  context, 
-                                  _password.text,
-                                  _image?.path, 
-                                  _firstName.text, 
-                                  _lastName.text, 
-                                  _userName.text, 
-                                  _email.text, 
-                                  _phone.text, 
-                                  _district.text, 
-                                  _province.text
-                                );
-
+    // Continue with form submission
+    updateUser(
+      context, 
+      _password.text,
+      _image?.path, 
+      _firstName.text, 
+      _lastName.text, 
+      _userName.text, 
+      _email.text, 
+      _phone.text, 
+      _district.text, 
+      _province.text
+    );
   }
 
   //A function for showing alerts.
@@ -423,7 +432,7 @@ class _EditProfilePageState extends State<EditProfilePage>{
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text("OK"),
+              child: const Text("OK", style: TextStyle(color: Color(0xFFFF5C01))),
             ),
           ],
         );

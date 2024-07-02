@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
-import 'package:panchikawatta/screens/vehicle_details.dart';
 
 class BuyerProfile extends StatelessWidget {
   @override
@@ -86,11 +85,11 @@ class BuyerProfile extends StatelessWidget {
               ),
             ),
 
-            Container(
-              //color: Colors.pink.shade100,
-              height: 1000,
-              child: VehicleDetails(),
-            ),
+            // Container(
+            //   //color: Colors.pink.shade100,
+            //   height: 1000,
+            //   child: VehicleDetails(),
+            // ),
 
           ],
         ),

@@ -5,6 +5,7 @@ import 'package:panchikawatta/screens/buyer_profile.dart';
 import 'package:panchikawatta/screens/delete_and_edit_my_profile.dart';
 import 'package:panchikawatta/screens/edit_profile_page.dart';
 import 'package:panchikawatta/screens/seller_profile.dart';
+import 'package:panchikawatta/screens/sign_up2.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -15,8 +16,10 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStateMixin{
   late TabController _tabController;
   Future<Map<String, dynamic>>? _user;
+  Future<Map<String, dynamic>>? seller;
   String? profilePictureUrl;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  bool _isSeller = false;
 
   @override
   void initState() {
@@ -47,10 +50,13 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
         if (querySnapshot.docs.isNotEmpty) {
           final doc = querySnapshot.docs.first;
           if (doc['profile_picture'] != null) {
-            profilePictureUrl = doc['profile_picture']; // Assuming 'profilePicture' is the field name
+            profilePictureUrl = doc['profile_picture']; 
           } else {
             profilePictureUrl = null;
           }
+
+          _fetchSellerStatus(doc['id']);
+            
         }
       });
 
@@ -60,7 +66,6 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
         context: context, 
         builder: (BuildContext) {
           return AlertDialog(
-            // title: const Text('Error'),
             content: const Text('You do not have an account. Please sign up.'),
             actions: [
               TextButton(
@@ -69,12 +74,31 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                 },
                 child: const Text('OK'),
               ),
+
             ],
           );
         }
       );
     }
   }
+
+  Future<void> _fetchSellerStatus(int userId) async {
+    final sellerData = await ApiServices.getSellerById(userId);
+    bool isSeller = false;
+
+    if (sellerData != null && (!sellerData.containsKey('status') || sellerData['status'] != 'error')) {
+      isSeller = true;
+    }
+
+    setState(() {
+      _isSeller = isSeller;
+    });
+  }
+
+  // void fetchSeller(AboutDialog) {
+  //   // Fetch the seller's data from the database
+  //   _seller =  ApiServices.getSellerById(userId);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -139,11 +163,11 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
         builder: (context, snapshot) {
           if (_user == null) {
             return const Center(
-              child: CircularProgressIndicator( ),
+              child: CircularProgressIndicator( color: Color(0xFFFF5C01),),
             );
           } else if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(color: Color(0xFFFF5C01)),
             );
           } else if (snapshot.hasError) {
             return Center(
@@ -193,7 +217,8 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
                       controller: _tabController,
                       children: [
                         BuyerProfile(),
-                        SellerProfile(),
+
+                        _isSeller? SellerProfile() : sign_up2(),
                       ],
                     ),
                   ),
@@ -204,7 +229,6 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
               ),
             );
           }
-        //}
         },
       )
     );

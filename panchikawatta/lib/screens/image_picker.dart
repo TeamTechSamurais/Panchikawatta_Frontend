@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-//import 'package:image_cropper/image_cropper.dart';
 
 class ImagePickerPage extends StatefulWidget {
+  
   @override
   _ImagePickerPageState createState() => _ImagePickerPageState();
 }
@@ -35,64 +35,6 @@ class _ImagePickerPageState extends State<ImagePickerPage> {
     }
   }
 
-  // Future<void> _pickImage() async {
-  //   final ImagePicker _picker = ImagePicker();
-  //   final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-
-  //   if (image != null) {
-  //     await Future.delayed(const Duration(milliseconds: 500));
-
-  //     final cropper = ImageCropper();
-
-  //     // final croppedImage = await cropper.cropImage(
-  //     //   sourcePath: image.path,
-  //     //   aspectRatio: CropAspectRatio(ratioX: 1.0, ratioY: 1.0), // For square crop
-  //     //   compressQuality: 100,
-  //     //   maxWidth: 700,
-  //     //   maxHeight: 700,
-  //     //   compressFormat: ImageCompressFormat.jpg,
-  //     //   androidUiSettings: const AndroidUiSettings(
-  //     //     toolbarColor: Colors.orange,
-  //     //     toolbarTitle: "Crop Image",
-  //     //     statusBarColor: Colors.deepOrange,
-  //     //     backgroundColor: Colors.white,
-  //     //   ),
-  //     // );
-
-  //     // if (croppedImage != null) {
-  //     //   setState(() {
-  //     //     _image = XFile(croppedImage.path);
-  //     //   });
-  //     // }
-
-  //     try {
-  //       final croppedImage = await cropper.cropImage(
-  //         sourcePath: image.path,
-  //             aspectRatio: CropAspectRatio(ratioX: 1.0, ratioY: 1.0), // For square crop
-  //             compressQuality: 100,
-  //             maxWidth: 700,
-  //             maxHeight: 700,
-  //             compressFormat: ImageCompressFormat.jpg,
-  //             androidUiSettings: const AndroidUiSettings(
-  //               toolbarColor: Colors.orange,
-  //               toolbarTitle: "Crop Image",
-  //               statusBarColor: Colors.deepOrange,
-  //               backgroundColor: Colors.white,
-  //             ),
-  //       );
-
-  //       if (croppedImage != null) {
-  //         setState(() {
-  //           _image = XFile(croppedImage.path);
-  //         });
-  //       }
-  //     } catch (e) {
-  //       print('Error cropping image: $e');
-  //     }
-
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -117,7 +59,6 @@ class _ImagePickerPageState extends State<ImagePickerPage> {
                       IconButton(
                         icon: const Icon(Icons.camera_alt, color: Color(0xFF000000), size: 32,),
                         onPressed: () {
-                          // Add your button press logic here
                           _pickImageFromCamera();
                         },
                       ),
@@ -130,8 +71,6 @@ class _ImagePickerPageState extends State<ImagePickerPage> {
                       IconButton(
                         icon: const Icon(Icons.collections, color: Color(0xFF000000), size: 32,),
                         onPressed: () {
-                          // Add your button press logic here
-                          // _pickImage();
                           _pickImageFromGallery();
                         },
                       ),
@@ -144,14 +83,13 @@ class _ImagePickerPageState extends State<ImagePickerPage> {
                       IconButton(
                         icon: const Icon(Icons.delete, color: Color(0xFF000000), size: 33,),
                         onPressed: () {
-                          // Add your button press logic here
                           setState(() {
                             _image = null;
                           });
                           Navigator.pop(context, null);
                         },
                       ),
-                      const Text('Delete', style: TextStyle(fontSize: 16, color: Color(0xFF000000))),
+                      const Text('Remove', style: TextStyle(fontSize: 16, color: Color(0xFF000000))),
                     ],
                   ),
 

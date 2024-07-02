@@ -8,7 +8,8 @@ class InputFields extends StatefulWidget {
   final FocusNode? focusNode; //for the search functionality in the chat app
   final VoidCallback? onPressed; // Add onPressed parameter
   final TextEditingController? controller; // Add controller parameter
-  final String? autofill; // Add autofill parameter
+  bool? obscureText; // Add obscureText parameter
+  
 
   InputFields({
     required this.hintText,
@@ -18,7 +19,7 @@ class InputFields extends StatefulWidget {
     this.focusNode,
     this.onPressed, 
     this.controller, 
-    this.autofill,
+    this.obscureText = false,
   });
 
   @override
@@ -40,10 +41,9 @@ class _InputFieldsState extends State<InputFields>{
             _textFieldValue = value;
           });
         },
-        // controller: widget.cont,
         focusNode: widget.focusNode,
-        autofillHints: [widget.autofill == null ? '' : widget.autofill!],
         controller: widget.controller, // Assign the provided controller to the TextField
+        obscureText: widget.obscureText!, // Assign the provided obscureText value to the TextField
         decoration: InputDecoration(
           hintText: widget.hintText,
           hintStyle: const TextStyle(fontSize: 16, color: Color(0xCC000000), fontWeight: FontWeight.normal),
@@ -55,8 +55,6 @@ class _InputFieldsState extends State<InputFields>{
           ),
           suffixIcon: widget.suffixIcon != null ? IconButton(
             onPressed: () {
-              // Handle icon tap (e.g., open a date picker)
-              // If onPressed callback is provided, call it
               if (widget.onPressed != null) {   //dinithi
                 widget.onPressed!();  //dinithi
               }                       //dinithi
