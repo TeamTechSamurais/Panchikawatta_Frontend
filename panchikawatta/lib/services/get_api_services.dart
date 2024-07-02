@@ -52,4 +52,48 @@ class GetApiService {
       throw Exception('Failed to load spare parts');
     }
   }
+
+  Future<List<SparePart>> fetchFilteredAds({
+    String? province,
+    String? district,
+    String? vehicleMake,
+    String? model,
+    String? origin,
+    String? minPrice,
+    String? maxPrice,
+    List<String>? conditions,
+    List<String>? fuelTypes,
+    String? minYear,
+    String? maxYear,
+  }) async {
+    final queryParameters = {
+      'province': province,
+      'district': district,
+      'vehicleMake': vehicleMake,
+      'model': model,
+      'origin': origin,
+      'minPrice': minPrice,
+      'maxPrice': maxPrice,
+      'conditions': conditions?.join(','),
+      'fuelTypes': fuelTypes?.join(','),
+      'minYear': minYear,
+      'maxYear': maxYear,
+    };
+
+    final uri = Uri.http(
+      Utils.baseUrl,
+      '/adListing/filter',
+      queryParameters
+        ..removeWhere((key, value) => value == null || value.isEmpty),
+    );
+
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      return data.map((item) => SparePart.fromJson(item)).toList();
+    } else {
+      throw Exception('Failed to load spare parts');
+    }
+  }
 }
