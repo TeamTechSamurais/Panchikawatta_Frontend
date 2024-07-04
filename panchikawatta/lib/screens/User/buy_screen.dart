@@ -122,7 +122,7 @@ class _BuyScreenState extends State<BuyScreen> {
                         sparePart.title,
                         style: const TextStyle(
                             fontSize: 22,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.w600,
                             color: Colors.black),
                       ),
                     ],
@@ -208,7 +208,7 @@ class _BuyScreenState extends State<BuyScreen> {
                                             sparePart.make,
                                             style: const TextStyle(
                                               fontSize: 16,
-                                              fontWeight: FontWeight.w500,
+                                              fontWeight: FontWeight.w600,
                                               color: Colors.black,
                                             ),
                                           ),
@@ -236,7 +236,7 @@ class _BuyScreenState extends State<BuyScreen> {
                                             sparePart.model,
                                             style: const TextStyle(
                                               fontSize: 16,
-                                              fontWeight: FontWeight.w500,
+                                              fontWeight: FontWeight.w600,
                                               color: Colors.black,
                                             ),
                                           ),
@@ -264,7 +264,7 @@ class _BuyScreenState extends State<BuyScreen> {
                                             sparePart.year.toString(),
                                             style: const TextStyle(
                                               fontSize: 16,
-                                              fontWeight: FontWeight.w500,
+                                              fontWeight: FontWeight.w600,
                                               color: Colors.black,
                                             ),
                                           ),
@@ -292,7 +292,7 @@ class _BuyScreenState extends State<BuyScreen> {
                                             sparePart.condition,
                                             style: const TextStyle(
                                               fontSize: 16,
-                                              fontWeight: FontWeight.w500,
+                                              fontWeight: FontWeight.w600,
                                               color: Colors.black,
                                             ),
                                           ),
@@ -320,7 +320,7 @@ class _BuyScreenState extends State<BuyScreen> {
                                             sparePart.fuel,
                                             style: const TextStyle(
                                               fontSize: 16,
-                                              fontWeight: FontWeight.w500,
+                                              fontWeight: FontWeight.w600,
                                               color: Colors.black,
                                             ),
                                           ),
@@ -348,7 +348,7 @@ class _BuyScreenState extends State<BuyScreen> {
                                             sparePart.origin,
                                             style: const TextStyle(
                                               fontSize: 16,
-                                              fontWeight: FontWeight.w500,
+                                              fontWeight: FontWeight.w600,
                                               color: Colors.black,
                                             ),
                                           ),
