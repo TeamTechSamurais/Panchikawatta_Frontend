@@ -37,7 +37,7 @@ class PostSuccess extends StatelessWidget {
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const ProfilePage(),
+                      builder: (context) => ProfilePage(),
                     ),
                     (Route<dynamic> route) =>
                         false, // This removes all routes from the stack

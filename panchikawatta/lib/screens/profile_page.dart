@@ -1,124 +1,180 @@
 import 'package:flutter/material.dart';
-import 'package:panchikawatta/components/custom_button.dart';
-import 'package:panchikawatta/screens/AdPost/adType.dart';
-import 'package:panchikawatta/screens/User/ad_details_sparepart.dart';
-import 'package:panchikawatta/screens/User/buyer_profile.dart';
+import 'package:panchikawatta/screens/Profile/buyer_profile.dart';
+import 'package:panchikawatta/screens/delete_and_edit_my_profile.dart';
+import 'package:panchikawatta/screens/Profile/edit_profile_page.dart';
+import 'package:panchikawatta/screens/seller_profile.dart';
 
-// ignore: camel_case_types
-class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+class ProfilePage extends StatefulWidget {
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0.0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded),
+          icon: const Icon(Icons.arrow_back, color: Colors.black, size: 28),
           onPressed: () {
+            // Navigate to the previous page
             Navigator.pop(context);
           },
         ),
-        title: const Text(
-          'My Profile',
-          style: TextStyle(
-            color: Color(0xFFFF5C01),
-            fontSize: 27,
-            fontWeight: FontWeight.w500,
+        title: const Text('My Profile',
+            style: TextStyle(color: Color(0xFFFF5C01), fontSize: 28)),
+        actions: [
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.settings, color: Colors.black, size: 28),
+            onSelected: (String result) {
+              switch (result) {
+                case 'EditProfile':
+                  // Handle action for EditProfile
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => EditProfilePage()),
+                  );
+                  break;
+                case 'DeleteProfile':
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return DeleteProfileDialog();
+                    },
+                  );
+
+                  break;
+                case 'Logout':
+                  // Handle your action for Logout
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Logout();
+                    },
+                  );
+                  break;
+              }
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(
+                value: 'EditProfile',
+                child: Text('Edit Profile'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'DeleteProfile',
+                child: Text('Delete Profile'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'Logout',
+                child:
+                    Text('Logout', style: TextStyle(color: Color(0xFFFF5C01))),
+              ),
+            ],
           ),
-        ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             const SizedBox(height: 20),
-            const CircleAvatar(
-              radius: 70,
-              backgroundImage: AssetImage('assets/images/profileImage.png'),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              'Anne Fernando',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => BuyerProfile()),
-                      );
-                    },
-                    child: const Text('        Buyer',
-                        style:
-                            TextStyle(fontSize: 18, color: Color(0xFF757575))),
-                  ),
-                  const Text('|'),
-                  TextButton(
-                    onPressed: () {},
-                    child: const Text('Seller        ',
-                        style:
-                            TextStyle(fontSize: 18, color: Color(0xFFFF5C01))),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 15),
-            Padding(
-              padding: const EdgeInsets.all(5),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.4,
-                child: CustomButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const AdType()),
-                    );
-                  },
-                  text: 'Post Ad',
+            const Center(
+              child: CircleAvatar(
+                radius: 80,
+                backgroundImage: AssetImage(
+                  'lib/assets/profilePicture.jpg',
                 ),
               ),
             ),
-            const SizedBox(height: 15),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.9,
-              child: const Divider(
-                color: Color(0x80000000),
-                thickness: 1,
+
+            const SizedBox(height: 25),
+
+            const Center(
+                child: Text(
+              'Anne_Fernando82',
+              style: TextStyle(
+                fontSize: 18,
               ),
+            )),
+
+            const SizedBox(height: 25),
+
+            TabBar(
+              controller: _tabController,
+              tabs: [
+                _individualTab(
+                  'Buyer',
+                ),
+                _individualTab('Seller'),
+              ],
+              labelColor: const Color(0xFFFF5C01),
+              unselectedLabelColor: const Color(0x80000000),
+              indicatorColor: Colors.transparent,
+              indicatorSize: TabBarIndicatorSize.tab,
+              labelPadding: const EdgeInsets.all(0),
+              indicatorPadding: const EdgeInsets.all(0),
+              dividerColor: Colors.transparent,
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 10, right: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+
+            // Container(
+            //   height: 2000, // You can adjust this value as needed
+            //   child: TabBarView(
+            //     controller: _tabController,
+            //     children: [
+            //       Expanded(
+            //         child: BuyerProfile(),
+            //       ),
+            //       SellerProfile(),],
+            //   ),
+            // ),
+
+            Container(
+              height: 2000, // You can adjust this value as needed
+              child: TabBarView(
+                controller: _tabController,
                 children: [
-                  const SizedBox(height: 40),
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    child: const Text(
-                      'My Ads                    ',
-                      style: TextStyle(
-                          color: Color(0xFF000000),
-                          fontSize: 22,
-                          fontWeight: FontWeight.w500),
-                    ),
-                  ),
+                  BuyerProfile(),
+                  SellerProfile(),
                 ],
               ),
             ),
-            SizedBox(
-              height: 1000,
-              child: AdDetailsSpareparts(),
-            ),
+
+            const SizedBox(height: 20),
           ],
         ),
+      ),
+    );
+  }
+
+  //A method to create an individual tab. This is created to add a vertical divider between the tabs.
+  Widget _individualTab(String text) {
+    return Container(
+      height: 50 + MediaQuery.of(context).padding.bottom,
+      padding: const EdgeInsets.all(0),
+      width: double.infinity,
+      decoration: const BoxDecoration(
+          border: Border(
+              right: BorderSide(
+                  color: Color(0x80000000),
+                  width: 0,
+                  style: BorderStyle.solid))),
+      child: Tab(
+        text: text,
       ),
     );
   }
