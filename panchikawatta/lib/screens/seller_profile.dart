@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:panchikawatta/components/custom_button.dart';
+import 'package:panchikawatta/screens/AdPost/adType.dart';
 import 'package:panchikawatta/screens/services_ads.dart';
 import 'package:panchikawatta/screens/spare_parts_ads.dart';
 
 class SellerProfile extends StatefulWidget {
   @override
-  _SellerProfile createState() => _SellerProfile(); 
+  _SellerProfile createState() => _SellerProfile();
 }
 
-class _SellerProfile extends State<SellerProfile> with SingleTickerProviderStateMixin{
+class _SellerProfile extends State<SellerProfile>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -37,11 +39,13 @@ class _SellerProfile extends State<SellerProfile> with SingleTickerProviderState
 
             Center(
               child: CustomButton(
-                onPressed: () {
-                  // Navigate to the add vehicle page
-                }, 
-                text: 'Post ad'
-              ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const AdType()),
+                    );
+                  },
+                  text: 'Post ad'),
             ),
 
             const SizedBox(height: 15),
@@ -57,41 +61,39 @@ class _SellerProfile extends State<SellerProfile> with SingleTickerProviderState
             const SizedBox(height: 20),
 
             Padding(
-              padding: const EdgeInsets.only(left: 30, right: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  const Text('My Ads', style: TextStyle(fontSize: 20, color: Colors.black)), 
-
-                  const SizedBox(width: 40),
-
-                  Expanded(child: 
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Color(0x80FF5C01),
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: TabBar(
-                        controller: _tabController,
-                        tabs: const [
-                          Tab(text: 'Spare Parts'),
-                          Tab(text: 'Services'),
-                        ],
-                        dividerColor: Colors.transparent,
-                        labelColor: Colors.white,
-                        unselectedLabelColor: Colors.white,
-                        indicator: BoxDecoration(
+                padding: const EdgeInsets.only(left: 30, right: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    const Text('My Ads',
+                        style: TextStyle(fontSize: 20, color: Colors.black)),
+                    const SizedBox(width: 40),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0x80FF5C01),
                           borderRadius: BorderRadius.circular(30),
-                          color: Color(0xFFFF55C01),
                         ),
-                        indicatorColor: Colors.transparent,
-                        indicatorSize: TabBarIndicatorSize.tab,
+                        child: TabBar(
+                          controller: _tabController,
+                          tabs: const [
+                            Tab(text: 'Spare Parts'),
+                            Tab(text: 'Services'),
+                          ],
+                          dividerColor: Colors.transparent,
+                          labelColor: Colors.white,
+                          unselectedLabelColor: Colors.white,
+                          indicator: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            color: const Color(0xFFFF55C01),
+                          ),
+                          indicatorColor: Colors.transparent,
+                          indicatorSize: TabBarIndicatorSize.tab,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              )
-            ),
+                  ],
+                )),
 
             const SizedBox(height: 20),
 

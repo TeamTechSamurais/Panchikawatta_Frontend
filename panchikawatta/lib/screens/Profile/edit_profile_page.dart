@@ -6,7 +6,7 @@ import 'package:panchikawatta/screens/auth_functions.dart';
 import 'package:panchikawatta/screens/chat_screen.dart';
 import 'dart:io';
 import 'package:panchikawatta/screens/image_picker.dart';
-import 'package:panchikawatta/screens/1profile_page.dart';
+import 'package:panchikawatta/screens/profile_page.dart';
 
 class EditProfilePage extends StatefulWidget {
   @override

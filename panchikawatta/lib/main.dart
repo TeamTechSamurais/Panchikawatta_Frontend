@@ -1,15 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:panchikawatta/screens/1profile_page.dart';
-import 'package:panchikawatta/screens/login_screen.dart';
-import 'package:panchikawatta/screens/search_page.dart';
+import 'package:panchikawatta/screens/profile_page.dart';
 import 'firebase_options.dart';
 import 'package:panchikawatta/screens/SplashScreen.dart';
 import 'screens/search_page1.dart';
 import 'screens/notification_page.dart';
 import 'screens/alert_page.dart';
 import 'package:panchikawatta/screens/login.dart';
+
 import 'package:panchikawatta/global/common/toast.dart';
 
 Future<void> main() async {
@@ -42,8 +41,8 @@ class _MyAppState extends State<MyApp> {
       home: user != null ? const MyHomePage() : const SplashScreen(),
       routes: {
         'SplashScreen': (context) => const SplashScreen(),
-        'login': (context) =>
-            LoginScreen(), // Make sure `LoginPage` is defined properly
+        'login': (context) => login(),
+        // Define the login route here
       },
     );
   }
@@ -60,9 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    const SearchPage(
-      ads: null,
-    ),
+    const search_page1(),
     const notification_page(),
     const alert_page(),
     ProfilePage(),
@@ -70,13 +67,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final List<Widget> _guestPages = [
     const search_page1(),
-    ProfilePage(),
   ];
 
   void _onItemTapped(int index) {
     User? user = FirebaseAuth.instance.currentUser;
 
     if (user == null && index != 0) {
+      // Show a message or do nothing if the user is not logged in and tries to access other pages
       showToast(message: "Please log in to access this page.");
       return;
     }
@@ -91,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
     User? user = FirebaseAuth.instance.currentUser;
     List<Widget> pages = user != null ? _pages : _guestPages;
     return Scaffold(
-      body: pages[_selectedIndex],
+      body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -114,12 +111,13 @@ class _MyHomePageState extends State<MyHomePage> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         selectedItemColor: const Color(0xFFFF5C01),
-        unselectedItemColor: const Color(0xFF757575),
+        unselectedItemColor: const Color.fromARGB(255, 117, 117, 117),
       ),
     );
   }
 }
 
+// Initialize Firebase
 Future<void> _initializeFirebase() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
