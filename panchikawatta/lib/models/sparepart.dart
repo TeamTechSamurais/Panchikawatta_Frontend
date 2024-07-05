@@ -4,6 +4,7 @@ class SparePart {
   final String description;
   String imageUrl;
   final int price;
+  final String type;
   final String make;
   final String model;
   final String origin;
@@ -17,6 +18,7 @@ class SparePart {
     required this.description,
     String? imageUrl,
     required this.price,
+    required this.type,
     required this.make,
     required this.model,
     required this.origin,
@@ -32,6 +34,7 @@ class SparePart {
       description: json['description'] ?? 'No description',
       imageUrl: json['imageUrl'] ?? 'assets/images/no_image.png',
       price: json['price'] ?? 0,
+      type: json['type'] ?? 'Unknown',
       make: json['make'] ?? 'Unknown',
       model: json['model'] ?? 'Unknown',
       origin: json['origin'] ?? 'Unknown',

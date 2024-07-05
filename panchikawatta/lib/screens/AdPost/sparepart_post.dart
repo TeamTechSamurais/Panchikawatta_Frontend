@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/components/add_image.dart';
+import 'package:panchikawatta/dropdowns/vehicle_type.dart';
 import 'package:panchikawatta/screens/AdPost/post_unsuccess.dart';
 import 'package:panchikawatta/services/post_api_service.dart';
 import 'package:panchikawatta/dropdowns/condition_post.dart';
@@ -26,6 +27,7 @@ class _AdPostState extends State<AdPost> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
+  String? _selectedType;
   String? _selectedMake;
   String? _selectedModel;
   String? _selectedOrigin;
@@ -39,12 +41,20 @@ class _AdPostState extends State<AdPost> {
     });
   }
 
+  void _resetSelectedMakeAndModel() {
+    setState(() {
+      _selectedMake = null;
+      _selectedModel = null;
+    });
+  }
+
   Future<void> _postSparePart() async {
     try {
       final title = _titleController.text;
       final description = _descriptionController.text;
       final price = int.tryParse(_priceController.text);
       final image = _images[0];
+      final type = _selectedType;
       final make = _selectedMake;
       final model = _selectedModel;
       final origin = _selectedOrigin;
@@ -55,6 +65,7 @@ class _AdPostState extends State<AdPost> {
       if (title.isEmpty ||
           description.isEmpty ||
           price == null ||
+          type == null ||
           make == null ||
           model == null ||
           origin == null ||
@@ -196,7 +207,6 @@ class _AdPostState extends State<AdPost> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: List.generate(1, (index) {
@@ -217,6 +227,21 @@ class _AdPostState extends State<AdPost> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: VehicleType(
+                            selectedType: _selectedType,
+                            onChanged: (String? type) {
+                              setState(() {
+                                _selectedType = type;
+                                _resetSelectedMakeAndModel();
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 20),
                     Row(
                       children: [
@@ -228,9 +253,9 @@ class _AdPostState extends State<AdPost> {
                                 _selectedMake = make;
                               });
                             },
+                            selectedType: _selectedType, // Add this property
                           ),
                         ),
-                        const SizedBox(width: 20),
                         Expanded(
                           child: VehicleModel(
                             selectedModel: _selectedModel,
@@ -240,6 +265,7 @@ class _AdPostState extends State<AdPost> {
                                 _selectedModel = model;
                               });
                             },
+                            selectedMake: _selectedMake,
                           ),
                         ),
                       ],
@@ -253,16 +279,14 @@ class _AdPostState extends State<AdPost> {
                             decoration: const InputDecoration(
                               hintText: 'Year',
                               hintStyle: TextStyle(
-                                fontSize: 16,
-                                color: Color(0xCC000000),
-                                fontWeight: FontWeight.normal,
+                                fontSize: 16.5,
+                                color: Color.fromARGB(204, 89, 89, 89),
+                                fontWeight: FontWeight.w500,
                               ),
-                              filled: true,
-                              fillColor: Color.fromARGB(255, 255, 255, 255),
+                              border: InputBorder.none,
                             ),
                           ),
                         ),
-                        const SizedBox(width: 20),
                         Expanded(
                           child: OriginDropdown(
                             onChanged: (value) {
@@ -288,7 +312,6 @@ class _AdPostState extends State<AdPost> {
                             selectedCondition: _selectedCondition,
                           ),
                         ),
-                        const SizedBox(width: 20),
                         Expanded(
                           child: Fuel(
                             onChanged: (value) {

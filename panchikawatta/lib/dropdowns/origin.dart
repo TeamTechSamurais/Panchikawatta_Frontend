@@ -4,11 +4,15 @@ class OriginDropdown extends StatelessWidget {
   final String? selectedOrigin;
   final ValueChanged<String?> onChanged;
 
-  OriginDropdown(
-      {super.key, required this.selectedOrigin, required this.onChanged});
+  OriginDropdown({
+    Key? key,
+    required this.selectedOrigin,
+    required this.onChanged,
+  }) : super(key: key);
 
   final List<String> origins = [
     'Any',
+    'Local',
     'Japan',
     'UK',
     'Germany',
@@ -18,16 +22,17 @@ class OriginDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButtonFormField<String>(
+    return DropdownButton<String>(
       value: selectedOrigin,
-      decoration: const InputDecoration(labelText: 'Origin'),
-      items: origins.map((origin) {
+      hint: const Text('Origin'),
+      items: origins.map((String origin) {
         return DropdownMenuItem<String>(
           value: origin,
           child: Text(origin),
         );
       }).toList(),
       onChanged: onChanged,
+      isExpanded: true,
     );
   }
 }
