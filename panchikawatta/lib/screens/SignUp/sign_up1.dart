@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
+import 'dart:math';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:panchikawatta/components/drop_down_input_fields.dart';
@@ -49,6 +51,9 @@ class _SignUp1State extends State<sign_up1> {
   final TextEditingController phoneNoController = TextEditingController();
   String? selectedprovince;
   String? selecteddistrict;
+  // String? selectedProvince;
+  // String? selectedDistrict;
+
   @override
   void dispose() {
     userNameController.dispose();
@@ -767,4 +772,11 @@ class _SignUp1State extends State<sign_up1> {
       }
     }
   }
+}
+
+
+//Save the email locally
+Future<void> saveUserEmail(String email) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.setString('userEmail', email);
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:card_swiper/card_swiper.dart';
+// import 'package:card_swiper/card_swiper.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/screens/User/wishlist.dart';
 import 'package:panchikawatta/models/sparepart.dart';

@@ -10,6 +10,7 @@ import 'package:panchikawatta/user_auth/firebase_auth_implementation/firebase_au
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class login extends StatefulWidget {
   @override
@@ -43,22 +44,22 @@ class _LoginState extends State<login> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 25),
+          padding: const EdgeInsets.symmetric(horizontal: 25),
           child: Column(
             children: <Widget>[
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                 child: Row(
                   children: [
                     GestureDetector(
                       onTap: () {
                         Navigator.pop(context);
                       },
-                      child: Icon(Icons.arrow_back),
+                      child: const Icon(Icons.arrow_back),
                     ),
-                    SizedBox(width: 10),
-                    Text(
+                    const SizedBox(width: 10),
+                    const Text(
                       "Login",
                       style: TextStyle(
                         color: Color(0xFFFF5C01),
@@ -69,17 +70,17 @@ class _LoginState extends State<login> {
                   ],
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
                 child: Image.asset(
                   'lib/src/img/orange logo 1.png',
                   height: 150,
                   width: 200,
                 ),
               ),
-              SizedBox(height: 2),
-              Padding(
+              const SizedBox(height: 2),
+              const Padding(
                 padding: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
                 child: Text(
                   "Welcome to Panchikawatta",
@@ -89,12 +90,12 @@ class _LoginState extends State<login> {
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextFieldContainer(
                 child: TextField(
                   controller: emailController,
                   cursorColor: Colors.black,
-                  decoration: InputDecoration(
+                  decoration: const  InputDecoration(
                     hintText: "Email",
                     border: InputBorder.none,
                   ),
@@ -105,7 +106,7 @@ class _LoginState extends State<login> {
                   controller: passwordController,
                   obscureText: true,
                   cursorColor: Colors.black,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: "Password",
                     border: InputBorder.none,
                   ),
@@ -114,7 +115,7 @@ class _LoginState extends State<login> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.symmetric(vertical: 20),
                     child: Text(
                       "Forget Password?",
@@ -128,10 +129,10 @@ class _LoginState extends State<login> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ForgetPassword1()),
+                            builder: (context) => const ForgetPassword1()),
                       );
                     },
-                    child: Icon(
+                    child: const Icon(
                       Icons.arrow_forward,
                       color: Colors.black,
                       size: 24,
@@ -139,7 +140,7 @@ class _LoginState extends State<login> {
                   ),
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Container(
                 width: size.width * 0.8,
                 decoration: BoxDecoration(
@@ -148,7 +149,7 @@ class _LoginState extends State<login> {
                 child: ElevatedButton(
                   onPressed: _signIn,
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 40),
+                    padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 40),
                     backgroundColor: const Color(0xFFFF5C01),
                   ),
                   child: _isSigning
@@ -162,7 +163,7 @@ class _LoginState extends State<login> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.symmetric(vertical: 30),
                     child: Text(
                       "Don't have an Account?",
@@ -178,7 +179,7 @@ class _LoginState extends State<login> {
                         MaterialPageRoute(builder: (context) => sign_up1()),
                       );
                     },
-                    child: Text(
+                    child: const Text(
                       "Sign Up",
                       style: TextStyle(
                         color: Color(0xFFFF8000),
@@ -203,8 +204,11 @@ class _LoginState extends State<login> {
 
     String email = emailController.text.trim();
     String password = passwordController.text.trim();
+    // String username = usernameController.text;
 
     User? user = await _auth.signInWithEmailAndPassword(email, password);
+
+    saveUserEmail(email);
 
     setState(() {
       _isSigning = false;
@@ -238,6 +242,7 @@ class _LoginState extends State<login> {
       showToast(message: "Invalid email or password");
     }
   }
+}
 
   Future<String?> _generateJwtToken(User user) async {
     try {
@@ -266,7 +271,6 @@ class _LoginState extends State<login> {
       return null;
     }
   }
-}
 
 class TextFieldContainer extends StatelessWidget {
   final Widget child;

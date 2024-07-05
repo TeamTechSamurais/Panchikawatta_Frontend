@@ -1,4 +1,4 @@
-  import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 class DropdownInputField extends StatefulWidget {
   final List<String> dropdownItems;
@@ -24,7 +24,8 @@ class _DropdownInputFieldState extends State<DropdownInputField> {
   @override
   void initState() {
     super.initState();
-    _dropdownValue = widget.initialValue;
+    _dropdownValue = widget.dropdownItems.contains(widget.initialValue) ? widget.initialValue : null;
+    // _dropdownValue = widget.initialValue;
   }
 
   @override
@@ -35,11 +36,12 @@ class _DropdownInputFieldState extends State<DropdownInputField> {
         child: DropdownButtonFormField<String>(
           value: _dropdownValue,
           hint: Text(widget.hintText),
+          isExpanded: true,
           items: widget.dropdownItems.map((String value) {
             return DropdownMenuItem<String>(
               value: value,
               child: DefaultTextStyle(
-                style: const TextStyle(fontSize: 16, color: Color(0xCC000000), fontWeight: FontWeight.normal),
+                style: const TextStyle(fontSize: 16, color: Color(0xCC000000)),
                 child: Text(value),
               ),
             );
@@ -52,7 +54,13 @@ class _DropdownInputFieldState extends State<DropdownInputField> {
             _formKey.currentState!.validate();
           },
           decoration: const InputDecoration(
-            border: InputBorder.none,
+            //borderRadius: BorderRadius.all(Radius.circular(10)),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+              borderSide: BorderSide.none,
+            ),
+            filled: true,
+            fillColor: Color.fromARGB(255, 241, 239, 237)
           ),
         ),
       ),

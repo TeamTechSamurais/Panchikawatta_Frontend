@@ -6,6 +6,10 @@ import 'package:panchikawatta/screens/services_ads.dart';
 import 'package:panchikawatta/screens/spare_parts_ads.dart';
 
 class SellerProfile extends StatefulWidget {
+  // final int userId;
+
+  // SellerProfile({required this.userId});
+
   @override
   _SellerProfile createState() => _SellerProfile();
 }
@@ -13,12 +17,19 @@ class SellerProfile extends StatefulWidget {
 class _SellerProfile extends State<SellerProfile>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  // Future<Map<String, dynamic>>? _seller;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    // fetchSeller();
   }
+
+  // void fetchSeller() {
+  //   // Fetch the seller's data from the database
+  //   _seller =  ApiServices.getSellerById(widget.userId);
+  // }
 
   @override
   void dispose() {
@@ -29,13 +40,10 @@ class _SellerProfile extends State<SellerProfile>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //backgroundColor: Colors.pink.shade100,
       body: SingleChildScrollView(
         child: Column(
           children: [
             const SizedBox(height: 20),
-
-            //Text('data')
 
             Center(
               child: CustomButton(

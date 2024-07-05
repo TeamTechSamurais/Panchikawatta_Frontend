@@ -8,7 +8,6 @@ import 'screens/search_page1.dart';
 import 'screens/notification_page.dart';
 import 'screens/alert_page.dart';
 import 'package:panchikawatta/screens/login.dart';
-
 import 'package:panchikawatta/global/common/toast.dart';
 
 Future<void> main() async {

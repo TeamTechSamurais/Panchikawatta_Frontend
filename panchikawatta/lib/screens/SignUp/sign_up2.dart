@@ -1,13 +1,7 @@
-import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
-import 'dart:math';
-
 import 'package:http/http.dart' as http;
 import 'package:panchikawatta/components/custom_button.dart';
-import 'package:panchikawatta/screens/SignUp/Vehicledetails2.dart';
 import 'package:panchikawatta/screens/login.dart';
-import 'package:panchikawatta/screens/SignUp/sign_up1.dart';
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/screens/SignUp/Vehicledetails1.dart';
 
@@ -130,11 +124,11 @@ class _SignUp2State extends State<sign_up2> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 25),
+          padding: const EdgeInsets.symmetric(horizontal: 25),
           child: Column(
             children: <Widget>[
-              SizedBox(height: 40),
-              Padding(
+              const SizedBox(height: 40),
+              const Padding(
                 padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                 child: Row(
                   children: [
@@ -157,7 +151,7 @@ class _SignUp2State extends State<sign_up2> {
                 ),
               ),
               SizedBox(height: 20),
-              Padding(
+              const Padding(
                 padding: EdgeInsets.symmetric(vertical: 30, horizontal: 10),
                 child: Text(
                   "If you want to sell, fill this out",
@@ -172,7 +166,7 @@ class _SignUp2State extends State<sign_up2> {
                 child: TextField(
                   controller: businessNameController,
                   cursorColor: Colors.black,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: "Business Name",
                     border: InputBorder.none,
                   ),
@@ -182,7 +176,7 @@ class _SignUp2State extends State<sign_up2> {
                 child: TextField(
                   controller: businessAddressController,
                   cursorColor: Colors.black,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: "Business Address",
                     border: InputBorder.none,
                   ),
@@ -205,7 +199,7 @@ class _SignUp2State extends State<sign_up2> {
                   },
                   cursorColor: Colors.black,
                   keyboardType: TextInputType.phone,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: "Phone (+94)",
                     border: InputBorder.none,
                   ),
@@ -216,7 +210,7 @@ class _SignUp2State extends State<sign_up2> {
                   cursorColor: Colors.black,
                   controller: businessDescriptionController,
                   maxLines: 5,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: "Business description",
                     border: InputBorder.none,
                   ),
@@ -324,13 +318,13 @@ class _SignUp2State extends State<sign_up2> {
                         style: ButtonStyle(
                           padding:
                               MaterialStateProperty.all<EdgeInsetsGeometry>(
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                            const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                           ),
                           backgroundColor: MaterialStateProperty.all<Color>(
                             const Color(0xFFFF5C01),
                           ),
                         ),
-                        child: Text(
+                        child: const Text(
                           "Next",
                           style: TextStyle(color: Colors.white),
                         ),
