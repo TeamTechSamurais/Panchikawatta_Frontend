@@ -37,8 +37,8 @@ class PowerSteeringAction extends StatelessWidget {
             const SizedBox(height: 50),
             const Text(
               'The power steering system is having an issue.\n\n'
-              '1. If your vehicle has \bEPS (Electronic power system)\b, go to a mechanic to have the problem assessed.\n'
-              '2. If it has the \bhydraulic power steering\b you need to topped off the power steering fluid.\n\n'
+              '1. If your vehicle has EPS (Electronic power system), go to a mechanic to have the problem assessed.\n'
+              '2. If it has the hydraulic power steering you need to topped off the power steering fluid.\n\n'
               'Schedule a maintenance appointment if issue persists.',
               style: TextStyle(fontSize: 18),
             ),

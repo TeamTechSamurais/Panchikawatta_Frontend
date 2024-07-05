@@ -26,16 +26,16 @@
 //   final TextEditingController Business_contact_noController = TextEditingController();
 //   final TextEditingController Business_descriptionController = TextEditingController();
 //   final TextEditingController firstNameController = TextEditingController();
-  
+
 //   @override
 //   Widget build(BuildContext context) {
 //     Size size = MediaQuery.of(context).size;
 //     Map<String, String?>? data =
 //         ModalRoute.of(context)!.settings.arguments as Map<String,String?>?;
- 
+
 //     String fname = data?['firstname'] ?? '';
 //     String lname = data?['lastname'] ?? '';
-//     String username = data?['username'] ?? '';  
+//     String username = data?['username'] ?? '';
 //     String password = data?['password'] ?? '';
 //     String email = data?['email'] ?? '';
 //     String phoneno = data?['phoneno'] ?? '';
@@ -137,7 +137,7 @@
 //                             context,
 //                             MaterialPageRoute(
 //                                 builder: (context) => ChatScreen() ),
-//                                     // Vehicledetails1()),  
+//                                     // Vehicledetails1()),
 //                           );
 //                         },
 //                         style: ButtonStyle(
@@ -161,12 +161,12 @@
 //                       borderRadius: BorderRadius.circular(29),
 //                       child: TextButton(
 //                         onPressed: () {
-                         
+
 //                             Navigator.push(
 //                               context,
 //                               MaterialPageRoute(
-//                                 builder: (context) =>  ChatScreen(), //Vehicledetails1(), 
-                                
+//                                 builder: (context) =>  ChatScreen(), //Vehicledetails1(),
+
 //                                 settings: RouteSettings(
 //                                   arguments: {
 //                                   'Business_Name': Business_NameController.text,
@@ -174,11 +174,11 @@
 //                                   'Business_contact_no': Business_contact_noController.text,
 //                                   'Business_contact_no': Business_descriptionController.text,
 //                                     'fname': fname,
-                                  
+
 //                                 }),
 //                               ),
 //                             );
-                          
+
 //                         },
 //                         style: ButtonStyle(
 //                           padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
@@ -205,10 +205,6 @@
 //   }
 // }
 
-
-
-
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -220,7 +216,8 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 // import 'package:panchikawatta/rest/rest_api.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:panchikawatta/screens/chat_screen.dart';
+import 'package:panchikawatta/screens/Chat/chat_screen.dart';
+
 class EmailValidationResult {
   final bool isValid;
   final String message;
@@ -236,9 +233,6 @@ class PhoneNumberValidationResult {
 }
 
 class LoginScreen extends StatefulWidget {
-
-
-
   @override
   _SignUp1State createState() => _SignUp1State();
 }
@@ -254,9 +248,7 @@ class _SignUp1State extends State<LoginScreen> {
   final TextEditingController phoneNoController = TextEditingController();
   String? selectedProvince;
   String? selectedDistrict;
-@override
-
-
+  @override
   void _showFillMessage(String message, [String? emailError]) {
     showDialog(
       context: context,
@@ -415,10 +407,10 @@ class _SignUp1State extends State<LoginScreen> {
                                 context: context,
                                 builder: (BuildContext builder) {
                                   return SafeArea(
-                                    child:  Column(
+                                    child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: <Widget>[
-                                         ListTile(
+                                        ListTile(
                                           leading: new Icon(Icons.camera),
                                           title: new Text('Take Photo'),
                                           onTap: () async {
@@ -434,7 +426,7 @@ class _SignUp1State extends State<LoginScreen> {
                                             }
                                           },
                                         ),
-                                         ListTile(
+                                        ListTile(
                                           leading:
                                               new Icon(Icons.photo_library),
                                           title:
@@ -704,25 +696,25 @@ class _SignUp1State extends State<LoginScreen> {
                     child: TextButton(
                       onPressed: () async {
                         if (firstNameController.text.isNotEmpty &&
-                          lastNameController.text.isNotEmpty &&
-                          UsernameController.text.isNotEmpty &&
-                          PasswordController.text.isNotEmpty &&
-                          emailController.text.isNotEmpty &&
-                          phoneNoController.text.isNotEmpty) {
-                        // doRegister(
-                        //   firstNameController.text,
-                        //         lastNameController.text,
-                        //         UsernameController.text,
-                        //         PasswordController.text,
-                        //         emailController.text,
-                        //         phoneNoController.text,
-                        // );
-                      } else {
-                        Fluttertoast.showToast(
-                          msg: 'All fields are required',
-                          textColor: Colors.red,
-                        );
-                      }
+                            lastNameController.text.isNotEmpty &&
+                            UsernameController.text.isNotEmpty &&
+                            PasswordController.text.isNotEmpty &&
+                            emailController.text.isNotEmpty &&
+                            phoneNoController.text.isNotEmpty) {
+                          // doRegister(
+                          //   firstNameController.text,
+                          //         lastNameController.text,
+                          //         UsernameController.text,
+                          //         PasswordController.text,
+                          //         emailController.text,
+                          //         phoneNoController.text,
+                          // );
+                        } else {
+                          Fluttertoast.showToast(
+                            msg: 'All fields are required',
+                            textColor: Colors.red,
+                          );
+                        }
                         // Check if any field is empty
                         if (firstNameController.text.isEmpty ||
                             lastNameController.text.isEmpty ||
@@ -745,13 +737,13 @@ class _SignUp1State extends State<LoginScreen> {
                                 await isEmailValid(emailController.text);
                             if (!result.isValid) {
                               // Show validation message if email is not valid
-                              _showFillMessage(result.message,
-                                  'Please enter a valid email');
+                              _showFillMessage(
+                                  result.message, 'Please enter a valid email');
                             } else {
                               // Custom phone number validation
-                              PhoneNumberValidationResult phoneValidationResult =
-                                  validatePhoneNumber(
-                                      phoneNoController.text);
+                              PhoneNumberValidationResult
+                                  phoneValidationResult =
+                                  validatePhoneNumber(phoneNoController.text);
                               if (!phoneValidationResult.isValid) {
                                 // Show validation message if phone number is not valid
                                 _showFillMessage(phoneValidationResult.message,
@@ -788,7 +780,6 @@ class _SignUp1State extends State<LoginScreen> {
                         backgroundColor: MaterialStateProperty.all<Color>(
                             const Color(0xFFFF5C01)),
                       ),
-
                       child: Text(
                         "Register",
                         style: TextStyle(color: Colors.white),
@@ -858,8 +849,6 @@ class _SignUp1State extends State<LoginScreen> {
 //     print(res.toString());
 //   }
 }
-
-
 
 // Widget TextFieldContainer({required TextField child}) {
 //   return Container(

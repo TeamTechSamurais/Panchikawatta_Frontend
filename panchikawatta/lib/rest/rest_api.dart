@@ -1,4 +1,6 @@
- import 'dart:convert';
+// ignore_for_file: non_constant_identifier_names
+
+import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:panchikawatta/constant/utils.dart';
@@ -12,13 +14,12 @@ Future userLogin(String Username, String Password) async {
 }
 
 Future userRegister(
-  String firstName ,
+  String firstName,
   String lastName,
   String Username,
   String Password,
   String email,
   String phoneNo,
-  
 ) async {
   final response = await http.post(
     Uri.parse('${Utils.baseUrl}/user/register'),
@@ -30,7 +31,6 @@ Future userRegister(
       'Password': Password,
       'email': email,
       'phoneNo': phoneNo,
-      
     },
   );
 

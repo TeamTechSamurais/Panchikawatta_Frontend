@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:panchikawatta/screens/chat_screen.dart';
+import 'package:panchikawatta/screens/Chat/chat_screen.dart';
 import 'package:panchikawatta/screens/SignUp/sign_up1.dart';
 
 class search_page1 extends StatefulWidget {

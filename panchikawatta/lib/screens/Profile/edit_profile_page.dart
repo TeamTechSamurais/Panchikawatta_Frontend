@@ -3,7 +3,7 @@ import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/components/drop_down_input_fields.dart';
 import 'package:panchikawatta/components/input_fields.dart';
 import 'package:panchikawatta/screens/auth_functions.dart';
-import 'package:panchikawatta/screens/chat_screen.dart';
+import 'package:panchikawatta/screens/Chat/chat_screen.dart';
 import 'dart:io';
 import 'package:panchikawatta/screens/image_picker.dart';
 import 'package:panchikawatta/screens/profile_page.dart';

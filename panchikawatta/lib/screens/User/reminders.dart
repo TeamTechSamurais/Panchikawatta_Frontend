@@ -21,25 +21,25 @@ class _ReminderScreenState extends State<ReminderScreen> {
   }
 
   Future<void> fetchVehicles() async {
-    final response = await http
-        // .get(Uri.parse('http://10.0.2.2:8000/users/getReminder/$vehicleId'));
-        .get(Uri.parse('http://10.0.2.2:8000/users/getReminder'));
-    if (response.statusCode == 200) {
+    try {
+      final vehiclesData =
+          await getUserVehicleReminders(2); // Replace 1 with the actual userId
       setState(() {
-        vehicles = List<Map<String, dynamic>>.from(json.decode(response.body));
+        vehicles = vehiclesData;
       });
-    } else {
-      throw Exception('Failed to load vehicles');
+    } catch (e) {
+      // Handle error
+      print(e);
     }
   }
 
   Future<void> markAsDone(int vehicleId) async {
     final response = await http
-        .delete(Uri.parse('http://localhost:5000/api/reminders/$vehicleId'));
+        .patch(Uri.parse('http://10.0.2.2:8000/api/reminders/$vehicleId/done'));
     if (response.statusCode == 200) {
-      fetchVehicles(); // Refresh the list after deletion
+      fetchVehicles(); // Refresh the list after marking as done
     } else {
-      throw Exception('Failed to delete reminder');
+      throw Exception('Failed to update reminder');
     }
   }
 
@@ -47,6 +47,12 @@ class _ReminderScreenState extends State<ReminderScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded, size: 30),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
         title: const Text(
           'My Reminders',
           style: TextStyle(
@@ -55,14 +61,10 @@ class _ReminderScreenState extends State<ReminderScreen> {
             color: Color(0xFFFF5C01),
           ),
         ),
+        elevation: 0,
       ),
-      body: GridView.builder(
+      body: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 1,
-          childAspectRatio: 3 / 1,
-          mainAxisSpacing: 10,
-        ),
         itemCount: vehicles.length,
         itemBuilder: (ctx, i) => VehicleItem(
           vehicleId: vehicles[i]['vehicleId'],
@@ -70,7 +72,7 @@ class _ReminderScreenState extends State<ReminderScreen> {
           model: vehicles[i]['model'],
           year: vehicles[i]['year'].toString(),
           nearestReminder: vehicles[i]['nearestReminder']['type'] +
-              ': ' +
+              ' - ' +
               vehicles[i]['nearestReminder']['date'],
           onMarkAsDone: markAsDone,
         ),
@@ -101,32 +103,71 @@ class VehicleItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 5,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(15.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                const SizedBox(height: 20, width: 20),
-                const Icon(Icons.car_crash_outlined,
-                    size: 50, color: Color.fromARGB(255, 0, 0, 0)),
-                const SizedBox(width: 50),
-                Text('$make $model $year',
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 18)),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '$make $model $year',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      nearestReminder,
+                      style: const TextStyle(
+                        color: Color(0xFFFF5C01),
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+                const Spacer(),
+                Image.asset(
+                  'assets/images/car_image.png', // Use the correct path to your image asset
+                  width: 80,
+                  height: 80,
+                ),
               ],
             ),
-            Text('Reminder: $nearestReminder',
-                style: const TextStyle(
-                    color: Color.fromARGB(255, 255, 26, 10), fontSize: 16)),
+            const SizedBox(height: 10),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFFF5C01),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
               onPressed: () => onMarkAsDone(vehicleId),
-              child: const Text('Mark as Done'),
+              child: const Text(
+                'Mark As Done',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         ),
       ),
     );
+  }
+}
+
+Future<List<Map<String, dynamic>>> getUserVehicleReminders(int userId) async {
+  final response = await http
+      .get(Uri.parse('http://10.0.2.2:8000/users/getReminder/$userId'));
+  if (response.statusCode == 200) {
+    return List<Map<String, dynamic>>.from(json.decode(response.body));
+  } else {
+    throw Exception('Failed to load vehicle reminders');
   }
 }

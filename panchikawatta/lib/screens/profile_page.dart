@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/screens/Profile/buyer_profile.dart';
-import 'package:panchikawatta/screens/delete_and_edit_my_profile.dart';
+import 'package:panchikawatta/screens/Profile/delete_and_edit_my_profile.dart';
 import 'package:panchikawatta/screens/Profile/edit_profile_page.dart';
 import 'package:panchikawatta/screens/seller_profile.dart';
 

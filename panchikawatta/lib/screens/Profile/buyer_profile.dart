@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/screens/SignUp/vehicle_details.dart';
+import 'package:panchikawatta/screens/User/reminders.dart';
 
 class BuyerProfile extends StatelessWidget {
   @override
@@ -30,7 +31,11 @@ class BuyerProfile extends StatelessWidget {
                     ),
                     CustomButton(
                       onPressed: () {
-                        // Add your button press logic here
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ReminderScreen()),
+                        );
                       },
                       text: 'reminders',
                     ),

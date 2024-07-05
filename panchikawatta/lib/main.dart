@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:panchikawatta/screens/profile_page.dart';
+import 'package:panchikawatta/screens/search_page.dart';
 import 'firebase_options.dart';
 import 'package:panchikawatta/screens/SplashScreen.dart';
 import 'screens/search_page1.dart';
@@ -59,7 +60,9 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    const search_page1(),
+    const SearchPage(
+      ads: [],
+    ),
     const notification_page(),
     const alert_page(),
     ProfilePage(),

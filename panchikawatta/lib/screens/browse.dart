@@ -11,20 +11,20 @@ class browse extends StatelessWidget {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 80, vertical: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 20),
         child: Column(
           children: <Widget>[
-            SizedBox(height: 40),
-            Padding(
+            const SizedBox(height: 40),
+            const Padding(
               padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
             ),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
             Image.asset(
               'lib/src/img/orange logo 1.png',
               height: 150,
               width: 200,
             ),
-            SizedBox(height: 90),
+            const SizedBox(height: 90),
             Container(
               width: size.width * 0.3,
               child: ClipRRect(
@@ -38,21 +38,21 @@ class browse extends StatelessWidget {
                   },
                   style: ButtonStyle(
                     padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                      EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                     ),
                     backgroundColor: MaterialStateProperty.all<Color>(
                       const Color(0xFFFF5C01),
                     ),
                   ),
-                  child: Text(
+                  child: const Text(
                     "Login",
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
               ),
             ),
-            SizedBox(height: 30),
-            Text(
+            const SizedBox(height: 30),
+            const Text(
               "or",
               style: TextStyle(
                 color: Colors.black,
@@ -61,12 +61,12 @@ class browse extends StatelessWidget {
             ),
             Container(
               width: size.width * 1.8,
-              child: Divider(
+              child: const Divider(
                 color: Colors.grey,
                 thickness: 1,
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Container(
               width: size.width * 0.3,
               child: ClipRRect(
@@ -75,18 +75,19 @@ class browse extends StatelessWidget {
                   onPressed: () {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => MyHomePage()),
+                      MaterialPageRoute(
+                          builder: (context) => const MyHomePage()),
                     );
                   },
                   style: ButtonStyle(
                     padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                      EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                     ),
                     backgroundColor: MaterialStateProperty.all<Color>(
                       const Color(0xFFFF5C01),
                     ),
                   ),
-                  child: Text(
+                  child: const Text(
                     "Browse",
                     style: TextStyle(color: Colors.white),
                   ),
