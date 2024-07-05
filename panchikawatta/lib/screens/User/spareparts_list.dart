@@ -57,9 +57,9 @@ class SparePartsList extends StatelessWidget {
                           );
                         },
                       );
-
                 return InkWell(
                   onTap: () {
+                    print('Tapped Sparepart ID: ${sparePart.id}');
                     Navigator.push(
                       context,
                       MaterialPageRoute(

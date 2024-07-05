@@ -21,6 +21,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
   @override
   void initState() {
     super.initState();
+    print('ServiceScreen serviceId: ${widget.serviceId}');
     futureService = GetApiService().getServiceById(widget.serviceId);
   }
 

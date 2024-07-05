@@ -148,12 +148,12 @@ class _SearchPageState extends State<SearchPage> {
                         itemBuilder: (BuildContext context) =>
                             <PopupMenuEntry<String>>[
                           const PopupMenuItem<String>(
-                            value: 'newest',
-                            child: Text('Newest first'),
+                            value: 'newest)first',
+                            child: Text('Newest first (Default)'),
                           ),
                           const PopupMenuItem<String>(
-                            value: 'best_match',
-                            child: Text('Best match'),
+                            value: 'oldest',
+                            child: Text('Oldest first'),
                           ),
                           const PopupMenuItem<String>(
                             value: 'price_low_high',

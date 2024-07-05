@@ -21,11 +21,14 @@ class ServicesList extends StatelessWidget {
           return const Center(child: Text('No Services found'));
         } else {
           return Padding(
-            padding: const EdgeInsets.all(10.0), // Add padding here
+            padding: const EdgeInsets.all(10.0),
             child: ListView.builder(
               itemCount: snapshot.data!.length,
               itemBuilder: (context, i) {
                 var service = snapshot.data![i];
+                print(
+                    'Service ID: ${service.id}'); // Debugging: Print service ID
+
                 final isBase64 = service.imageUrl.startsWith('/9j');
                 final imageWidget = isBase64
                     ? Image.memory(
@@ -55,6 +58,7 @@ class ServicesList extends StatelessWidget {
 
                 return InkWell(
                   onTap: () {
+                    print('Tapped service ID: ${service.id}');
                     Navigator.push(
                       context,
                       MaterialPageRoute(

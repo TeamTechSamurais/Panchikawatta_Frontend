@@ -15,10 +15,10 @@ class Service {
 
   factory Service.fromJson(Map<String, dynamic> json) {
     return Service(
-      id: json['id'] ?? 0,
+      id: json['serviceId'] ?? 0,
       title: json['title'] ?? 'Unknown',
       description: json['description'] ?? 'No description',
-      price: json['price'] ?? 'No price',
+      price: json['price'] ?? 0,
       imageUrl: json['imageUrl'] ?? 'No image',
     );
   }

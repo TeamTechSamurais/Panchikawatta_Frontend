@@ -58,8 +58,9 @@ class GetApiService {
   Future<Service> getServiceById(int serviceId) async {
     print(
         'Fetching service with ID: $serviceId'); // Debugging: Print service ID
-    final response =
-        await http.get(Uri.parse('${Utils.baseUrl}/services/$serviceId'));
+    final url = '${Utils.baseUrl}/users/services/$serviceId';
+    print('URL: $url'); // Debugging: Print URL
+    final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonResponse = json.decode(response.body);

@@ -25,6 +25,7 @@ dependencies:
   shared_preferences: any
   fluttertoast: any
   image: ^3.0.1
+  url_launcher: ^6.0.13
 
 dev_dependencies:
   flutter_test:
