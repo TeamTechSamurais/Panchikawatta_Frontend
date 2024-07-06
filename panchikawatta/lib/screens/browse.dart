@@ -1,6 +1,7 @@
 import 'package:panchikawatta/main.dart';
 import 'package:panchikawatta/screens/login.dart';
 import 'package:flutter/material.dart';
+import 'package:panchikawatta/screens/search_page.dart';
 import 'package:panchikawatta/screens/search_page1.dart';
 
 class browse extends StatelessWidget {

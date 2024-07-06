@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:panchikawatta/components/drop_down_input_fields.dart';
+import 'package:panchikawatta/dropdowns/district.dart';
+import 'package:panchikawatta/dropdowns/province.dart';
 import 'package:panchikawatta/main.dart';
 import 'package:panchikawatta/screens/SignUp/Registration_successs.dart';
 import 'package:panchikawatta/screens/auth_functions.dart';
@@ -429,104 +431,34 @@ class _SignUp1State extends State<sign_up1> {
                   ),
                 ),
                 const SizedBox(height: 5),
-                Row(
-                  children: [
-                    Expanded(
-                      child: DropdownButtonFormField<String>(
-                        decoration: const InputDecoration(
-                          hintText: ' Province',
-                          border: InputBorder.none, // Set the hint text here
-                        ),
-                        isExpanded: true,
-                        value: selectedprovince, // Use the selected value
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            selectedprovince =
-                                newValue; // Update the selected province
-                          });
-                        },
-                        items: <String>[
-                          'Western',
-                          'Central',
-                          'Southern',
-                          'Northern',
-                          'Eastern',
-                          'NorthWestern',
-                          'NorthCentral',
-                          'Uva',
-                          'Sabaragamuwa',
-                        ].map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            _showFillMessage("Please select a province");
-                            return null;
-                          }
-                          return null;
-                        },
-                      ),
-                    ),
-                    Expanded(
-                      child: DropdownButtonFormField<String>(
-                        decoration: const InputDecoration(
-                          hintText: ' District',
-                          border: InputBorder.none, // Set the hint text here
-                        ),
-                        isExpanded: true,
-                        value: selecteddistrict, // Use the selected value
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            selecteddistrict =
-                                newValue; // Update the selected district
-                          });
-                        },
-                        items: <String>[
-                          'Colombo',
-                          'Gampaha',
-                          'Kalutara',
-                          'Kandy',
-                          'Matale',
-                          'Nuwara Eliya',
-                          'Galle',
-                          'Matara',
-                          'Hambantota',
-                          'Jaffna',
-                          'Killinochchi',
-                          'Mannar',
-                          'Vavuniya',
-                          'Mulaitivu',
-                          'Batticaloa',
-                          'Ampara',
-                          'Trincomalee',
-                          'Kurunegala',
-                          'Puttalam',
-                          'Anuradhapura',
-                          'Polonnaruwa',
-                          'Badulla',
-                          'Monaragala',
-                          'Ratnapura',
-                          'Kegalle'
-                        ].map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            _showFillMessage("Please select a district");
-                            return null;
-                          }
-                          return null;
-                        },
-                      ),
-                    ),
-                  ],
-                ),
+Row(
+  children: [
+    Expanded(
+      child: ProvinceDropdown(
+        selectedProvince: selectedprovince,
+        onChanged: (String? newValue) {
+          setState(() {
+            selectedprovince = newValue;
+            // Clear the selected district when province changes
+            selecteddistrict = null;
+          });
+        },
+      ),
+    ),
+    Expanded(
+      child: DistrictDropdown(
+        selectedProvince: selectedprovince,
+        selectedDistrict: selecteddistrict,
+        onChanged: (String? newValue) {
+          setState(() {
+            selecteddistrict = newValue;
+          });
+        },
+      ),
+    ),
+  ],
+),
+
                 const SizedBox(height: 10),
                 Container(
                   width: size.width * 0.3,
@@ -715,12 +647,13 @@ class _SignUp1State extends State<sign_up1> {
                                 'password': passwordController.text.trim(),
                                 'district': selecteddistrict,
                                 'province': selectedprovince,
+                                'images':imagePath!
                                 // Add other necessary fields here
                               };
 
                               try {
                                 var response = await http.post(
-                                  Uri.parse('http://10.0.2.2:8000/api/auth/'),
+                                  Uri.parse('http://10.0.2.2:8000/users/'),
                                   headers: {
                                     'Content-Type':
                                         'application/json; charset=UTF-8',
@@ -758,7 +691,7 @@ class _SignUp1State extends State<sign_up1> {
                 }
               } else {
                 // Handle case where account creation failed
-                _showFillMessage('The email addreess is already in use');
+                _showFillMessage('The email addreess is already  in use');
               }
             }
             ;

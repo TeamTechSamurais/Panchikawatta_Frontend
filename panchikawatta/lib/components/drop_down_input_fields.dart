@@ -1,16 +1,20 @@
-  import 'package:flutter/material.dart';
+ import 'package:flutter/material.dart';
 
 class DropdownInputField extends StatefulWidget {
   final List<String> dropdownItems;
   final String hintText;
   final String? initialValue;
   final FormFieldValidator<String>? validator;
+  final ValueChanged<String?>? onChanged;
+  final String? value;
 
   DropdownInputField({
     required this.dropdownItems,
     required this.hintText,
     this.validator,
-    this.initialValue, String? value,
+    this.initialValue,
+    this.onChanged,
+    this.value,
   });
 
   @override
@@ -24,7 +28,7 @@ class _DropdownInputFieldState extends State<DropdownInputField> {
   @override
   void initState() {
     super.initState();
-    _dropdownValue = widget.initialValue;
+    _dropdownValue = widget.initialValue ?? widget.value;
   }
 
   @override
@@ -39,7 +43,11 @@ class _DropdownInputFieldState extends State<DropdownInputField> {
             return DropdownMenuItem<String>(
               value: value,
               child: DefaultTextStyle(
-                style: const TextStyle(fontSize: 16, color: Color(0xCC000000), fontWeight: FontWeight.normal),
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Color(0xCC000000),
+                  fontWeight: FontWeight.normal,
+                ),
                 child: Text(value),
               ),
             );
@@ -49,6 +57,9 @@ class _DropdownInputFieldState extends State<DropdownInputField> {
             setState(() {
               _dropdownValue = newValue;
             });
+            if (widget.onChanged != null) {
+              widget.onChanged!(newValue);
+            }
             _formKey.currentState!.validate();
           },
           decoration: const InputDecoration(

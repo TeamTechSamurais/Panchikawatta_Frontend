@@ -6,6 +6,7 @@ import 'package:panchikawatta/main.dart';
 import 'package:panchikawatta/rest/rest_api.dart';
 import 'package:panchikawatta/screens/Profile/forgetpassword1.dart';
 import 'package:panchikawatta/screens/SignUp/sign_up1.dart';
+import 'package:panchikawatta/screens/storage_helper.dart';
 import 'package:panchikawatta/user_auth/firebase_auth_implementation/firebase_auth_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -218,8 +219,8 @@ class _LoginState extends State<login> {
         String? jwtToken = await _generateJwtToken(user);
 
         if (jwtToken != null) {
-          // Save JWT token locally if needed
-          // Example: saveTokenLocally(jwtToken);
+        await saveJwtToken(jwtToken); 
+        startTokenExpiryTimer(jwtToken);
 
           // Navigate to home page after successful login
           Navigator.push(
@@ -229,7 +230,7 @@ class _LoginState extends State<login> {
             ),
           );
         } else {
-          showToast(message: "Failed to generate JWT token");
+         // showToast(message: "Failed to generate JWT token");
         }
       } else {
         showToast(message: "Please verify your email before login");
@@ -266,7 +267,31 @@ class _LoginState extends State<login> {
       return null;
     }
   }
+    void startTokenExpiryTimer(String jwtToken) {
+    final payload = parseJwt(jwtToken);
+    final expiryDate = DateTime.fromMillisecondsSinceEpoch(payload['exp'] * 1000);
+    final now = DateTime.now();
+    final timeToExpiry = expiryDate.difference(now);
+
+    Timer(timeToExpiry, () {
+      // Token has expired, navigate to login page
+      deleteJwtToken(); // Optionally delete the expired token
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => login()), // Ensure login() is correctly imported
+      );
+    });
+  }
+
+  Map<String, dynamic> parseJwt(String token) {
+    final parts = token.split('.');
+    final payload = utf8.decode(base64.decode(base64.normalize(parts[1])));
+    return json.decode(payload);
+  }
 }
+
+
+
 
 class TextFieldContainer extends StatelessWidget {
   final Widget child;

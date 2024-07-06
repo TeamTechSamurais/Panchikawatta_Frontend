@@ -1,8 +1,9 @@
-// ignore_for_file: avoid_print
+ // ignore_for_file: avoid_print
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:panchikawatta/constant/utils.dart';
+import 'package:panchikawatta/models/service.dart';
 import 'package:panchikawatta/models/sparepart.dart';
 
 class GetApiService {
@@ -27,6 +28,18 @@ class GetApiService {
     }
   }
 
+  Future<List<Service>> getServices() async {
+    final response =
+        await http.get(Uri.parse('${Utils.baseUrl}/adListing/getServices'));
+
+    if (response.statusCode == 200) {
+      final List<dynamic> servicesJson = json.decode(response.body);
+      return servicesJson.map((json) => Service.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load spareparts');
+    }
+  }
+
   Future<SparePart> getSparePartById(int sparePartId) async {
     final response = await http
         .get(Uri.parse('${Utils.baseUrl}/users/spare-parts/$sparePartId'));
@@ -42,12 +55,43 @@ class GetApiService {
     }
   }
 
+  Future<Service> getServiceById(int serviceId) async {
+    print(
+        'Fetching service with ID: $serviceId'); // Debugging: Print service ID
+    final url = '${Utils.baseUrl}/users/services/$serviceId';
+    print('URL: $url'); // Debugging: Print URL
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonResponse = json.decode(response.body);
+      print('JSON Response: $jsonResponse'); // Debugging: Print JSON response
+      final Service service = Service.fromJson(jsonResponse);
+      print('Service Object: $service'); // Debugging: Print Service object
+      return service;
+    } else {
+      print(
+          'Failed to load services: ${response.body}'); // Print the error response
+      throw Exception('Failed to load services');
+    }
+  }
+
   Future<List<SparePart>> searchSpareparts(String keyword) async {
     final response = await http
         .get(Uri.parse('${Utils.baseUrl}/adListing/search?keyword=$keyword'));
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
       return data.map((item) => SparePart.fromJson(item)).toList();
+    } else {
+      throw Exception('Failed to load spare parts');
+    }
+  }
+
+  Future<List<Service>> searchServices(String keyword) async {
+    final response = await http.get(Uri.parse(
+        '${Utils.baseUrl}/adListing/searchServices?keyword=$keyword'));
+    if (response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body);
+      return data.map((item) => Service.fromJson(item)).toList();
     } else {
       throw Exception('Failed to load spare parts');
     }
@@ -96,4 +140,14 @@ class GetApiService {
       throw Exception('Failed to load spare parts');
     }
   }
+
+  // Future<List<Map<String, dynamic>>> getUserVehicleReminders(int userId) async {
+  //   final response = await http
+  //       .get(Uri.parse('http://10.0.2.2:8000/users/getReminder/$userId'));
+  //   if (response.statusCode == 200) {
+  //     return List<Map<String, dynamic>>.from(json.decode(response.body));
+  //   } else {
+  //     throw Exception('Failed to load vehicle reminders');
+  //   }
+  // }
 }

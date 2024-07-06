@@ -331,7 +331,7 @@ class _SignUp2State extends State<sign_up2> {
                           ),
                         ),
                         child: Text(
-                          "Next",
+                          "Save",
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
