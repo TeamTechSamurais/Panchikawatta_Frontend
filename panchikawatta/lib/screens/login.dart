@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:js';
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/global/common/toast.dart';
 import 'package:panchikawatta/main.dart';
 import 'package:panchikawatta/rest/rest_api.dart';
 import 'package:panchikawatta/screens/Profile/forgetpassword1.dart';
 import 'package:panchikawatta/screens/SignUp/sign_up1.dart';
+import 'package:panchikawatta/screens/storage_helper.dart';
 import 'package:panchikawatta/user_auth/firebase_auth_implementation/firebase_auth_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -49,7 +51,8 @@ class _LoginState extends State<login> {
             children: <Widget>[
               const SizedBox(height: 40),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                 child: Row(
                   children: [
                     GestureDetector(
@@ -72,7 +75,8 @@ class _LoginState extends State<login> {
               ),
               const SizedBox(height: 10),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
                 child: Image.asset(
                   'lib/src/img/orange logo 1.png',
                   height: 150,
@@ -95,7 +99,7 @@ class _LoginState extends State<login> {
                 child: TextField(
                   controller: emailController,
                   cursorColor: Colors.black,
-                  decoration: const  InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: "Email",
                     border: InputBorder.none,
                   ),
@@ -149,7 +153,8 @@ class _LoginState extends State<login> {
                 child: ElevatedButton(
                   onPressed: _signIn,
                   style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 40),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 40),
                     backgroundColor: const Color(0xFFFF5C01),
                   ),
                   child: _isSigning
@@ -222,18 +227,18 @@ class _LoginState extends State<login> {
         String? jwtToken = await _generateJwtToken(user);
 
         if (jwtToken != null) {
-          // Save JWT token locally if needed
-          // Example: saveTokenLocally(jwtToken);
+          await saveJwtToken(jwtToken);
+          startTokenExpiryTimer(jwtToken);
 
           // Navigate to home page after successful login
           Navigator.push(
-            context,
+            context as BuildContext,
             MaterialPageRoute(
               builder: (context) => MyHomePage(),
             ),
           );
         } else {
-          showToast(message: "Failed to generate JWT token");
+          // showToast(message: "Failed to generate JWT token");
         }
       } else {
         showToast(message: "Please verify your email before login");
@@ -244,33 +249,57 @@ class _LoginState extends State<login> {
   }
 }
 
-  Future<String?> _generateJwtToken(User user) async {
-    try {
-      // Get the Firebase ID token
-      String? idToken = await user.getIdToken();
-      print('Received idToken token: $idToken');
+Future<String?> _generateJwtToken(User user) async {
+  try {
+    // Get the Firebase ID token
+    String? idToken = await user.getIdToken();
+    print('Received idToken token: $idToken');
 
-      // Call your Node.js server to generate JWT token
-      final response = await http.post(
-        Uri.parse('http://10.0.2.2:8000/users/generateJwtToken'),
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode({'idToken': idToken}),
-      );
+    // Call your Node.js server to generate JWT token
+    final response = await http.post(
+      Uri.parse('http://10.0.2.2:8000/users/generateJwtToken'),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode({'idToken': idToken}),
+    );
 
-      if (response.statusCode == 201) {
-        // Assuming your server returns the JWT token in the response body
-        final responseData = jsonDecode(response.body);
-        return responseData['token'];
-      } else {
-        return null;
-      }
-    } catch (e) {
-      print('Error generating JWT token: $e');
+    if (response.statusCode == 201) {
+      // Assuming your server returns the JWT token in the response body
+      final responseData = jsonDecode(response.body);
+      return responseData['token'];
+    } else {
       return null;
     }
+  } catch (e) {
+    print('Error generating JWT token: $e');
+    return null;
   }
+}
+
+void startTokenExpiryTimer(String jwtToken) {
+  final payload = parseJwt(jwtToken);
+  final expiryDate = DateTime.fromMillisecondsSinceEpoch(payload['exp'] * 1000);
+  final now = DateTime.now();
+  final timeToExpiry = expiryDate.difference(now);
+
+  Timer(timeToExpiry, () {
+    // Token has expired, navigate to login page
+    deleteJwtToken(); // Optionally delete the expired token
+    Navigator.pushReplacement(
+      context as BuildContext,
+      MaterialPageRoute(
+          builder: (context) =>
+              login()), // Ensure login() is correctly imported
+    );
+  });
+}
+
+Map<String, dynamic> parseJwt(String token) {
+  final parts = token.split('.');
+  final payload = utf8.decode(base64.decode(base64.normalize(parts[1])));
+  return json.decode(payload);
+}
 
 class TextFieldContainer extends StatelessWidget {
   final Widget child;
