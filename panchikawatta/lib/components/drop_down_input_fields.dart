@@ -5,12 +5,16 @@ class DropdownInputField extends StatefulWidget {
   final String hintText;
   final String? initialValue;
   final FormFieldValidator<String>? validator;
+  final ValueChanged<String?>? onChanged;
+  final String? value;
 
   DropdownInputField({
     required this.dropdownItems,
     required this.hintText,
     this.validator,
-    this.initialValue, String? value,
+    this.initialValue,
+    this.onChanged,
+    this.value,
   });
 
   @override
@@ -24,8 +28,7 @@ class _DropdownInputFieldState extends State<DropdownInputField> {
   @override
   void initState() {
     super.initState();
-    _dropdownValue = widget.dropdownItems.contains(widget.initialValue) ? widget.initialValue : null;
-    // _dropdownValue = widget.initialValue;
+    _dropdownValue = widget.initialValue ?? widget.value;
   }
 
   @override
@@ -41,7 +44,11 @@ class _DropdownInputFieldState extends State<DropdownInputField> {
             return DropdownMenuItem<String>(
               value: value,
               child: DefaultTextStyle(
-                style: const TextStyle(fontSize: 16, color: Color(0xCC000000)),
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Color(0xCC000000),
+                  fontWeight: FontWeight.normal,
+                ),
                 child: Text(value),
               ),
             );
@@ -51,17 +58,19 @@ class _DropdownInputFieldState extends State<DropdownInputField> {
             setState(() {
               _dropdownValue = newValue;
             });
+            if (widget.onChanged != null) {
+              widget.onChanged!(newValue);
+            }
             _formKey.currentState!.validate();
           },
           decoration: const InputDecoration(
-            //borderRadius: BorderRadius.all(Radius.circular(10)),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10)),
-              borderSide: BorderSide.none,
-            ),
-            filled: true,
-            fillColor: Color.fromARGB(255, 241, 239, 237)
-          ),
+              //borderRadius: BorderRadius.all(Radius.circular(10)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+                borderSide: BorderSide.none,
+              ),
+              filled: true,
+              fillColor: Color.fromARGB(255, 241, 239, 237)),
         ),
       ),
     );

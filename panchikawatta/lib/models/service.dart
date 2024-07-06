@@ -19,4 +19,6 @@ class Service {
       imageUrl: json['imageUrl'] ?? 'No image',
     );
   }
+
+  get price => null;
 }

@@ -1,11 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/components/input_fields.dart';
 import 'package:panchikawatta/screens/Profile/buyer_profile.dart';
+import 'package:panchikawatta/screens/Profile/edit_profile_page.dart';
 import 'package:panchikawatta/screens/api_service.dart';
+
 import 'package:panchikawatta/screens/delete_and_edit_my_profile.dart';
-import 'package:panchikawatta/screens/edit_profile_page.dart';
+import 'package:panchikawatta/screens/Profile/edit_profile_page.dart';
 import 'package:panchikawatta/screens/seller_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,9 +20,11 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  late Future<DocumentSnapshot<Map<String, dynamic>>> _userProfile;
   Future<Map<String, dynamic>>? _userFuture;
   String? profilePictureUrl;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   bool _isSeller = false;
   int? _userId;
   final TextEditingController _businessName = TextEditingController();
@@ -31,6 +36,15 @@ class _ProfilePageState extends State<ProfilePage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _userProfile = _getUserProfile();
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> _getUserProfile() async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      return await _firestore.collection('users').doc(user.uid).get();
+    }
+    throw Exception("No user logged in");
     _tabController.addListener(_handleTabChange);
     _fetchUser();
   }
@@ -78,7 +92,8 @@ class _ProfilePageState extends State<ProfilePage>
           context: context,
           builder: (BuildContext) {
             return AlertDialog(
-              content: const Text('You do not have an account. Please sign up.'),
+              content:
+                  const Text('You do not have an account. Please sign up.'),
               actions: [
                 TextButton(
                   onPressed: () {
@@ -97,7 +112,8 @@ class _ProfilePageState extends State<ProfilePage>
     bool isSeller = false;
 
     if (sellerData != null &&
-        (!sellerData.containsKey('status') || sellerData['status'] != 'error')) {
+        (!sellerData.containsKey('status') ||
+            sellerData['status'] != 'error')) {
       isSeller = true;
     }
 
@@ -115,8 +131,8 @@ class _ProfilePageState extends State<ProfilePage>
           builder: (BuildContext context) {
             return AlertDialog(
               content: Container(
-                width: MediaQuery.of(context).size.width * 0.98, 
-                height: MediaQuery.of(context).size.height * 0.65, 
+                width: MediaQuery.of(context).size.width * 0.98,
+                height: MediaQuery.of(context).size.height * 0.65,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -128,91 +144,83 @@ class _ProfilePageState extends State<ProfilePage>
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-
                     const SizedBox(height: 20),
-
                     Form(
-                        key: formKey,
-                        child: Column(
-                          children: [
-                            InputFields(
-                              hintText: "Business Name",
-                              width1: MediaQuery.of(context).size.width * 0.8,
-                              controller: _businessName,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter a business name';
-                                }
-                                return null;
-                              },
-                            ),
-
-                            const SizedBox(height: 20),
-
-                            InputFields(
-                              hintText: "Business Address",
-                              width1: MediaQuery.of(context).size.width * 0.8,
-                              controller: _businessAddress,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter a business address';
-                                }
-                                return null;
-                              },
-                            ),
-
-                            const SizedBox(height: 20),
-
-                            InputFields(
-                              hintText: "Phone (+94)",
-                              width1: MediaQuery.of(context).size.width * 0.8,
-                              controller: _businessPhone,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter a phone number';
-                                }
-                                // Check if the phone number is valid
-                                final phoneRegExp = RegExp(r'^\d{10}$');
-                                if (!phoneRegExp.hasMatch(value)) {
-                                  return 'Please enter a valid phone number';
-                                }
-                                return null;
-                              },
-                            ),
-
-                            const SizedBox(height: 20),
-
-                            InputFields(
-                              hintText: "Business description",
-                              width1: MediaQuery.of(context).size.width * 0.8,
-                              controller: _businessDescription,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter a business description';
-                                }
-                                return null;
-                              },
-                            ),
-
-                            const SizedBox(height: 20),
-                            CustomButton(
-                              onPressed: () {
-                                if (formKey.currentState!.validate()) {
-                                  // Handle form submission
-                                  final data = {
-                                    'business_name': _businessName.text,
-                                    'business_address': _businessAddress.text,
-                                    'business_phone': _businessPhone.text,
-                                    'business_description': _businessDescription.text,
-                                    'user_id': _userId,
-                                  };
-                                  ApiServices.registerSeller(data);
-                                }
-                              },
-                              text: 'submit',
-                            ),
-                          ],
-                        ),
+                      key: formKey,
+                      child: Column(
+                        children: [
+                          InputFields(
+                            hintText: "Business Name",
+                            width1: MediaQuery.of(context).size.width * 0.8,
+                            controller: _businessName,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter a business name';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          InputFields(
+                            hintText: "Business Address",
+                            width1: MediaQuery.of(context).size.width * 0.8,
+                            controller: _businessAddress,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter a business address';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          InputFields(
+                            hintText: "Phone (+94)",
+                            width1: MediaQuery.of(context).size.width * 0.8,
+                            controller: _businessPhone,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter a phone number';
+                              }
+                              // Check if the phone number is valid
+                              final phoneRegExp = RegExp(r'^\d{10}$');
+                              if (!phoneRegExp.hasMatch(value)) {
+                                return 'Please enter a valid phone number';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          InputFields(
+                            hintText: "Business description",
+                            width1: MediaQuery.of(context).size.width * 0.8,
+                            controller: _businessDescription,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter a business description';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          CustomButton(
+                            onPressed: () {
+                              if (formKey.currentState!.validate()) {
+                                // Handle form submission
+                                final data = {
+                                  'business_name': _businessName.text,
+                                  'business_address': _businessAddress.text,
+                                  'business_phone': _businessPhone.text,
+                                  'business_description':
+                                      _businessDescription.text,
+                                  'user_id': _userId,
+                                };
+                                ApiServices.registerSeller(data);
+                              }
+                            },
+                            text: 'submit',
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -220,7 +228,8 @@ class _ProfilePageState extends State<ProfilePage>
             );
           },
         ).then((_) {
-          _tabController.index = 0; // Switch back to the buyer tab when the dialog is closed
+          _tabController.index =
+              0; // Switch back to the buyer tab when the dialog is closed
         });
       });
     }
@@ -229,159 +238,157 @@ class _ProfilePageState extends State<ProfilePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0.0,
-        automaticallyImplyLeading: false,
-        title: const Text('My Profile',
-          style: TextStyle(
-            color: Color(0xFFFF5C01),
-            fontSize: 28,
-            fontWeight: FontWeight.bold)),
-        actions: [
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.settings, color: Colors.black, size: 28),
-            onSelected: (String result) {
-              switch (result) {
-                case 'EditProfile':
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EditProfilePage()),
-                  );
-                  break;
-                case 'DeleteProfile':
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return DeleteProfileDialog();
-                    },
-                  );
-
-                  break;
-                case 'Logout':
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return Logout();
-                    },
-                  );
-                  break;
-              }
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          elevation: 0.0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.black, size: 28),
+            onPressed: () {
+              // Navigate to the previous page
+              Navigator.pop(context);
             },
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-              const PopupMenuItem<String>(
-                value: 'EditProfile',
-                child: Text('Edit Profile'),
-              ),
-              const PopupMenuItem<String>(
-                value: 'DeleteProfile',
-                child: Text('Delete Profile'),
-              ),
-              const PopupMenuItem<String>(
-                value: 'Logout',
-                child: Text('Logout',
-                  style: TextStyle(color: Color(0xFFFF5C01))),
-              ),
-            ],
           ),
-        ],
-      ),
-      body: FutureBuilder<Map<String, dynamic>>(
-        future: _userFuture,
-        builder: (context, snapshot) {
-          if (_userFuture == null) {
-            return const Center(
-              child: CircularProgressIndicator(
-                color: Color(0xFFFF5C01),
-              ),
-            );
-          } else if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(color: Color(0xFFFF5C01)),
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            );
-          } else {
-            final user = snapshot.data!;
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  const SizedBox(height: 20),
-                  Center(
-                    child: CircleAvatar(
-                      radius: 80,
-                      backgroundImage: profilePictureUrl != null
-                        ? NetworkImage(profilePictureUrl!)
-                        : null,
-                      child: profilePictureUrl == null
-                        ? const Icon(
-                          Icons.person,
-                          size: 80,
-                        )
-                        : null),
-                  ),
-
-                  const SizedBox(height: 25),
-
-                  Center(
-                    child: Text(
+          title: const Text('My Profile',
+              style: TextStyle(color: Color(0xFFFF5C01), fontSize: 28)),
+          actions: [
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.settings, color: Colors.black, size: 28),
+              onSelected: (String result) {
+                switch (result) {
+                  case 'EditProfile':
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => EditProfilePage()),
+                    );
+                    break;
+                  case 'DeleteProfile':
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return DeleteProfileDialog();
+                      },
+                    );
+                    break;
+                  case 'Logout':
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Logout();
+                      },
+                    );
+                    break;
+                }
+              },
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                const PopupMenuItem<String>(
+                  value: 'EditProfile',
+                  child: Text('Edit Profile'),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'DeleteProfile',
+                  child: Text('Delete Profile'),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'Logout',
+                  child: Text('Logout',
+                      style: TextStyle(color: Color(0xFFFF5C01))),
+                ),
+              ],
+            ),
+          ],
+        ),
+        body: FutureBuilder<Map<String, dynamic>>(
+          future: _userFuture,
+          builder: (context, snapshot) {
+            if (_userFuture == null) {
+              return const Center(
+                child: CircularProgressIndicator(
+                  color: Color(0xFFFF5C01),
+                ),
+              );
+            } else if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(color: Color(0xFFFF5C01)),
+              );
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text('Error: ${snapshot.error}'),
+              );
+            } else {
+              final user = snapshot.data!;
+              return SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    Center(
+                      child: CircleAvatar(
+                          radius: 80,
+                          backgroundImage: profilePictureUrl != null
+                              ? NetworkImage(profilePictureUrl!)
+                              : null,
+                          child: profilePictureUrl == null
+                              ? const Icon(
+                                  Icons.person,
+                                  size: 80,
+                                )
+                              : null),
+                    ),
+                    const SizedBox(height: 25),
+                    Center(
+                        child: Text(
                       '${user['userName']}',
                       style: const TextStyle(
                         fontSize: 18,
                       ),
-                    )
-                  ),
-                    
-                  const SizedBox(height: 25),
-                  TabBar(
-                    controller: _tabController,
-                    tabs: [
-                      _individualTab(
-                        'Buyer',
-                      ),
-                      _individualTab('Seller'),
-                    ],
-                    labelColor: const Color(0xFFFF5C01),
-                    unselectedLabelColor: Color(0x80000000),
-                    indicatorColor: Colors.transparent,
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    labelPadding: EdgeInsets.all(0),
-                    indicatorPadding: EdgeInsets.all(0),
-                    dividerColor: Colors.transparent,
-                  ),
-                  Container(
-                    height: 2000, 
-                    child: TabBarView(
+                    )),
+                    const SizedBox(height: 25),
+                    TabBar(
                       controller: _tabController,
-                      children: [
-                        BuyerProfile(),
-                        _isSeller ? SellerProfile() : Container(),
+                      tabs: [
+                        _individualTab(
+                          'Buyer',
+                        ),
+                        _individualTab('Seller'),
                       ],
+                      labelColor: const Color(0xFFFF5C01),
+                      unselectedLabelColor: Color(0x80000000),
+                      indicatorColor: Colors.transparent,
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      labelPadding: EdgeInsets.all(0),
+                      indicatorPadding: EdgeInsets.all(0),
+                      dividerColor: Colors.transparent,
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                ],
-              ),
-            );
-          }
-        },
-      ));
+                    Container(
+                      height: 2000,
+                      child: TabBarView(
+                        controller: _tabController,
+                        children: [
+                          BuyerProfile(),
+                          _isSeller ? SellerProfile() : Container(),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              );
+            }
+          },
+        ));
   }
 
-  //A method to create an individual tab. This is created to add a vertical divider between the tabs.
   Widget _individualTab(String text) {
     return Container(
       height: 50 + MediaQuery.of(context).padding.bottom,
-      padding: const EdgeInsets.all(0),
+      padding: EdgeInsets.all(0),
       width: double.infinity,
       decoration: const BoxDecoration(
-        border: Border(
-          right: BorderSide(
-            color: Color(0x80000000),
-            width: 0,
-            style: BorderStyle.solid))),
+          border: Border(
+              right: BorderSide(
+                  color: Color(0x80000000),
+                  width: 0,
+                  style: BorderStyle.solid))),
       child: Tab(
         text: text,
       ),
