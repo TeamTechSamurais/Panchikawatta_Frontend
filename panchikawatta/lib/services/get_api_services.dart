@@ -38,7 +38,7 @@ class GetApiService {
       print(sparePart);
       return sparePart;
     } else {
-      throw Exception('Failed to load spare part');
+      throw Exception('Failed to load spare part.');
     }
   }
 
