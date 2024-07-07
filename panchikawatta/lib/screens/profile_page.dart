@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously, avoid_types_as_parameter_names, non_constant_identifier_names
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -6,9 +8,7 @@ import 'package:panchikawatta/components/input_fields.dart';
 import 'package:panchikawatta/screens/Profile/buyer_profile.dart';
 import 'package:panchikawatta/screens/Profile/edit_profile_page.dart';
 import 'package:panchikawatta/screens/api_service.dart';
-
 import 'package:panchikawatta/screens/delete_and_edit_my_profile.dart';
-import 'package:panchikawatta/screens/Profile/edit_profile_page.dart';
 import 'package:panchikawatta/screens/seller_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -130,7 +130,7 @@ class _ProfilePageState extends State<ProfilePage>
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              content: Container(
+              content: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.98,
                 height: MediaQuery.of(context).size.height * 0.65,
                 child: Column(
@@ -352,14 +352,14 @@ class _ProfilePageState extends State<ProfilePage>
                         _individualTab('Seller'),
                       ],
                       labelColor: const Color(0xFFFF5C01),
-                      unselectedLabelColor: Color(0x80000000),
+                      unselectedLabelColor: const Color(0x80000000),
                       indicatorColor: Colors.transparent,
                       indicatorSize: TabBarIndicatorSize.tab,
-                      labelPadding: EdgeInsets.all(0),
-                      indicatorPadding: EdgeInsets.all(0),
+                      labelPadding: const EdgeInsets.all(0),
+                      indicatorPadding: const EdgeInsets.all(0),
                       dividerColor: Colors.transparent,
                     ),
-                    Container(
+                    SizedBox(
                       height: 2000,
                       child: TabBarView(
                         controller: _tabController,
@@ -381,7 +381,7 @@ class _ProfilePageState extends State<ProfilePage>
   Widget _individualTab(String text) {
     return Container(
       height: 50 + MediaQuery.of(context).padding.bottom,
-      padding: EdgeInsets.all(0),
+      padding: const EdgeInsets.all(0),
       width: double.infinity,
       decoration: const BoxDecoration(
           border: Border(
