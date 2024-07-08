@@ -6,7 +6,6 @@ import 'package:panchikawatta/components/drop_down_input_fields.dart';
 import 'package:panchikawatta/components/input_fields.dart';
 import 'package:panchikawatta/main.dart';
 import 'package:http/http.dart' as http;
-import 'package:panchikawatta/screens/Signup/Registration_successs.dart';
 import 'package:panchikawatta/screens/SignUp/Vehicledetails1.dart';
 
 class Vehicledetails2 extends StatefulWidget {

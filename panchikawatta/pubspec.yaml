@@ -24,6 +24,7 @@ dependencies:
   image_cropper: ^7.0.5
   shared_preferences: any
   fluttertoast: any
+  badges: ^3.0.2
 
 dev_dependencies:
   flutter_test:

@@ -725,7 +725,7 @@ class _SignUp1State extends State<sign_up1> {
 
                               try {
                                 var response = await http.post(
-                                  Uri.parse('http://10.0.2.2:8000/api/auth/'),
+                                  Uri.parse('http://10.0.2.2:8000/users/'), //192.168.8.117
                                   headers: {
                                     'Content-Type':
                                         'application/json; charset=UTF-8',

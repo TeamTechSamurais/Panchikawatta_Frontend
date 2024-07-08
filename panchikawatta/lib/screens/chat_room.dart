@@ -165,7 +165,7 @@ class _ChatRoomState extends State<ChatRoom> {
 
       Map<String, dynamic> message = {
         'sendby': _auth.currentUser!.uid,
-        'message': '',
+        'message': const Icon(Icons.image).toString(),
         'imageUrl': imageUrl,
         'time': FieldValue.serverTimestamp(),
       };
@@ -175,6 +175,19 @@ class _ChatRoomState extends State<ChatRoom> {
           .doc(widget.chatRoomId)
           .collection('chats')
           .add(message);
+
+      // Add the chatRoomId to the user's document when a message is sent
+      addChatRoomId();
+
+      // Increment unread messages count
+      await _firestore
+          .collection('chatRoom')
+          .doc(widget.chatRoomId)
+          .set({
+            'unreadMessages': {
+              widget.user : FieldValue.increment(1)
+            }
+          }, SetOptions(merge: true));
 
       setState(() {
         _isLoading = false;
@@ -190,6 +203,7 @@ class _ChatRoomState extends State<ChatRoom> {
         'sendby' : _auth.currentUser!.uid,
         'message': _message.text,
         'time' : FieldValue.serverTimestamp(),
+        'unread' : 'true',
       };
 
       await _firestore 
@@ -203,34 +217,101 @@ class _ChatRoomState extends State<ChatRoom> {
       // Add the chatRoomId to the user's document when a message is sent
       addChatRoomId();
 
+      // Ensure chatRoom document has the users field if it doesn't exist
+      final chatRoomDoc = await _firestore.collection('chatRoom').doc(widget.chatRoomId).get();
+      if (!chatRoomDoc.exists) {
+        await _firestore.collection('chatRoom').doc(widget.chatRoomId).set({
+          'users': [_auth.currentUser!.uid, widget.user],
+          'unreadMessages': {
+            widget.user: FieldValue.increment(1) // Increment unread messages for the other user
+          },
+        });
+      } else {
+        // Increment unread messages for the other user
+        final otherUserId = chatRoomDoc['users'].firstWhere((userId) => userId != _auth.currentUser!.uid);
+        await _firestore.collection('chatRoom').doc(widget.chatRoomId).set({
+          'unreadMessages': {
+            otherUserId: FieldValue.increment(1)
+          },
+        }, SetOptions(merge: true));
+      } 
+
     } else {
       print('Enter a message to send');
     }
   }
 
   // Function to add chat room id
+  // void addChatRoomId() async {
+  //   String uid = _auth.currentUser!.uid;
+  //   String otherUid = widget.user;
+
+  //   DocumentReference userDoc1 = _firestore.collection('users').doc(uid);
+  //   DocumentReference userDoc2 = _firestore.collection('users').doc(otherUid);
+
+  //   userDoc1.update({
+  //     'chatRooms': FieldValue.arrayUnion([
+  //       { 'otherUid' : widget.user,
+  //         'chatRoomId' : widget.chatRoomId
+  //       }
+  //     ])
+  //   });
+
+  //   userDoc2.update({
+  //     'chatRooms': FieldValue.arrayUnion([
+  //       {'otherUid' : uid,
+  //       'chatRoomId' : widget.chatRoomId}
+  //     ])
+  //   });
+  // }
+
   void addChatRoomId() async {
     String uid = _auth.currentUser!.uid;
     String otherUid = widget.user;
+    String chatRoomId = widget.chatRoomId;
 
     DocumentReference userDoc1 = _firestore.collection('users').doc(uid);
     DocumentReference userDoc2 = _firestore.collection('users').doc(otherUid);
 
-    userDoc1.update({
-      'chatRooms': FieldValue.arrayUnion([
-        { 'otherUid' : widget.user,
-          'chatRoomId' : widget.chatRoomId
-        }
-      ])
+    // Update chatRooms for the current user
+    await _firestore.runTransaction((transaction) async {
+      DocumentSnapshot snapshot = await transaction.get(userDoc1);
+
+      if (snapshot.exists) {
+        List<dynamic> chatRooms = snapshot['chatRooms'] as List<dynamic>? ?? [];
+        // Remove existing entry if it exists
+        chatRooms.removeWhere((room) => room['chatRoomId'] == chatRoomId);
+        // Add new entry at the beginning
+        chatRooms.insert(0, {'otherUid': otherUid, 'chatRoomId': chatRoomId});
+
+        transaction.update(userDoc1, {'chatRooms': chatRooms});
+      } else {
+        transaction.set(userDoc1, {
+          'chatRooms': [{'otherUid': otherUid, 'chatRoomId': chatRoomId}]
+        });
+      }
     });
 
-    userDoc2.update({
-      'chatRooms': FieldValue.arrayUnion([
-        {'otherUid' : uid,
-        'chatRoomId' : widget.chatRoomId}
-      ])
+    // Update chatRooms for the other user
+    await _firestore.runTransaction((transaction) async {
+      DocumentSnapshot snapshot = await transaction.get(userDoc2);
+
+      if (snapshot.exists) {
+        List<dynamic> chatRooms = snapshot['chatRooms'] as List<dynamic>? ?? [];
+        // Remove existing entry if it exists
+        chatRooms.removeWhere((room) => room['chatRoomId'] == chatRoomId);
+        // Add new entry at the beginning
+        chatRooms.insert(0, {'otherUid': uid, 'chatRoomId': chatRoomId});
+
+        transaction.update(userDoc2, {'chatRooms': chatRooms});
+      } else {
+        transaction.set(userDoc2, {
+          'chatRooms': [{'otherUid': uid, 'chatRoomId': chatRoomId}]
+        });
+      }
     });
   }
+
 
   // Widget to display messages
   Widget messages(Size size, Map<String,dynamic> map ) {

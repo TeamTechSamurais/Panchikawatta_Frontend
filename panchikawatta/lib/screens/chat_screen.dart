@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/input_fields.dart';
 import 'package:panchikawatta/screens/chat_room.dart';
+import 'package:badges/badges.dart' as badges;
 
 class ChatScreen extends StatefulWidget {
   @override
@@ -106,7 +107,7 @@ class _ChatScreenState extends State<ChatScreen> {
     
 
     return ListView.builder(  //A scrollable list of widgets that are created on demand.
-      itemCount: searchResults?.length ?? 0, //searchResults!.isEmpty ? 0 : searchResults!.length,
+      itemCount: searchResults?.length ?? 0, 
       itemBuilder: (context, index) {   //The itemBuilder function is called for each item in the list.
         
         if (index < results.length) {
@@ -203,20 +204,16 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
       ),
 
-      body: _isSearching ? _buildSearchResults() 
-        // : Container(
-        //   child: const Center(
-        //     child: Text('Search for a user to chat with', style: TextStyle(fontSize: 20)),
-        //   ),
+      body: _isSearching 
+        ? _buildSearchResults() 
         : StreamBuilder<DocumentSnapshot>(
           stream: FirebaseFirestore.instance.collection('users').doc(_auth.currentUser!.uid).snapshots(), //get the document of the current user
           builder: (context, snapshot) {
             if (snapshot.hasData && snapshot.data != null) {
               final chatrooms = snapshot.data?.data() ;
-              final chatRooms = chatrooms is Map<String, dynamic> ? chatrooms['chatRooms'] as List<dynamic>? ?? [] : [] ; //(snapshot.data!.data() as Map<String, dynamic>)['chatRooms'] as List<dynamic>;
-              //final chatRooms = (snapshot.data!.data() as Map<String, dynamic>)['chatRooms'] as List<dynamic>;
-              // final chatRoomIds = chatRooms.map((chatRoom) => chatRoom as String).toList();
-              // return _buildChatRoomList(chatRoomIds);
+              final chatRooms = chatrooms is Map<String, dynamic> 
+                                  ? (chatrooms['chatRooms'] as List<dynamic>? ?? []).toList()  
+                                  : [] ; //(snapshot.data!.data() as Map<String, dynamic>)['chatRooms'] as List<dynamic>;
 
               if (chatRooms.isEmpty) {
                 return const Center(
@@ -227,13 +224,13 @@ class _ChatScreenState extends State<ChatScreen> {
               return ListView.builder(
                 itemCount: chatRooms.length,
                 itemBuilder: (context, index) {
-                  final item = chatRooms[index]; //as Map<String, dynamic>;
+                  final item = chatRooms[index]; 
                   Map<String, dynamic>? chatRoomMap ;
                   String? chatRoomId ;
 
                   if (item is Map<String, dynamic>) {
                     chatRoomMap = item;
-                    final id = chatRoomMap['chatRoomId'] ;//as String;
+                    final id = chatRoomMap['chatRoomId'] ;
 
                     if (id is String) {
                       chatRoomId = id;
@@ -248,7 +245,6 @@ class _ChatScreenState extends State<ChatScreen> {
                     return const SizedBox.shrink();
                   }
 
-                  // final chatRoomId = chatRoomMap['chatRoomId'] as String;
                   final otherUserId = chatRoomMap?['otherUid'] as String? ?? 'defaultUserId';
 
                   return StreamBuilder<QuerySnapshot>(
@@ -259,91 +255,145 @@ class _ChatScreenState extends State<ChatScreen> {
                       .orderBy('time', descending: true)
                       .snapshots(),
                     builder: (context, chatSnapshot) {
-                      if (chatSnapshot.hasData && chatSnapshot.data != null) {
+                      if (chatSnapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                      if (chatSnapshot.hasError) {
+                        return const Center(
+                          child: Text('An error occurred'),
+                        );
+                      }
+                      if (!chatSnapshot.hasData || chatSnapshot.data!.docs.isEmpty) {
+                        return const SizedBox.shrink();
+                      }
 
                         final chatDocs = chatSnapshot.data!.docs;
-
-                        if (chatDocs.isEmpty) {
-                          print('No chat messages found');
-                          return const SizedBox.shrink();
-                        }
 
                         final lastMessage = chatDocs.first;
 
                         return FutureBuilder<DocumentSnapshot>(
                           future: _firestore.collection('users').doc(otherUserId).get(), 
                           builder: (context, userSnapshot) {
-                            if (userSnapshot.connectionState == ConnectionState.done && userSnapshot.hasData) {
+                            // if (userSnapshot.connectionState == ConnectionState.waiting) { // && userSnapshot.hasData) {
+                            //   return const Center(
+                            //     child: CircularProgressIndicator(),
+                            //   );
+                            // }
+
+                            if (userSnapshot.hasError) {
+                              return const Center(
+                                child: Text('An error occurred'),
+                              );
+                            }
+
+                            if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
+                              return const SizedBox.shrink();
+                            }
 
                               final data = userSnapshot.data?.data() ;
                               final userDisplayName =  data is Map<String, dynamic> ? data['name'] as String? ?? 'defaultName' : 'defaultname' ; //(userSnapshot.data?.data() as Map<String, dynamic>)['name'] as String;
-                              // final pic = userSnapshot.data?.data();
                               final userDisplayPicture = data is Map<String, dynamic> ? data['profile_picture'] as String? ?? '' : '' ; //(userSnapshot.data?.data() as Map<String, dynamic>)['profile_picture'] as String? ?? '';
-                              //final userDisplayPicture = (userSnapshot.data!.data() as Map<String, dynamic>)['profile_picture'] as String? ?? '';
-                              return Padding (
-                                padding: EdgeInsets.fromLTRB(
-                                  MediaQuery.of(context).size.width * 0.05,  // left
-                                  0,                                        // top
-                                  MediaQuery.of(context).size.width * 0.05,  // right
-                                  0,                                        // bottom
-                                ),
-                                child: Container( 
-                                  height: 75,
-                                  decoration: const BoxDecoration(
-                                    border: Border(bottom: BorderSide(color: Color(0xFFFF5C01))),
-                                  ),
-                                  child: ListTile(
-                                    leading: CircleAvatar(
-                                      backgroundImage: userDisplayPicture.isEmpty 
-                                        ? null 
-                                        : NetworkImage(userDisplayPicture),
-                                      child: userDisplayPicture.isEmpty  
-                                        ? const Icon(Icons.person) 
-                                        : null,
-                                    ),
-                                    onTap: () { 
-                                      // String roomId = this.chatRoomId(
-                                      //   _auth.currentUser!.uid ,
-                                      //   searchResults![index]['uid'],
-                                      // );
+                              
+                              return StreamBuilder<DocumentSnapshot>(
+                                stream: _firestore
+                                    .collection('chatRoom')
+                                    .doc(chatRoomId)
+                                    .snapshots(),
+                                builder: (context, chatRoomSnapshot) {
+                                  // if (chatRoomSnapshot.connectionState == ConnectionState.waiting) {
+                                  //   return const Center(child: CircularProgressIndicator());
+                                  // }
+                                  if (chatRoomSnapshot.hasError) {
+                                    return const Center(child: Text('An error occurred.'));
+                                  }
+                                  if (!chatRoomSnapshot.hasData || !chatRoomSnapshot.data!.exists) {
+                                    return const SizedBox.shrink();
+                                  }
 
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (_) => ChatRoom(
-                                            chatRoomId: chatRoomId as String, //roomId
-                                            userMap: {'uid': otherUserId, 'name': userDisplayName, 'profile_picture': userDisplayPicture},  //searchResults![index],
-                                            user: otherUserId,
-                                          )
-                                        )
-                                      );
-                                      
-                                    },
+                                    final chatRoomData = chatRoomSnapshot.data!.data() as Map<String, dynamic>;
+                                    int unreadMessages = 0;
+                                    if (chatRoomData['unreadMessages'] is Map<String, dynamic>) {
+                                      unreadMessages = chatRoomData['unreadMessages'][_auth.currentUser!.uid] as int? ?? 0;
+                                    }
+
+                                        
+                                    return Padding (
+                                      padding: EdgeInsets.fromLTRB(
+                                        MediaQuery.of(context).size.width * 0.05,  // left
+                                        0,                                        // top
+                                        MediaQuery.of(context).size.width * 0.05,  // right
+                                        0,                                        // bottom
+                                      ),
+                                      child: Container( 
+                                        height: 75,
+                                        decoration: const BoxDecoration(
+                                          border: Border(bottom: BorderSide(color: Color(0xFFFF5C01))),
+                                        ),
+                                        child: ListTile(
+                                          leading: CircleAvatar(
+                                            backgroundImage: userDisplayPicture.isEmpty 
+                                              ? null 
+                                              : NetworkImage(userDisplayPicture),
+                                            child: userDisplayPicture.isEmpty  
+                                              ? const Icon(Icons.person) 
+                                              : null,
+                                          ),
+                                          onTap: () { 
+                                            Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                builder: (_) => ChatRoom(
+                                                  chatRoomId: chatRoomId as String, //roomId
+                                                  userMap: {'uid': otherUserId, 'name': userDisplayName, 'profile_picture': userDisplayPicture},  //searchResults![index],
+                                                  user: otherUserId,
+                                                )
+                                              )
+                                            );
+
+                                            // Reset unread messages count
+                                            _firestore
+                                                .collection('chatRoom')
+                                                .doc(chatRoomId)
+                                                .update({
+                                                  'unreadMessages': {
+                                                    _auth.currentUser!.uid: 0,
+                                                  }
+                                                });
+                                            
+                                          },
                                 
-                                    title: Text(userDisplayName), 
-                                    subtitle: Text(lastMessage['message']),
-                                  ),
-                                ),
+                                          title: Text(userDisplayName), 
+                                          subtitle: Text(lastMessage['message']),
+                                          trailing: unreadMessages > 0
+                                              ? badges.Badge(
+                                                  badgeContent: Text(
+                                                    unreadMessages.toString(),
+                                                    style: const TextStyle(color: Colors.white),
+                                                  ),
+                                                  badgeStyle: const badges.BadgeStyle(
+                                                    badgeColor: Color(0xFFFF5C01),
+                                                  ),
+                                                )
+                                              : null,
+                                        ),
+                                      ),
+                                    );
+                                },
                               );
-                            } else {
-                              return const SizedBox.shrink();
-                            }
-                          },
+                          }
                         );
-                      } else {
-                        return const SizedBox.shrink();
-                      }
-                    },
+                    }
                   );
                 },
-              );
+              ); 
             } else {
               return const Center(
                 child: Text('You have not chat with anyone', style: TextStyle(fontSize: 20)),
               );
             }
           },
-        ), 
-
+        )
     );
   }
 }
