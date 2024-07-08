@@ -436,34 +436,33 @@ class _SignUp1State extends State<sign_up1> {
                   ),
                 ),
                 const SizedBox(height: 5),
-Row(
-  children: [
-    Expanded(
-      child: ProvinceDropdown(
-        selectedProvince: selectedprovince,
-        onChanged: (String? newValue) {
-          setState(() {
-            selectedprovince = newValue;
-            // Clear the selected district when province changes
-            selecteddistrict = null;
-          });
-        },
-      ),
-    ),
-    Expanded(
-      child: DistrictDropdown(
-        selectedProvince: selectedprovince,
-        selectedDistrict: selecteddistrict,
-        onChanged: (String? newValue) {
-          setState(() {
-            selecteddistrict = newValue;
-          });
-        },
-      ),
-    ),
-  ],
-),
-
+                Row(
+                  children: [
+                    Expanded(
+                      child: ProvinceDropdown(
+                        selectedProvince: selectedprovince,
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedprovince = newValue;
+                            // Clear the selected district when province changes
+                            selecteddistrict = null;
+                          });
+                        },
+                      ),
+                    ),
+                    Expanded(
+                      child: DistrictDropdown(
+                        selectedProvince: selectedprovince,
+                        selectedDistrict: selecteddistrict,
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selecteddistrict = newValue;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 10),
                 Container(
                   width: size.width * 0.3,
@@ -652,7 +651,7 @@ Row(
                                 'password': passwordController.text.trim(),
                                 'district': selecteddistrict,
                                 'province': selectedprovince,
-                                'images':imagePath!
+                                //'images':imagePath!
                                 // Add other necessary fields here
                               };
 
@@ -706,7 +705,6 @@ Row(
     }
   }
 }
-
 
 //Save the email locally
 Future<void> saveUserEmail(String email) async {
