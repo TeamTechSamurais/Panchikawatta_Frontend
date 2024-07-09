@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:js';
+
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/global/common/toast.dart';
 import 'package:panchikawatta/main.dart';
@@ -23,6 +23,7 @@ class login extends StatefulWidget {
 
 class _LoginState extends State<login> {
   bool _isSigning = false;
+   bool _isPasswordVisible = false;
   final FirebaseAuthServices _auth = FirebaseAuthServices();
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -105,14 +106,24 @@ class _LoginState extends State<login> {
                   ),
                 ),
               ),
-              TextFieldContainer(
+               TextFieldContainer(
                 child: TextField(
                   controller: passwordController,
-                  obscureText: true,
+                  obscureText: !_isPasswordVisible, // Change this line
                   cursorColor: Colors.black,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: "Password",
                     border: InputBorder.none,
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        });
+                      },
+                    ),
                   ),
                 ),
               ),
@@ -211,7 +222,7 @@ class _LoginState extends State<login> {
     String password = passwordController.text.trim();
     // String username = usernameController.text;
 
-    User? user = await _auth.signInWithEmailAndPassword(email, password);
+     User? user = await _auth.signInWithEmailAndPassword(email, password);
 
     saveUserEmail(email);
 
@@ -223,14 +234,14 @@ class _LoginState extends State<login> {
       if (user.emailVerified) {
         showToast(message: "You are successfully signed in");
 
-        // Generate JWT token
+       
         String? jwtToken = await _generateJwtToken(user);
 
         if (jwtToken != null) {
           await saveJwtToken(jwtToken);
-          startTokenExpiryTimer(jwtToken);
+          startTokenExpiryTimer(jwtToken,context);
 
-          // Navigate to home page after successful login
+        
           Navigator.push(
             context as BuildContext,
             MaterialPageRoute(
@@ -248,14 +259,14 @@ class _LoginState extends State<login> {
     }
   }
 }
-
+ 
 Future<String?> _generateJwtToken(User user) async {
   try {
-    // Get the Firebase ID token
+   
     String? idToken = await user.getIdToken();
     print('Received idToken token: $idToken');
 
-    // Call your Node.js server to generate JWT token
+     
     final response = await http.post(
       Uri.parse('http://10.0.2.2:8000/users/generateJwtToken'),
       headers: {
@@ -265,7 +276,7 @@ Future<String?> _generateJwtToken(User user) async {
     );
 
     if (response.statusCode == 201) {
-      // Assuming your server returns the JWT token in the response body
+       
       final responseData = jsonDecode(response.body);
       return responseData['token'];
     } else {
@@ -277,23 +288,23 @@ Future<String?> _generateJwtToken(User user) async {
   }
 }
 
-void startTokenExpiryTimer(String jwtToken) {
+ void startTokenExpiryTimer(String jwtToken, BuildContext context) {
   final payload = parseJwt(jwtToken);
   final expiryDate = DateTime.fromMillisecondsSinceEpoch(payload['exp'] * 1000);
   final now = DateTime.now();
   final timeToExpiry = expiryDate.difference(now);
 
   Timer(timeToExpiry, () {
-    // Token has expired, navigate to login page
-    deleteJwtToken(); // Optionally delete the expired token
+    
+    deleteJwtToken();  
     Navigator.pushReplacement(
-      context as BuildContext,
+      context,
       MaterialPageRoute(
-          builder: (context) =>
-              login()), // Ensure login() is correctly imported
+          builder: (context) => login()), 
     );
   });
 }
+
 
 Map<String, dynamic> parseJwt(String token) {
   final parts = token.split('.');
@@ -327,3 +338,7 @@ void main() {
     home: login(),
   ));
 }
+
+
+
+

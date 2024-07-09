@@ -451,10 +451,13 @@ List<String> vehicleTypes = [
   'Convertible',
   'Hatchback',
 ];
-
+FirebaseAuth _auth = FirebaseAuth.instance;
+FirebaseFirestore _firestore = FirebaseFirestore.instance;
+FirebaseStorage _storage = FirebaseStorage.instance;
 class Vehicledetails1 extends StatefulWidget {
   final int userId;
   final int vehicleId;
+ 
   Vehicledetails1({required this.userId, this.vehicleId = 0});
 
   @override
@@ -468,6 +471,7 @@ class _AddVehicleDetailsState extends State<Vehicledetails1> {
   String? selectedmake;
   String? selectedmodel;
   String? imagePath;
+  String? downloadUrl;
   TextEditingController yearController = TextEditingController();
   TextEditingController licenceDateController = TextEditingController();
   TextEditingController insuranceDateController = TextEditingController();
@@ -498,14 +502,44 @@ class _AddVehicleDetailsState extends State<Vehicledetails1> {
       },
     );
   }
+Future<String> uploadVehiclePhoto(String uid, String imagePath) async {
+  try {
+    File file = File(imagePath);
 
+    // Upload the file to Firebase Storage
+    TaskSnapshot snapshot = await FirebaseStorage.instance
+        .ref('vehicle_pictures/$uid/${ file.path.split('/').last}')
+        .putFile(file);
+
+    // Get the download URL of the uploaded image
+    String downloadUrl = await snapshot.ref.getDownloadURL();
+
+    print("Vehicle photo uploaded successfully. Download URL: $downloadUrl");
+
+    return downloadUrl;
+    
+  } catch (e) {
+    // Handle any errors that occur during the process
+    print("Error uploading vehicle photo: $e");
+    throw e; // Optionally rethrow the exception to handle it elsewhere if needed
+  }
+}
   Future<void> _uploadFromGallery() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         imagePath = pickedFile.path;
       });
-      await uploadVehiclePhoto(widget.userId.toString(), imagePath!);
+      
+      downloadUrl = await uploadVehiclePhoto(widget.userId.toString(), imagePath!);
+     
+     setState(() async {
+      
+      // Update the state variable with the downloadUrl
+      downloadUrl = downloadUrl;
+        
+        downloadUrl = await uploadVehiclePhoto(widget.userId.toString(), imagePath!);
+    });
     }
   }
 
@@ -812,7 +846,7 @@ class _AddVehicleDetailsState extends State<Vehicledetails1> {
         'year': int.tryParse(yearController.text.trim()) ?? 0,
         'licenceDate': licenceDateController.text.trim(),
         'insuranceDate': insuranceDateController.text.trim(),
-        'images':imagePath!
+        'imageUrls':downloadUrl ,
       };
 
       try {

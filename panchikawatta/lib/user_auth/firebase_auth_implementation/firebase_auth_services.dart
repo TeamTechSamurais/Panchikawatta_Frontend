@@ -39,6 +39,7 @@ Future<User?> signInWithEmailAndPassword(
     return null;
   
 }
+ 
     Future<bool> sendEmailVerification(User user, BuildContext context) async {
     try {
       await user.sendEmailVerification();

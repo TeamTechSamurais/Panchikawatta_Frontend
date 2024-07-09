@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 import 'dart:math';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
@@ -17,7 +18,7 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:panchikawatta/screens/SignUp/sign_up2.dart';
 import 'package:panchikawatta/user_auth/firebase_auth_implementation/firebase_auth_services.dart';
-
+FirebaseStorage _storage = FirebaseStorage.instance;
 class EmailValidationResult {
   final bool isValid;
   final String message;
@@ -41,6 +42,8 @@ class _SignUp1State extends State<sign_up1> {
   final FirebaseAuthServices _auth = FirebaseAuthServices();
 
   String? imagePath;
+  
+  String? downloadUrl;
   bool _isSigningUp = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController firstNameController = TextEditingController();
@@ -361,7 +364,7 @@ class _SignUp1State extends State<sign_up1> {
                       return validatePassword(value);
                     },
                     cursorColor: Colors.black,
-                    obscureText: true,
+                    obscureText: false,
                     decoration: const InputDecoration(
                       hintText: "Password",
                       border: InputBorder.none,
@@ -378,7 +381,7 @@ class _SignUp1State extends State<sign_up1> {
                       }
                       return validateConfirmPassword(value);
                     },
-                    obscureText: true,
+                    obscureText: false,
                     cursorColor: Colors.black,
                     decoration: const InputDecoration(
                       hintText: "Confirm Password",
@@ -436,34 +439,33 @@ class _SignUp1State extends State<sign_up1> {
                   ),
                 ),
                 const SizedBox(height: 5),
-Row(
-  children: [
-    Expanded(
-      child: ProvinceDropdown(
-        selectedProvince: selectedprovince,
-        onChanged: (String? newValue) {
-          setState(() {
-            selectedprovince = newValue;
-            // Clear the selected district when province changes
-            selecteddistrict = null;
-          });
-        },
-      ),
-    ),
-    Expanded(
-      child: DistrictDropdown(
-        selectedProvince: selectedprovince,
-        selectedDistrict: selecteddistrict,
-        onChanged: (String? newValue) {
-          setState(() {
-            selecteddistrict = newValue;
-          });
-        },
-      ),
-    ),
-  ],
-),
-
+                Row(
+                  children: [
+                    Expanded(
+                      child: ProvinceDropdown(
+                        selectedProvince: selectedprovince,
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedprovince = newValue;
+                            // Clear the selected district when province changes
+                            selecteddistrict = null;
+                          });
+                        },
+                      ),
+                    ),
+                    Expanded(
+                      child: DistrictDropdown(
+                        selectedProvince: selectedprovince,
+                        selectedDistrict: selecteddistrict,
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selecteddistrict = newValue;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 10),
                 Container(
                   width: size.width * 0.3,
@@ -575,52 +577,28 @@ Row(
               setState(() {
                 _isSigningUp = true;
               });
-//  Map<String, dynamic> userData = {
-//                                   'firstName': firstNameController.text.trim(),
-//                                   'lastName': lastNameController.text.trim(),
-//                                   'userName': userNameController.text.trim(),
-//                                   'email': emailController.text.trim(),
-//                                   'phoneNo': phoneNoController.text.trim(),
-//                                   'password': passwordController.text.trim(),
-//                                   'district': selecteddistrict,
-//                                   'province':selectedprovince,
-//                                   // Add other necessary fields here
-//                                 };
+              
+  
 
-//                                 try {
-//                                   var response = await http.post(
-//                                     Uri.parse('http://10.0.2.2:8000/api/auth/'),
-//                                     headers: {
-//                                       'Content-Type': 'application/json; charset=UTF-8',
-//                                     },
-//                                     body: jsonEncode(userData),
-//                                   );
-// } catch (e) {
-//                                   print('Error: $e');
-//                                   _showFillMessage(
-//                                     'Error registering user. Please try again later.',
-
-//                                   );
-//                                 }
-              // createAccount(usernameController.text.trim(), passwordController.text.trim(), emailController.text.trim(), imagePath).then((user) {
-              //   if (user != null) {
-              //     setState(() {
-              //       _isSigningUp = false;
-              //     });
-              //     Navigator.push(context, MaterialPageRoute(builder: (_) => Registraion_success()));
-              //   } else {
-              //     setState(() {
-              //       _isSigningUp = false;
-              //     });
-              //   }
-              // }) ;
               UserCredential? userCredential = await createAccount(
                   userNameController.text.trim(),
                   passwordController.text,
                   emailController.text.trim(),
-                  imagePath);
+                  imagePath!);
               // User? user = userCredential?.user;
+if (imagePath != null) {
+        // Upload the image to Firebase Storage
+        File file = File(imagePath!);
+          User? user = userCredential?.user;
+        TaskSnapshot snapshot = await _storage
+            .ref('profile_pictures/${user?.uid}')
+            .putFile(
+                file); // Upload the file to the profile_pictures folder in Firebase Storage
 
+        // Get the download URL
+        downloadUrl = await snapshot.ref.getDownloadURL();
+         print("Profile picture URL: $downloadUrl");
+      }
               setState(() {
                 _isSigningUp = false;
               });
@@ -630,6 +608,7 @@ Row(
                     userCredential.user!, context);
 
                 if (userCredential != null) {
+                  
                   // Show dialog informing user to check their email for verification
                   showDialog(
                     context: context,
@@ -642,8 +621,11 @@ Row(
                         actions: <Widget>[
                           TextButton(
                             child: const Text('OK'),
+                            
                             onPressed: () async {
+                              
                               Map<String, dynamic> userData = {
+                                
                                 'firstName': firstNameController.text.trim(),
                                 'lastName': lastNameController.text.trim(),
                                 'userName': userNameController.text.trim(),
@@ -652,7 +634,7 @@ Row(
                                 'password': passwordController.text.trim(),
                                 'district': selecteddistrict,
                                 'province': selectedprovince,
-                                'images':imagePath!
+                                 'imageUrls':downloadUrl,
                                 // Add other necessary fields here
                               };
 
@@ -706,7 +688,6 @@ Row(
     }
   }
 }
-
 
 //Save the email locally
 Future<void> saveUserEmail(String email) async {

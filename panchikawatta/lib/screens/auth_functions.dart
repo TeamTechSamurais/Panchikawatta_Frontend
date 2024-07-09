@@ -37,6 +37,7 @@ Future<UserCredential?> createAccount(String username, String password, String e
 
         // Get the download URL
         downloadUrl = await snapshot.ref.getDownloadURL();
+         print("Profile picture URL: $downloadUrl");
       }
 
       // send user data to the firebase cloud firestore database
@@ -44,7 +45,7 @@ Future<UserCredential?> createAccount(String username, String password, String e
         "name": username,
         "email": email,
         "profile_picture": downloadUrl,
-        "vehicle_photo": downloadUrl,
+       // "vehicle_photo": downloadUrl,
       });
       print("User ID: ${user.uid}");
 
@@ -52,6 +53,10 @@ Future<UserCredential?> createAccount(String username, String password, String e
     } else {
       print("Some error happend");
       return userCredential;
+       
+      
+         
+    
     }
   } catch (e) {
     print(e);
