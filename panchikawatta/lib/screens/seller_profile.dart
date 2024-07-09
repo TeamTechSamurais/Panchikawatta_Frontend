@@ -44,7 +44,6 @@ class _SellerProfile extends State<SellerProfile>
         child: Column(
           children: [
             const SizedBox(height: 20),
-
             Center(
               child: CustomButton(
                   onPressed: () {
@@ -55,9 +54,7 @@ class _SellerProfile extends State<SellerProfile>
                   },
                   text: 'Post ad'),
             ),
-
             const SizedBox(height: 15),
-
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.9,
               child: const Divider(
@@ -65,9 +62,7 @@ class _SellerProfile extends State<SellerProfile>
                 thickness: 1,
               ),
             ),
-
             const SizedBox(height: 20),
-
             Padding(
                 padding: const EdgeInsets.only(left: 30, right: 20),
                 child: Row(
@@ -102,9 +97,7 @@ class _SellerProfile extends State<SellerProfile>
                     ),
                   ],
                 )),
-
             const SizedBox(height: 20),
-
             Container(
               height: 2000, // You can adjust this value as needed
               child: TabBarView(

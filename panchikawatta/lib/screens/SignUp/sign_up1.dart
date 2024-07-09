@@ -634,7 +634,7 @@ if (imagePath != null) {
                                 'password': passwordController.text.trim(),
                                 'district': selecteddistrict,
                                 'province': selectedprovince,
-                                 'imageUrls':downloadUrl,
+                                'images':imagePath!
                                 // Add other necessary fields here
                               };
 
