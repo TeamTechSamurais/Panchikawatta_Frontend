@@ -402,13 +402,13 @@
 //     );
 //   }
 // }
- 
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
- import 'package:panchikawatta/screens/SignUp/Vehicledetails2.dart';
+import 'package:panchikawatta/screens/SignUp/Vehicledetails2.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/components/input_fields.dart';
 import 'package:http/http.dart' as http;
@@ -454,10 +454,11 @@ List<String> vehicleTypes = [
 FirebaseAuth _auth = FirebaseAuth.instance;
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 FirebaseStorage _storage = FirebaseStorage.instance;
+
 class Vehicledetails1 extends StatefulWidget {
   final int userId;
   final int vehicleId;
- 
+
   Vehicledetails1({required this.userId, this.vehicleId = 0});
 
   @override
@@ -502,44 +503,46 @@ class _AddVehicleDetailsState extends State<Vehicledetails1> {
       },
     );
   }
-Future<String> uploadVehiclePhoto(String uid, String imagePath) async {
-  try {
-    File file = File(imagePath);
 
-    // Upload the file to Firebase Storage
-    TaskSnapshot snapshot = await FirebaseStorage.instance
-        .ref('vehicle_pictures/$uid/${ file.path.split('/').last}')
-        .putFile(file);
+  Future<String> uploadVehiclePhoto(String uid, String imagePath) async {
+    try {
+      File file = File(imagePath);
 
-    // Get the download URL of the uploaded image
-    String downloadUrl = await snapshot.ref.getDownloadURL();
+      // Upload the file to Firebase Storage
+      TaskSnapshot snapshot = await FirebaseStorage.instance
+          .ref('vehicle_pictures/$uid/${file.path.split('/').last}')
+          .putFile(file);
 
-    print("Vehicle photo uploaded successfully. Download URL: $downloadUrl");
+      // Get the download URL of the uploaded image
+      String downloadUrl = await snapshot.ref.getDownloadURL();
 
-    return downloadUrl;
-    
-  } catch (e) {
-    // Handle any errors that occur during the process
-    print("Error uploading vehicle photo: $e");
-    throw e; // Optionally rethrow the exception to handle it elsewhere if needed
+      print("Vehicle photo uploaded successfully. Download URL: $downloadUrl");
+
+      return downloadUrl;
+    } catch (e) {
+      // Handle any errors that occur during the process
+      print("Error uploading vehicle photo: $e");
+      throw e; // Optionally rethrow the exception to handle it elsewhere if needed
+    }
   }
-}
+
   Future<void> _uploadFromGallery() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         imagePath = pickedFile.path;
       });
-      
-      downloadUrl = await uploadVehiclePhoto(widget.userId.toString(), imagePath!);
-     
-     setState(() async {
-      
-      // Update the state variable with the downloadUrl
-      downloadUrl = downloadUrl;
-        
-        downloadUrl = await uploadVehiclePhoto(widget.userId.toString(), imagePath!);
-    });
+
+      downloadUrl =
+          await uploadVehiclePhoto(widget.userId.toString(), imagePath!);
+
+      setState(() async {
+        // Update the state variable with the downloadUrl
+        downloadUrl = downloadUrl;
+
+        downloadUrl =
+            await uploadVehiclePhoto(widget.userId.toString(), imagePath!);
+      });
     }
   }
 
@@ -568,8 +571,6 @@ Future<String> uploadVehiclePhoto(String uid, String imagePath) async {
     }
   }
 
-   
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -582,8 +583,7 @@ Future<String> uploadVehiclePhoto(String uid, String imagePath) async {
         // ),
         automaticallyImplyLeading: false,
         title: Padding(
-          padding:
-              const EdgeInsets.only(left: 80.0), 
+          padding: const EdgeInsets.only(left: 80.0),
           child: const Text(
             'Vehicle Details',
             style: TextStyle(color: Color(0xFFFF5C01), fontSize: 28),
@@ -663,10 +663,10 @@ Future<String> uploadVehiclePhoto(String uid, String imagePath) async {
             const SizedBox(height: 20),
             Padding(
               padding: EdgeInsets.fromLTRB(
-                MediaQuery.of(context).size.width * 0.1, 
-                0, 
-                MediaQuery.of(context).size.width * 0.1, 
-                0, 
+                MediaQuery.of(context).size.width * 0.1,
+                0,
+                MediaQuery.of(context).size.width * 0.1,
+                0,
               ),
               child: Container(
                 width: MediaQuery.of(context).size.width * 0.8,
@@ -677,7 +677,6 @@ Future<String> uploadVehiclePhoto(String uid, String imagePath) async {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                      
                         Container(
                           width: MediaQuery.of(context).size.width * 0.4,
                           child: DropdownButton<String>(
@@ -687,8 +686,7 @@ Future<String> uploadVehiclePhoto(String uid, String imagePath) async {
                             onChanged: (value) {
                               setState(() {
                                 selectedtype = value;
-                                selectedmake =
-                                    null; 
+                                selectedmake = null;
                               });
                             },
                             items: vehicleTypes.map((type) {
@@ -708,8 +706,7 @@ Future<String> uploadVehiclePhoto(String uid, String imagePath) async {
                             onChanged: (value) {
                               setState(() {
                                 selectedmake = value;
-                                selectedmodel =
-                                    null; 
+                                selectedmodel = null;
                               });
                             },
                             items: selectedtype != null &&
@@ -729,7 +726,6 @@ Future<String> uploadVehiclePhoto(String uid, String imagePath) async {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        
                         Container(
                           width: MediaQuery.of(context).size.width * 0.4,
                           child: DropdownButton<String>(
@@ -752,7 +748,6 @@ Future<String> uploadVehiclePhoto(String uid, String imagePath) async {
                                 : [],
                           ),
                         ),
-
                         InputFields(
                           controller: yearController,
                           hintText: 'year',
@@ -828,69 +823,75 @@ Future<String> uploadVehiclePhoto(String uid, String imagePath) async {
                           text: 'Skip',
                         ),
                         CustomButton(
-  onPressed: () async {
-    if (yearController.text.isEmpty &&
-        selectedtype == null &&
-        selectedmake == null &&
-        selectedmodel == null &&
-        licenceDateController.text.isEmpty &&
-        insuranceDateController.text.isEmpty) {
-      _showFillMessage("Please fill   field to save details");
-    } else {
-      
-      Map<String, dynamic> userData = {
-        'userId': widget.userId,
-        'type': selectedtype,
-        'make': selectedmake,
-        'model': selectedmodel,
-        'year': int.tryParse(yearController.text.trim()) ?? 0,
-        'licenceDate': licenceDateController.text.trim(),
-        'insuranceDate': insuranceDateController.text.trim(),
-        'imageUrls':downloadUrl ,
-      };
+                          onPressed: () async {
+                            if (yearController.text.isEmpty &&
+                                selectedtype == null &&
+                                selectedmake == null &&
+                                selectedmodel == null &&
+                                licenceDateController.text.isEmpty &&
+                                insuranceDateController.text.isEmpty) {
+                              _showFillMessage(
+                                  "Please fill   field to save details");
+                            } else {
+                              Map<String, dynamic> userData = {
+                                'userId': widget.userId,
+                                'type': selectedtype,
+                                'make': selectedmake,
+                                'model': selectedmodel,
+                                'year':
+                                    int.tryParse(yearController.text.trim()) ??
+                                        0,
+                                'licenceDate':
+                                    licenceDateController.text.trim(),
+                                'insuranceDate':
+                                    insuranceDateController.text.trim(),
+                                'imageUrls': downloadUrl,
+                              };
 
-      try {
-        var response = await http.post(
-          Uri.parse('http://10.0.2.2:8000/users/cv'),
-          headers: {
-            'Content-Type': 'application/json; charset=UTF-8',
-          },
-          body: jsonEncode(userData),
-        );
-        
-        if (response.statusCode == 201) {
-          final responseData = jsonDecode(response.body);
-          int vehicleId = responseData['vehicleId'];
-          final userId = widget.userId;
-        
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Vehicledetails2(
-                vehicleId: vehicleId,
-                userId: userId,
-              ),
-            ),
-          );
-        } else {
-        
-          _showFillMessage("Error: ${response.statusCode}");
-        }
-      } catch (e) {
-        print('Error: $e');
-        _showFillMessage(
-          'Error registering vehicle. Please try again later.',
-        );
-      }
-    }
+                              try {
+                                var response = await http.post(
+                                  Uri.parse('http://10.0.2.2:8000/users/cv'),
+                                  headers: {
+                                    'Content-Type':
+                                        'application/json; charset=UTF-8',
+                                  },
+                                  body: jsonEncode(userData),
+                                );
 
-    if (imagePath != null) {
-      await uploadVehiclePhoto(widget.userId.toString(), imagePath!);
-    }
-  },
-  text: 'Save',
-),
+                                if (response.statusCode == 201) {
+                                  final responseData =
+                                      jsonDecode(response.body);
+                                  int vehicleId = responseData['vehicleId'];
+                                  final userId = widget.userId;
 
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => Vehicledetails2(
+                                        vehicleId: vehicleId,
+                                        userId: userId,
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  _showFillMessage(
+                                      "Error: ${response.statusCode}");
+                                }
+                              } catch (e) {
+                                print('Error: $e');
+                                _showFillMessage(
+                                  'Error registering vehicle. Please try again later.',
+                                );
+                              }
+                            }
+
+                            if (imagePath != null) {
+                              await uploadVehiclePhoto(
+                                  widget.userId.toString(), imagePath!);
+                            }
+                          },
+                          text: 'Save',
+                        ),
                       ],
                     ),
                   ],
@@ -903,5 +904,3 @@ Future<String> uploadVehiclePhoto(String uid, String imagePath) async {
     );
   }
 }
-
- 

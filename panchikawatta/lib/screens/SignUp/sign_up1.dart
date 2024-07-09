@@ -18,7 +18,9 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:panchikawatta/screens/SignUp/sign_up2.dart';
 import 'package:panchikawatta/user_auth/firebase_auth_implementation/firebase_auth_services.dart';
+
 FirebaseStorage _storage = FirebaseStorage.instance;
+
 class EmailValidationResult {
   final bool isValid;
   final String message;
@@ -42,7 +44,7 @@ class _SignUp1State extends State<sign_up1> {
   final FirebaseAuthServices _auth = FirebaseAuthServices();
 
   String? imagePath;
-  
+
   String? downloadUrl;
   bool _isSigningUp = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -577,8 +579,6 @@ class _SignUp1State extends State<sign_up1> {
               setState(() {
                 _isSigningUp = true;
               });
-              
-  
 
               UserCredential? userCredential = await createAccount(
                   userNameController.text.trim(),
@@ -586,19 +586,19 @@ class _SignUp1State extends State<sign_up1> {
                   emailController.text.trim(),
                   imagePath!);
               // User? user = userCredential?.user;
-if (imagePath != null) {
-        // Upload the image to Firebase Storage
-        File file = File(imagePath!);
-          User? user = userCredential?.user;
-        TaskSnapshot snapshot = await _storage
-            .ref('profile_pictures/${user?.uid}')
-            .putFile(
-                file); // Upload the file to the profile_pictures folder in Firebase Storage
+              if (imagePath != null) {
+                // Upload the image to Firebase Storage
+                File file = File(imagePath!);
+                User? user = userCredential?.user;
+                TaskSnapshot snapshot = await _storage
+                    .ref('profile_pictures/${user?.uid}')
+                    .putFile(
+                        file); // Upload the file to the profile_pictures folder in Firebase Storage
 
-        // Get the download URL
-        downloadUrl = await snapshot.ref.getDownloadURL();
-         print("Profile picture URL: $downloadUrl");
-      }
+                // Get the download URL
+                downloadUrl = await snapshot.ref.getDownloadURL();
+                print("Profile picture URL: $downloadUrl");
+              }
               setState(() {
                 _isSigningUp = false;
               });
@@ -608,7 +608,6 @@ if (imagePath != null) {
                     userCredential.user!, context);
 
                 if (userCredential != null) {
-                  
                   // Show dialog informing user to check their email for verification
                   showDialog(
                     context: context,
@@ -621,11 +620,8 @@ if (imagePath != null) {
                         actions: <Widget>[
                           TextButton(
                             child: const Text('OK'),
-                            
                             onPressed: () async {
-                              
                               Map<String, dynamic> userData = {
-                                
                                 'firstName': firstNameController.text.trim(),
                                 'lastName': lastNameController.text.trim(),
                                 'userName': userNameController.text.trim(),
@@ -634,7 +630,7 @@ if (imagePath != null) {
                                 'password': passwordController.text.trim(),
                                 'district': selecteddistrict,
                                 'province': selectedprovince,
-                                'images':imagePath!
+                                'images': imagePath!
                                 // Add other necessary fields here
                               };
 

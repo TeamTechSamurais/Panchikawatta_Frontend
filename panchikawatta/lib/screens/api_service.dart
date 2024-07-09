@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiServices {
-  static const String baseURL = "http://10.0.2.2:8000/profile";
+  static const String baseURL = "http://10.0.2.2:8000/profile"; //192.168.8.117
 
   static Future<Map<String, dynamic>> getUserByEmail(String email) async {
     //print('inside the getUserByEmail function');
@@ -83,7 +83,7 @@ class ApiServices {
     try {
       final response = await http
           .post(
-            Uri.parse('$baseURL/sellers'),
+            Uri.parse('http://10.0.2.2:8000/users/b'),
             headers: <String, String>{
               'Content-Type': 'application/json; charset=UTF-8',
             },

@@ -1,4 +1,4 @@
-  import 'dart:convert';
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
@@ -11,8 +11,8 @@ import 'package:panchikawatta/screens/SignUp/Vehicledetails1.dart';
 import 'package:panchikawatta/screens/login.dart';
 
 class Vehicledetails2 extends StatefulWidget {
-  final int vehicleId,userId;
- 
+  final int vehicleId, userId;
+
   final String? selectedPhotoPath;
 
   Vehicledetails2({
@@ -33,7 +33,7 @@ class _Vehicledetails2State extends State<Vehicledetails2> {
 
   TextEditingController lastServiceDateController = TextEditingController();
   //TextEditingController batteryConditionController = TextEditingController();
- String? selectedBatteryCondition;
+  String? selectedBatteryCondition;
   void _showFillMessage(String message, [String? emailError]) {
     showDialog(
       context: context,
@@ -66,19 +66,17 @@ class _Vehicledetails2State extends State<Vehicledetails2> {
     super.initState();
     selectedPhotoPath = widget.selectedPhotoPath;
   }
- 
-  
-    // Navigate to MyHomePage
-     void _saveVehicleDetails() async {
+
+  // Navigate to MyHomePage
+  void _saveVehicleDetails() async {
     // Validate and parse mileage per week
-     
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-      //  automaticallyImplyLeading: false,
+        //  automaticallyImplyLeading: false,
         title: Padding(
           padding:
               const EdgeInsets.only(left: 80.0), // Adjust the value as needed
@@ -141,7 +139,7 @@ class _Vehicledetails2State extends State<Vehicledetails2> {
                       hintText: 'Last Service date',
                       width1: 0.8,
                     ),
-                      const SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     DropdownInputField(
                       value: selectedBatteryCondition,
                       hintText: 'Battery Condition',
@@ -152,14 +150,13 @@ class _Vehicledetails2State extends State<Vehicledetails2> {
                         });
                       },
                     ),
-                    
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.8,
                       child: ClipRRect(
                         child: TextButton(
                           onPressed: () {
                             final userId = widget.userId;
-                           
+
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -195,71 +192,74 @@ class _Vehicledetails2State extends State<Vehicledetails2> {
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(
-                                  builder: (context) => login()),
+                              MaterialPageRoute(builder: (context) => login()),
                             );
                           },
                           text: 'skip',
                         ),
-   CustomButton(
-  onPressed: () async {
-    // Validate and parse mileage per week
-    int mileage = 0; // Default value if parsing fails or input is empty
-    String mileageText = milagePerWeekController.text.trim();
+                        CustomButton(
+                          onPressed: () async {
+                            // Validate and parse mileage per week
+                            int mileage =
+                                0; // Default value if parsing fails or input is empty
+                            String mileageText =
+                                milagePerWeekController.text.trim();
 
-    if (mileageText.isNotEmpty) {
-      try {
-        mileage = int.parse(mileageText);
-      } catch (e) {
-        // Handle parsing error (e.g., show error message to user)
-        print('Error parsing mileage: $e');
-        _showFillMessage('Invalid mileage value entered.');
-        return; // Exit function early to prevent further execution
-      }
-    }
+                            if (mileageText.isNotEmpty) {
+                              try {
+                                mileage = int.parse(mileageText);
+                              } catch (e) {
+                                // Handle parsing error (e.g., show error message to user)
+                                print('Error parsing mileage: $e');
+                                _showFillMessage(
+                                    'Invalid mileage value entered.');
+                                return; // Exit function early to prevent further execution
+                              }
+                            }
 
-    // Check if any of the required fields are empty
-    if (milagePerWeekController.text.isEmpty &&
-        lastServiceDateController.text.isEmpty &&
-          selectedBatteryCondition == null) {
-      _showFillMessage("Please fill in at least one field to save details");
-      return; // Exit function if validation fails
-    }
+                            // Check if any of the required fields are empty
+                            if (milagePerWeekController.text.isEmpty &&
+                                lastServiceDateController.text.isEmpty &&
+                                selectedBatteryCondition == null) {
+                              _showFillMessage(
+                                  "Please fill in at least one field to save details");
+                              return; // Exit function if validation fails
+                            }
 
-    // Prepare data to be sent to the server
-    Map<String, dynamic> userData = {
-      'vehicleId': widget.vehicleId,
-      'mileagePerWeek': mileage,
-      'lastServiceDate': lastServiceDateController.text.trim(),
-       'batteryCondition': selectedBatteryCondition ?? '',
-      // Add other necessary fields here
-    };
+                            // Prepare data to be sent to the server
+                            Map<String, dynamic> userData = {
+                              'vehicleId': widget.vehicleId,
+                              'mileagePerWeek': mileage,
+                              'lastServiceDate':
+                                  lastServiceDateController.text.trim(),
+                              'batteryCondition':
+                                  selectedBatteryCondition ?? '',
+                              // Add other necessary fields here
+                            };
 
-    try {
-      var response = await http.post(
-        Uri.parse('http://10.0.2.2:8000/users/uv'),
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(userData),
-      );
+                            try {
+                              var response = await http.post(
+                                Uri.parse('http://10.0.2.2:8000/users/uv'),
+                                headers: {
+                                  'Content-Type':
+                                      'application/json; charset=UTF-8',
+                                },
+                                body: jsonEncode(userData),
+                              );
 
-      
-        // Handle success response
-        handlePopup(context, widget.vehicleId, widget.userId);
-       
-    } catch (e) {
-      // Handle network or server errors
-      print('Error: $e');
-      _showFillMessage(
-        'Error updating vehicle. Please try again later.',
-      );
-    }
-  },
-  text: 'Save',
-),
-
-
+                              // Handle success response
+                              handlePopup(
+                                  context, widget.vehicleId, widget.userId);
+                            } catch (e) {
+                              // Handle network or server errors
+                              print('Error: $e');
+                              _showFillMessage(
+                                'Error updating vehicle. Please try again later.',
+                              );
+                            }
+                          },
+                          text: 'Save',
+                        ),
                       ],
                     ),
                   ],
@@ -272,10 +272,12 @@ class _Vehicledetails2State extends State<Vehicledetails2> {
     );
   }
 }
-  void handlePopup(BuildContext context, int vehicleId, int userId) {
+
+void handlePopup(BuildContext context, int vehicleId, int userId) {
   showDialog(
     context: context,
-    barrierDismissible: false, // Do not allow dismissing dialog by tapping outside or using back button
+    barrierDismissible:
+        false, // Do not allow dismissing dialog by tapping outside or using back button
     builder: (BuildContext context) {
       return AlertDialog(
         title: Text('Add More Vehicles'),
@@ -299,7 +301,8 @@ class _Vehicledetails2State extends State<Vehicledetails2> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => Vehicledetails2(vehicleId: vehicleId, userId: userId),
+                  builder: (context) =>
+                      Vehicledetails2(vehicleId: vehicleId, userId: userId),
                 ),
               );
             },

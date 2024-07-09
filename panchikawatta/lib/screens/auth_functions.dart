@@ -64,6 +64,10 @@ Future<UserCredential?> createAccount(String username, String password, String e
   }
 }
 
+
+
+
+
 Future<void> uploadVehiclePhoto(String uid, String imagePath) async {
   try {
     File file = File(imagePath);
@@ -103,6 +107,8 @@ Future<UserCredential?> logout(BuildContext context) async {
     return null;
   }
 }
+
+
 
 
 
@@ -164,11 +170,13 @@ void updateUser(
     Map<String, dynamic> userData = {
       "firstName": newFirstName ?? data["firstName"],
       "lastName": newLastName ?? data["lastName"],
-      "username": newUserName ?? data["username"],
+      "userName": newUserName ?? data["username"],
       "email": newEmail ?? email,
-      "phone": newPhone ?? data["phone"],
+      "phoneNo": newPhone ?? data["phone"],
       "district": newDistrict ?? data["district"],
       "province": newProvince ?? data["province"],
+      "imageUrls" : downloadUrl ?? data["profile_picture"],
+
     };
 
     // Update PostgreSQL database
