@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiServices {
-  static const String baseURL = "http://10.0.2.2:8000/profile"; //192.168.8.117
+  static const String baseURL =
+      "http://192.168.8.117:8000/profile"; //192.168.8.117
 
   static Future<Map<String, dynamic>> getUserByEmail(String email) async {
     //print('inside the getUserByEmail function');
