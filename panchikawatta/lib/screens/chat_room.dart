@@ -8,9 +8,9 @@ import 'package:image_picker/image_picker.dart';
 class ChatRoom extends StatefulWidget {
   final Map<String, dynamic> userMap;
   final String chatRoomId;
-  final String user;
+  //final String user;
 
-  ChatRoom({required this.userMap, required this.chatRoomId, required this.user});
+  ChatRoom({required this.userMap, required this.chatRoomId, });  //required this.user
 
   @override
   _ChatRoomState createState() => _ChatRoomState();
@@ -185,7 +185,7 @@ class _ChatRoomState extends State<ChatRoom> {
           .doc(widget.chatRoomId)
           .set({
             'unreadMessages': {
-              widget.user : FieldValue.increment(1)
+              widget.userMap['uid'] : FieldValue.increment(1)
             }
           }, SetOptions(merge: true));
 
@@ -221,9 +221,9 @@ class _ChatRoomState extends State<ChatRoom> {
       final chatRoomDoc = await _firestore.collection('chatRoom').doc(widget.chatRoomId).get();
       if (!chatRoomDoc.exists) {
         await _firestore.collection('chatRoom').doc(widget.chatRoomId).set({
-          'users': [_auth.currentUser!.uid, widget.user],
+          'users': [_auth.currentUser!.uid, widget.userMap['uid']],
           'unreadMessages': {
-            widget.user: FieldValue.increment(1) // Increment unread messages for the other user
+            widget.userMap['uid']: FieldValue.increment(1) // Increment unread messages for the other user
           },
         });
       } else {
@@ -267,7 +267,7 @@ class _ChatRoomState extends State<ChatRoom> {
 
   void addChatRoomId() async {
     String uid = _auth.currentUser!.uid;
-    String otherUid = widget.user;
+    String otherUid = widget.userMap['uid'];
     String chatRoomId = widget.chatRoomId;
 
     DocumentReference userDoc1 = _firestore.collection('users').doc(uid);

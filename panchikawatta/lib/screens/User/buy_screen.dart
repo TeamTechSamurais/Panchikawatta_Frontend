@@ -1,8 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 // import 'package:card_swiper/card_swiper.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/screens/User/wishlist.dart';
 import 'package:panchikawatta/models/sparepart.dart';
+import 'package:panchikawatta/screens/api_service.dart';
+import 'package:panchikawatta/screens/chat_room.dart';
 import 'package:panchikawatta/services/get_api_services.dart';
 
 class BuyScreen extends StatefulWidget {
@@ -17,11 +21,41 @@ class BuyScreen extends StatefulWidget {
 class _BuyScreenState extends State<BuyScreen> {
   late Future<SparePart> futureSparePart;
   final double _padding = 20.0; // Define common padding value
+  final _firestore = FirebaseFirestore.instance;
+  final _auth = FirebaseAuth.instance;
+  late String otherUserId = '';
+  late String userDisplayName = '';
+  late String? userDisplayPicture = '';
+
+  String chatRoomId(String user1, String user2) {
+    List<String> users = [user1, user2];
+    users.sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+
+    return users.join("");
+  }
 
   @override
   void initState() {
     super.initState();
     futureSparePart = GetApiService().getSparePartById(widget.sparePartId);
+  }
+
+  Future<void> _fetchUser (int sellerId) async {
+    final Map<String, dynamic> seller = await ApiServices.getUserById(sellerId);
+    final sellerEmail = seller['email'];
+
+    final querySnapshot = await _firestore.collection('user').where('email', isEqualTo: sellerEmail).get();
+    if (querySnapshot.docs.isNotEmpty) {
+      final doc = querySnapshot.docs.first;
+
+      setState(() {
+        otherUserId = doc['uid'];
+        userDisplayName = doc['displayName'];
+        userDisplayPicture = doc['photoUrl'];
+      });
+    } else {
+      print('User not found');
+    }
   }
 
   @override
@@ -153,8 +187,26 @@ class _BuyScreenState extends State<BuyScreen> {
                       ),
                       const SizedBox(width: 30),
                       GestureDetector(
-                        onTap: () {
-                          // Add code to call the phone number here
+                        onTap: () async {
+
+                          final sellerId = sparePart.sellerId;  // Get the seller ID from the spare part table
+                          await _fetchUser(sellerId); // Fetch the user ID from the firestore
+
+                          //Generate chat room ID
+                          String roomId = chatRoomId(
+                            _auth.currentUser!.uid ,
+                            otherUserId,
+                          );
+
+                          //Navigate to the chat room
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => ChatRoom(
+                                chatRoomId: roomId,
+                                userMap: {'uid': otherUserId, 'name': userDisplayName, 'profile_picture': userDisplayPicture},
+                              )
+                            )
+                          );
                         },
                         child: const Icon(
                           Icons.mail_rounded,
