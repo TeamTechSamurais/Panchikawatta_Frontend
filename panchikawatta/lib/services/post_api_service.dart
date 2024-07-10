@@ -13,7 +13,8 @@ class PostApiService {
     required String title,
     required String description,
     required int price,
-    XFile? image,
+    required List<String> imageUrls,
+    required String type,
     required String make,
     required String model,
     required String origin,
@@ -29,6 +30,8 @@ class PostApiService {
       request.fields['title'] = title;
       request.fields['description'] = description;
       request.fields['price'] = price.toString();
+      request.fields['imageUrls'] = jsonEncode(imageUrls);
+      request.fields['type'] = type;
       request.fields['make'] = make;
       request.fields['model'] = model;
       request.fields['origin'] = origin;
@@ -36,16 +39,16 @@ class PostApiService {
       request.fields['fuel'] = fuel;
       request.fields['year'] = year.toString();
 
-      if (image != null) {
-        final imageBytes = await image.readAsBytes();
-        request.files.add(
-          http.MultipartFile.fromBytes(
-            'image',
-            imageBytes,
-            filename: image.name,
-          ),
-        );
-      }
+      // if (imageURLs != null) {
+      //   final imageBytes = await image.readAsBytes();
+      //   request.files.add(
+      //     http.MultipartFile.fromBytes(
+      //       'image',
+      //       imageBytes,
+      //       filename: image.name,
+      //     ),
+      //   );
+      // }
 
       final response = await http.Response.fromStream(await request.send());
       if (response.statusCode != 201) {

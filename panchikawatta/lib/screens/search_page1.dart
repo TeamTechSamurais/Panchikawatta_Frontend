@@ -1,18 +1,17 @@
- import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:panchikawatta/screens/User/buy_screen.dart';
 import 'package:panchikawatta/screens/User/filter_sort.dart';
-import 'package:panchikawatta/screens/User/services_list';
-import 'package:panchikawatta/screens/User/spareparts_list';
+import 'package:panchikawatta/screens/User/services_list.dart';
+import 'package:panchikawatta/screens/User/spareparts_list.dart';
 import 'package:panchikawatta/services/get_api_services.dart';
 import 'package:panchikawatta/models/sparepart.dart';
 import 'package:panchikawatta/screens/SignUp/sign_up1.dart';
 
 import '../models/service.dart';
- 
+
 class search_page1 extends StatefulWidget {
-  const search_page1 ({super.key, required List<SparePart> ads});
+  const search_page1({super.key, required List<SparePart> ads});
 
   @override
   State<search_page1> createState() => _SearchPageState();
@@ -20,13 +19,13 @@ class search_page1 extends StatefulWidget {
 
 class _SearchPageState extends State<search_page1> {
   late Future<List<SparePart>> _spareParts;
-    late Future<List<Service>> _services;
+  late Future<List<Service>> _services;
   late Future<List<SparePart>> _searchedSpareParts;
-    late Future<List<Service>> _searchedServices;
+  late Future<List<Service>> _searchedServices;
   final TextEditingController _searchController = TextEditingController();
-    bool _isSearching = false;
+  bool _isSearching = false;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  
+
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   late Future<DocumentSnapshot<Map<String, dynamic>>> _userProfile;
   Map<String, dynamic>? userData;
@@ -35,7 +34,7 @@ class _SearchPageState extends State<search_page1> {
   void initState() {
     super.initState();
     _spareParts = GetApiService().searchSpareparts('');
-      _services = GetApiService().getServices();
+    _services = GetApiService().getServices();
     _userProfile = _getUserProfile();
     _userProfile.then((snapshot) {
       setState(() {
@@ -54,7 +53,7 @@ class _SearchPageState extends State<search_page1> {
 
   void _search() {
     setState(() {
-         _isSearching = _searchController.text.isNotEmpty;
+      _isSearching = _searchController.text.isNotEmpty;
       if (_isSearching) {
         _searchedSpareParts =
             GetApiService().searchSpareparts(_searchController.text);
@@ -86,8 +85,8 @@ class _SearchPageState extends State<search_page1> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  SizedBox(height: 8),
-                  Text(
+                  const SizedBox(height: 8),
+                  const Text(
                     'Buyer',
                     style: TextStyle(
                       fontSize: 16,
@@ -97,7 +96,7 @@ class _SearchPageState extends State<search_page1> {
                   ),
                   Text(
                     userData?['name'] ?? '',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
                       color: Colors.black,
@@ -105,25 +104,26 @@ class _SearchPageState extends State<search_page1> {
                   ),
                 ],
               ),
-              SizedBox(width: 5),
+              const SizedBox(width: 5),
               CircleAvatar(
                 radius: 25,
                 backgroundImage: userData?['profile_picture'] != null
                     ? NetworkImage(userData!['profile_picture'])
-                    : AssetImage('assets/images/profile_image.png') as ImageProvider,
+                    : const AssetImage('assets/images/profile_image.png')
+                        as ImageProvider,
               ),
-              SizedBox(width: 5),
+              const SizedBox(width: 5),
               PopupMenuButton(
                 itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                   PopupMenuItem(
-                    child: Text('Sign Out'),
+                    child: const Text('Sign Out'),
                     onTap: () {
                       FirebaseAuth.instance.signOut();
                       Navigator.pushNamed(context, '/SplashScreen');
                     },
                   ),
                   PopupMenuItem(
-                    child: Text('Sign Up'),
+                    child: const Text('Sign Up'),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -133,12 +133,12 @@ class _SearchPageState extends State<search_page1> {
                   ),
                 ],
               ),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
             ],
           ),
         ],
       ),
-         body: DefaultTabController(
+      body: DefaultTabController(
         length: 2, // Number of tabs
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

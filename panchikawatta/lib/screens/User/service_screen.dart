@@ -98,17 +98,6 @@ class _ServiceScreenState extends State<ServiceScreen> {
                   const SizedBox(
                     height: 10,
                   ),
-                  Center(
-                    child: CustomButton(
-                      onPressed: () {
-                        // Add your buy logic here
-                      },
-                      text: '              Buy it Now              ',
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
                   const Divider(
                     color: Colors.grey,
                     thickness: 1.5,

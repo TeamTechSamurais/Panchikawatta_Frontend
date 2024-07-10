@@ -1,4 +1,4 @@
- // ignore_for_file: avoid_print
+// ignore_for_file: avoid_print
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -101,6 +101,7 @@ class GetApiService {
     String? province,
     String? district,
     String? vehicleMake,
+    String? type,
     String? model,
     String? origin,
     String? minPrice,
@@ -114,6 +115,7 @@ class GetApiService {
       'province': province,
       'district': district,
       'vehicleMake': vehicleMake,
+      'type': type,
       'model': model,
       'origin': origin,
       'minPrice': minPrice,

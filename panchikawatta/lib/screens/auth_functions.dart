@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print, use_rethrow_when_possible, no_leading_underscores_for_local_identifiers, use_build_context_synchronously
+
 import 'dart:io';
 //import 'dart:js';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,8 +15,9 @@ FirebaseAuth _auth = FirebaseAuth.instance;
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 FirebaseStorage _storage = FirebaseStorage.instance;
 
-Future<UserCredential?> createAccount(String username, String password, String email, String? imagePath) async {
-  try {  
+Future<UserCredential?> createAccount(
+    String username, String password, String email, String? imagePath) async {
+  try {
     print("Attempting to create user with email: $email");
 
     UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
@@ -24,7 +27,8 @@ Future<UserCredential?> createAccount(String username, String password, String e
     if (user != null) {
       print("User is successfully created");
 
-      await user.updateDisplayName(username);  // Update the user's display name (this is a method from the Firebase Auth package
+      await user.updateDisplayName(
+          username); // Update the user's display name (this is a method from the Firebase Auth package
 
       String? downloadUrl;
       if (imagePath != null) {
@@ -37,7 +41,7 @@ Future<UserCredential?> createAccount(String username, String password, String e
 
         // Get the download URL
         downloadUrl = await snapshot.ref.getDownloadURL();
-         print("Profile picture URL: $downloadUrl");
+        print("Profile picture URL: $downloadUrl");
       }
 
       // send user data to the firebase cloud firestore database
@@ -45,7 +49,7 @@ Future<UserCredential?> createAccount(String username, String password, String e
         "name": username,
         "email": email,
         "profile_picture": downloadUrl,
-       // "vehicle_photo": downloadUrl,
+        // "vehicle_photo": downloadUrl,
       });
       print("User ID: ${user.uid}");
 
@@ -53,20 +57,12 @@ Future<UserCredential?> createAccount(String username, String password, String e
     } else {
       print("Some error happend");
       return userCredential;
-       
-      
-         
-    
     }
   } catch (e) {
     print(e);
     return null;
   }
 }
-
-
-
-
 
 Future<void> uploadVehiclePhoto(String uid, String imagePath) async {
   try {
@@ -108,10 +104,6 @@ Future<UserCredential?> logout(BuildContext context) async {
   }
 }
 
-
-
-
-
 void updateUser(
     BuildContext context,
     String password,
@@ -123,7 +115,6 @@ void updateUser(
     String? newPhone,
     String? newDistrict,
     String? newProvince) async {
-
   User? user = _auth.currentUser;
   if (user == null) {
     print("No user is currently signed in.");
@@ -135,7 +126,6 @@ void updateUser(
   String? downloadUrl;
 
   try {
-
     // Update email if it has changed
     if (newEmail != null && newEmail.isNotEmpty && newEmail != user.email) {
       await user.verifyBeforeUpdateEmail(newEmail);
@@ -145,7 +135,8 @@ void updateUser(
     // Update profile picture if a new one is provided
     if (newImagePath != null && newImagePath.isNotEmpty) {
       File file = File(newImagePath);
-      TaskSnapshot snapshot = await _storage.ref('profile_pictures/${user.uid}').putFile(file);
+      TaskSnapshot snapshot =
+          await _storage.ref('profile_pictures/${user.uid}').putFile(file);
       downloadUrl = await snapshot.ref.getDownloadURL();
       print("Profile picture updated");
     }
@@ -161,7 +152,9 @@ void updateUser(
     }
 
     // Update display name
-    if (newUserName != null && newUserName.isNotEmpty && newUserName != user.displayName) {
+    if (newUserName != null &&
+        newUserName.isNotEmpty &&
+        newUserName != user.displayName) {
       await user.updateDisplayName(newUserName);
       print("Display name updated");
     }
@@ -175,12 +168,12 @@ void updateUser(
       "phoneNo": newPhone ?? data["phone"],
       "district": newDistrict ?? data["district"],
       "province": newProvince ?? data["province"],
-      "imageUrls" : downloadUrl ?? data["profile_picture"],
-
+      "imageUrls": downloadUrl ?? data["profile_picture"],
     };
 
     // Update PostgreSQL database
-    Future<Map<String, dynamic>> updated = ApiServices.updateUser(email, userData);
+    Future<Map<String, dynamic>> updated =
+        ApiServices.updateUser(email, userData);
 
     updated.then((result) {
       print("User data updated successfully");
@@ -192,14 +185,13 @@ void updateUser(
             content: const Text("User data updated successfully"),
             actions: [
               CustomButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); // Close the dialog
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => ProfilePage()),
-                  );
-                },
-                text: 'OK'
-              ),
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => ProfilePage()),
+                    );
+                  },
+                  text: 'OK'),
             ],
           );
         },
@@ -210,14 +202,14 @@ void updateUser(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Error"),
-            content: Text("User data update failed. Please try again."),
+            title: const Text("Error"),
+            content: const Text("User data update failed. Please try again."),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop(); // Close the dialog
                 },
-                child: Text("OK"),
+                child: const Text("OK"),
               ),
             ],
           );
@@ -230,14 +222,14 @@ void updateUser(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Error"),
+          title: const Text("Error"),
           content: Text(e.toString()),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: Text("OK"),
+              child: const Text("OK"),
             ),
           ],
         );
@@ -245,13 +237,6 @@ void updateUser(
     );
   }
 }
-
-
-
-
-
-
-
 
 Future deleteUser(BuildContext context) async {
   User? user = _auth.currentUser;
@@ -285,14 +270,13 @@ Future deleteUser(BuildContext context) async {
             content: const Text("User deleted successfully"),
             actions: [
               CustomButton(
-                onPressed: () {
-                  Navigator.of(context).pop(); // Close the dialog
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => login()),
-                  );
-                },
-                text: 'OK'
-              ),
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => login()),
+                    );
+                  },
+                  text: 'OK'),
             ],
           );
         },
@@ -310,7 +294,7 @@ Future deleteUser(BuildContext context) async {
                 onPressed: () {
                   Navigator.of(context).pop(); // Close the dialog
                 },
-                child: Text("OK"),
+                child: const Text("OK"),
               ),
             ],
           );
@@ -323,14 +307,14 @@ Future deleteUser(BuildContext context) async {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Error"),
+          title: const Text("Error"),
           content: Text(e.toString()),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: Text("OK"),
+              child: const Text("OK"),
             ),
           ],
         );

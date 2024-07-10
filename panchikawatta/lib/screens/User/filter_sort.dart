@@ -9,6 +9,7 @@ import 'package:panchikawatta/dropdowns/origin.dart';
 import 'package:panchikawatta/dropdowns/province.dart';
 import 'package:panchikawatta/dropdowns/vehicle_make.dart';
 import 'package:panchikawatta/dropdowns/vehicle_model.dart';
+import 'package:panchikawatta/dropdowns/vehicle_type.dart';
 import 'package:panchikawatta/screens/search_page.dart';
 import 'package:panchikawatta/screens/search_page1.dart';
 import 'package:panchikawatta/services/get_api_services.dart';
@@ -23,6 +24,7 @@ class FilterSortScreen extends StatefulWidget {
 class _FilterSortScreenState extends State<FilterSortScreen> {
   String? selectedProvince;
   String? selectedDistrict;
+  String? selectedVehicleType;
   String? selectedVehicleMake;
   String? selectedModel;
   String? selectedOrigin;
@@ -43,6 +45,7 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
       final ads = await GetApiService().fetchFilteredAds(
         province: selectedProvince,
         district: selectedDistrict,
+        type: selectedVehicleType,
         vehicleMake: selectedVehicleMake,
         model: selectedModel,
         origin: selectedOrigin,
@@ -117,8 +120,20 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
               ],
             ),
             const SizedBox(height: 16),
+            VehicleType(
+              selectedType: selectedVehicleType,
+              onChanged: (String? type) {
+                setState(() {
+                  selectedVehicleType = type;
+                  selectedVehicleMake = null; // Reset model when make changes
+                  selectedModel = null;
+                });
+              },
+            ),
+            const SizedBox(height: 16),
             VehicleMake(
               selectedMake: selectedVehicleMake,
+              makes: vehicleMakeToModels[selectedVehicleMake] ?? [],
               onChanged: (String? make) {
                 setState(() {
                   selectedVehicleMake = make;

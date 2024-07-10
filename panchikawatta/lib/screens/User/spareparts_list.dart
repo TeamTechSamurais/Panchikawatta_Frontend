@@ -31,10 +31,9 @@ class SparePartsList extends StatelessWidget {
               ),
               itemBuilder: (context, i) {
                 var sparePart = snapshot.data![i];
-                final isBase64 = sparePart.imageUrl.startsWith('/9j');
-                final imageWidget = isBase64
-                    ? Image.memory(
-                        base64Decode(sparePart.imageUrl),
+                final imageWidget = sparePart.imageUrls.isNotEmpty
+                    ? Image.network(
+                        sparePart.imageUrls[0],
                         height: 65,
                         width: 75,
                         errorBuilder: (context, error, stackTrace) {
@@ -45,21 +44,14 @@ class SparePartsList extends StatelessWidget {
                           );
                         },
                       )
-                    : Image.network(
-                        sparePart.imageUrl,
-                        height: 65,
-                        width: 75,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Image.asset(
-                            'assets/images/no_image.png',
-                            height: 73,
-                            width: 81,
-                          );
-                        },
+                    : Image.asset(
+                        'assets/images/no_image.png',
+                        height: 73,
+                        width: 81,
                       );
                 return InkWell(
                   onTap: () {
-                    print('Tapped Sparepart ID: ${sparePart.id}');
+                    print('Tapped SparePart ID: ${sparePart.id}');
                     Navigator.push(
                       context,
                       MaterialPageRoute(
