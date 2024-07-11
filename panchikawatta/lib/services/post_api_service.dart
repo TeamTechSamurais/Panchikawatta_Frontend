@@ -104,4 +104,77 @@ class PostApiService {
       throw Exception('Error: $e');
     }
   }
+Future<Map<String, dynamic>?> createOrder({
+    required String name,
+    required String email,
+    required String address,
+    required String phoneNO,
+    required int sparePartId,
+    required int userId,
+    required String status,
+  }) async {
+    final response = await http.post(
+      Uri.parse('${Utils.baseUrl}/adListing/buy'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'name': name,
+        'email': email,
+        'address': address,
+        'phoneNO': phoneNO,
+        'sparePartId': sparePartId,
+        'userId': userId,
+        'status': status,
+      }),
+    );
+
+    // Log the response body and status code for debugging
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+
+    if (response.statusCode == 201) {
+      return jsonDecode(response.body);
+    } else {
+      final errorResponse = jsonDecode(response.body);
+      throw Exception('Failed to create order: ${errorResponse['error'] ?? response.body}');
+    }
+  }
+
+  // static Future<void> confirmOrder(int orderId) async {
+  //   final response = await http.post(
+  //     Uri.parse('${Utils.baseUrl}/adListing/confirmOrder'),
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: jsonEncode({'orderId': orderId}),
+  //   );
+
+  //   if (response.statusCode == 200) {
+  //     return jsonDecode(response.body);
+  //   } else {
+  //     final errorResponse = jsonDecode(response.body);
+  //     throw Exception('Failed to confirm order: ${errorResponse['error'] ?? response.body}');
+  //   }
+  // }
+
+Future<void> addToFavorites(String userId, String sparePartId) async {
+  final response = await http.post(
+    Uri.parse('${Utils.baseUrl}/adListing/addfavorite'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'userId': userId,
+      'sparePartId': sparePartId,
+    }),
+  );
+
+  if (response.statusCode != 200) {
+    throw Exception('Failed to add to favorites: ${response.body}');
+  }
+}
+
+
+
 }

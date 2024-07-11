@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
+import 'package:panchikawatta/screens/Order/buyer_order.dart';
 
 class BuyerProfile extends StatelessWidget {
   @override
@@ -25,13 +26,19 @@ class BuyerProfile extends StatelessWidget {
                       onPressed: () {
                         // Add your button press logic here
                       },
-                      text: 'wishlist',
+                      text: 'Wishlist',
                     ),
                     CustomButton(
                       onPressed: () {
-                        // Add your button press logic here
-                      },
-                      text: 'reminders',
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => BuyerOrderPage(userId: 23,
+                                  
+                                )),
+                      );
+                    },
+                      text: 'Orders',
                     ),
                   ],
                 ),

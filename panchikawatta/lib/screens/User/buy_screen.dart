@@ -1,9 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-// import 'package:card_swiper/card_swiper.dart';
 import 'package:panchikawatta/components/custom_button.dart';
-import 'package:panchikawatta/screens/User/wishlist.dart';
 import 'package:panchikawatta/models/sparepart.dart';
+import 'package:panchikawatta/screens/Order/buy_it_now.dart';
+import 'package:panchikawatta/screens/Order/wishlist.dart';
 import 'package:panchikawatta/services/get_api_services.dart';
+import 'package:panchikawatta/services/post_api_service.dart';
 
 class BuyScreen extends StatefulWidget {
   final int sparePartId;
@@ -16,12 +18,21 @@ class BuyScreen extends StatefulWidget {
 
 class _BuyScreenState extends State<BuyScreen> {
   late Future<SparePart> futureSparePart;
-  final double _padding = 20.0; // Define common padding value
+  final double _padding = 20.0;
+  final GetApiService getApiService = GetApiService();
+  final PostApiService postApiService = PostApiService();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  User? get currentUser => _auth.currentUser;
+  int? get userId => currentUser?.uid.hashCode;
+
+  // Replace this with your actual logic to get the user ID
+  //int get userId => 2; // Define a valid userId
 
   @override
   void initState() {
     super.initState();
-    futureSparePart = GetApiService().getSparePartById(widget.sparePartId);
+    futureSparePart = getApiService.getSparePartById(widget.sparePartId);
   }
 
   @override
@@ -49,11 +60,17 @@ class _BuyScreenState extends State<BuyScreen> {
         ),
         actions: [
           GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const WishlistScreen()),
-              );
+            onTap: () async {
+              try {
+                await postApiService.addToFavorites(userId! as String, widget.sparePartId as String);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Added to favorites')),
+                );
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Failed to add to favorites: $e')),
+                );
+              }
             },
             child: const Icon(
               Icons.favorite_outline,
@@ -100,8 +117,12 @@ class _BuyScreenState extends State<BuyScreen> {
                   Center(
                     child: CustomButton(
                       onPressed: () {
-                        // Add your buy logic here
-                      },
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => BuyNowScreen(sparePartId: widget.sparePartId, userId: userId!)),
+                      );
+                    },
                       text: '              Buy it Now              ',
                     ),
                   ),
@@ -196,8 +217,8 @@ class _BuyScreenState extends State<BuyScreen> {
                                             'Make:',
                                             style: TextStyle(
                                               fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
+                                              fontWeight: FontWeight.w600,
+                            color: Color.fromARGB(255, 87, 87, 87)
                                             ),
                                           ),
                                         ),
@@ -224,8 +245,8 @@ class _BuyScreenState extends State<BuyScreen> {
                                             'Model:',
                                             style: TextStyle(
                                               fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
+                                              fontWeight: FontWeight.w600,
+                            color: Color.fromARGB(255, 87, 87, 87)
                                             ),
                                           ),
                                         ),
@@ -252,8 +273,8 @@ class _BuyScreenState extends State<BuyScreen> {
                                             'Year:',
                                             style: TextStyle(
                                               fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
+                                              fontWeight: FontWeight.w600,
+                            color: Color.fromARGB(255, 87, 87, 87)
                                             ),
                                           ),
                                         ),
@@ -280,8 +301,8 @@ class _BuyScreenState extends State<BuyScreen> {
                                             'Condition:',
                                             style: TextStyle(
                                               fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
+                                              fontWeight: FontWeight.w600,
+                            color: Color.fromARGB(255, 87, 87, 87)
                                             ),
                                           ),
                                         ),
@@ -308,8 +329,8 @@ class _BuyScreenState extends State<BuyScreen> {
                                             'Fuel:',
                                             style: TextStyle(
                                               fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
+                                              fontWeight: FontWeight.w600,
+                            color: Color.fromARGB(255, 87, 87, 87)
                                             ),
                                           ),
                                         ),
@@ -336,8 +357,8 @@ class _BuyScreenState extends State<BuyScreen> {
                                             'Origin:',
                                             style: TextStyle(
                                               fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
+                                              fontWeight: FontWeight.w600,
+                            color: Color.fromARGB(255, 87, 87, 87)
                                             ),
                                           ),
                                         ),
@@ -359,25 +380,29 @@ class _BuyScreenState extends State<BuyScreen> {
                                 ),
                               ),
                             ),
-                            const SizedBox(
-                              height: 20,
+                            const Divider(
+                              color: Colors.grey,
+                              thickness: 1,
                             ),
                             const Text(
-                              'Description',
+                              'Description:',
                               style: TextStyle(
-                                  fontSize: 21,
-                                  fontWeight: FontWeight.w500,
-                                  color: Color(0xFFFF5C01)),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black,
+                              ),
                             ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            Text(
-                              sparePart.description,
-                              style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.black),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Text(
+                                sparePart.description,
+                                textAlign: TextAlign.justify,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black,
+                                ),
+                              ),
                             ),
                           ],
                         ),

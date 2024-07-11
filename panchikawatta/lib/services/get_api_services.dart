@@ -141,6 +141,16 @@ class GetApiService {
     }
   }
 
+Future<List<SparePart>> getUserFavorites(int userId) async {
+    final response = await http.get(Uri.parse('${Utils.baseUrl}/getFavorites/$userId'));
+
+    if (response.statusCode == 200) {
+      List<dynamic> jsonData = jsonDecode(response.body);
+      return jsonData.map((data) => SparePart.fromJson(data)).toList();
+    } else {
+      throw Exception('Failed to load favorites');
+    }
+  }
   // Future<List<Map<String, dynamic>>> getUserVehicleReminders(int userId) async {
   //   final response = await http
   //       .get(Uri.parse('http://10.0.2.2:8000/users/getReminder/$userId'));

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/screens/AdPost/adType.dart';
+import 'package:panchikawatta/screens/Order/seller_order.dart';
 import 'package:panchikawatta/screens/services_ads.dart';
 import 'package:panchikawatta/screens/spare_parts_ads.dart';
 
@@ -54,6 +55,14 @@ class _SellerProfile extends State<SellerProfile>
                   },
                   text: 'Post ad'),
             ),
+            CustomButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SellerOrderPage(sellerId: 5,)),
+                    );
+                  },
+                  text: 'View Orders'),
             const SizedBox(height: 15),
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.9,

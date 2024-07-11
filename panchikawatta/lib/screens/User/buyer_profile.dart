@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
+import 'package:panchikawatta/screens/Order/buyer_order.dart';
 import 'package:panchikawatta/screens/profile_page.dart';
-import 'package:panchikawatta/screens/User/reminders.dart';
 import 'package:panchikawatta/screens/User/vehicle_details.dart';
 
 class BuyerProfile extends StatelessWidget {
@@ -89,13 +89,14 @@ class BuyerProfile extends StatelessWidget {
                     // ),
                     CustomButton(
                       onPressed: () {
+                        print('Navigating to BuyerOrderScreen');
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const ReminderScreen()),
+                              builder: (context) => BuyerOrderPage(userId: 23)),
                         );
                       },
-                      text: 'Reminders',
+                      text: 'Orders',
                     ),
                   ],
                 ),
