@@ -1,5 +1,3 @@
-// ignore_for_file: library_private_types_in_public_api
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -8,12 +6,13 @@ import 'package:image_picker/image_picker.dart';
 class AddImage extends StatefulWidget {
   final double size;
   final Color color;
+  final Function(XFile?) onImageSelected;
 
   const AddImage({
     super.key,
     required this.size,
     required this.color,
-    required void Function(dynamic image) onImageSelected,
+    required this.onImageSelected,
   });
 
   @override
@@ -31,6 +30,9 @@ class _AddImageState extends State<AddImage> {
     setState(() {
       _image = pickedImage;
     });
+
+    // Call the callback to notify the parent widget of the selected image
+    widget.onImageSelected(pickedImage);
   }
 
   @override

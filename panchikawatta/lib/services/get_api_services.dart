@@ -21,10 +21,10 @@ class GetApiService {
         await http.get(Uri.parse('${Utils.baseUrl}/adListing/getSpareParts'));
 
     if (response.statusCode == 200) {
-      final List<dynamic> sparePartsJson = json.decode(response.body);
-      return sparePartsJson.map((json) => SparePart.fromJson(json)).toList();
+      List<dynamic> data = jsonDecode(response.body);
+      return data.map((json) => SparePart.fromJson(json)).toList();
     } else {
-      throw Exception('Failed to load spareparts');
+      throw Exception('Failed to load spare parts');
     }
   }
 
@@ -40,18 +40,15 @@ class GetApiService {
     }
   }
 
-  Future<SparePart> getSparePartById(int sparePartId) async {
+  Future<SparePart> getSparePartById(int id) async {
     final response = await http
-        .get(Uri.parse('${Utils.baseUrl}/users/spare-parts/$sparePartId'));
+        .get(Uri.parse('${Utils.baseUrl}/adListing/getSparepartById/$id'));
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> jsonResponse = json.decode(response.body);
-      final SparePart sparePart =
-          SparePart.fromJson(jsonResponse); // Directly map to SparePart
-      print(sparePart);
-      return sparePart;
+      Map<String, dynamic> data = jsonDecode(response.body);
+      return SparePart.fromJson(data);
     } else {
-      throw Exception('Failed to load spare part.');
+      throw Exception('Failed to load spare part');
     }
   }
 

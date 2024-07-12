@@ -42,36 +42,38 @@ class _AdPostState extends State<AdPost> {
   String? _selectedFuel;
   final TextEditingController _yearController = TextEditingController();
 
-  void _setImage(int index, XFile? image) {
+  void _setImage(int index, XFile? imagepath) {
     setState(() {
-      _images[index] = image;
+      _images[index] = imagepath;
     });
   }
 
   Future<List<String>> _uploadImages(List<XFile?> images) async {
-    List<String> imageUrls = [];
-    for (XFile? image in images) {
-      if (image != null) {
-        String downloadUrl = await _uploadImage(image);
-        imageUrls.add(downloadUrl);
+    List<String> downloadUrls = [];
+    for (XFile? imagepath in images) {
+      if (imagepath != null) {
+        String downloadUrl = await _uploadImage(imagepath);
+        downloadUrls.add(downloadUrl);
+      } else {
+        print("Error: Image path is null");
       }
+      print("Download URLs: $downloadUrls");
     }
-    return imageUrls;
+    return downloadUrls;
   }
 
-  Future<String> _uploadImage(XFile image) async {
+  Future<String> _uploadImage(XFile imagepath) async {
     try {
-      File file = File(image.path);
+      File file = File(imagepath.path);
 
       // Upload the file to Firebase Storage
       TaskSnapshot snapshot = await _storage
-          .ref('sparepart_images/${file.path.split('/').last}')
+          .ref('sparepart_image/${file.path.split('/').last}')
           .putFile(file);
 
       // Get the download URL of the uploaded image
       String downloadUrl = await snapshot.ref.getDownloadURL();
-
-      print("Image uploaded successfully");
+      print("\nImage uploaded successfully");
       return downloadUrl;
     } catch (e) {
       // Handle any errors that occur during the process
@@ -106,27 +108,17 @@ class _AdPostState extends State<AdPost> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Please fill all required fields')),
         );
-        print('Title: $title');
-        print('Description: $description');
-        print('Price: $price');
-        print('Type: $type');
-        print('Make: $make');
-        print('Model: $model');
-        print('Origin: $origin');
-        print('Condition: $condition');
-        print('Fuel: $fuel');
-        print('Year: $year');
         return;
       }
 
-      List<String> imageUrls = await _uploadImages(_images);
+      List<String> downloadUrls = await _uploadImages(_images);
 
       final sparePart = await widget.apiService.postSparePart(
         sellerId: 5, // replace with actual seller ID
         title: title,
         description: description,
         price: price,
-        imageUrls: imageUrls,
+        imageUrls: downloadUrls,
         type: type,
         make: make,
         model: model,
@@ -250,7 +242,7 @@ class _AdPostState extends State<AdPost> {
               ),
               const SizedBox(height: 10),
               const Text(
-                'Add Image',
+                'Add Images',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -259,13 +251,29 @@ class _AdPostState extends State<AdPost> {
               const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: List.generate(3, (index) {
-                  return AddImage(
+                children: [
+                  AddImage(
                     size: 70,
-                    color: const Color(0xFF999999),
-                    onImageSelected: (image) => _setImage(index, image),
-                  );
-                }),
+                    color: Colors.grey,
+                    onImageSelected: (image) {
+                      _setImage(0, image);
+                    },
+                  ),
+                  AddImage(
+                    size: 70,
+                    color: Colors.grey,
+                    onImageSelected: (image) {
+                      _setImage(1, image);
+                    },
+                  ),
+                  AddImage(
+                    size: 70,
+                    color: Colors.grey,
+                    onImageSelected: (image) {
+                      _setImage(2, image);
+                    },
+                  ),
+                ],
               ),
               const SizedBox(height: 10),
               Container(
@@ -333,7 +341,6 @@ class _AdPostState extends State<AdPost> {
                         });
                       },
                     ),
-                    const SizedBox(height: 10),
                     Fuel(
                       selectedFuel: _selectedFuel,
                       onChanged: (String? value) {

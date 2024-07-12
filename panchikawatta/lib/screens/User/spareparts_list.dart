@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/models/sparepart.dart';
 import 'package:panchikawatta/screens/User/buy_screen.dart';
@@ -51,12 +50,13 @@ class SparePartsList extends StatelessWidget {
                       );
                 return InkWell(
                   onTap: () {
-                    print('Tapped SparePart ID: ${sparePart.id}');
+                    int sparePartId = sparePart.id;
+                    print('Sparepart ID: $sparePartId');
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            BuyScreen(sparePartId: sparePart.id),
+                            BuyScreen(sparePartId: sparePartId),
                       ),
                     );
                   },

@@ -5,17 +5,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/global/common/toast.dart';
-import 'package:panchikawatta/main.dart';
-import 'package:panchikawatta/rest/rest_api.dart';
 import 'package:panchikawatta/screens/Profile/forgetpassword1.dart';
 import 'package:panchikawatta/screens/SignUp/sign_up1.dart';
 import 'package:panchikawatta/screens/app.dart';
 import 'package:panchikawatta/screens/storage_helper.dart';
 import 'package:panchikawatta/user_auth/firebase_auth_implementation/firebase_auth_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class login extends StatefulWidget {
   @override
@@ -26,16 +22,13 @@ class login extends StatefulWidget {
 
 class _LoginState extends State<login> {
   bool _isSigning = false;
-   bool _isPasswordVisible = false;
+  bool _isPasswordVisible = false;
   final FirebaseAuthServices _auth = FirebaseAuthServices();
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  // final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  // final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
-  // TextEditingController _email = TextEditingController();    //shashini
-  // TextEditingController _password = TextEditingController();
-  // bool isLoading = false;
 
   @override
   void dispose() {
@@ -109,7 +102,7 @@ class _LoginState extends State<login> {
                   ),
                 ),
               ),
-               TextFieldContainer(
+              TextFieldContainer(
                 child: TextField(
                   controller: passwordController,
                   obscureText: !_isPasswordVisible, // Change this line
@@ -119,7 +112,9 @@ class _LoginState extends State<login> {
                     border: InputBorder.none,
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                        _isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
                       ),
                       onPressed: () {
                         setState(() {
@@ -225,7 +220,7 @@ class _LoginState extends State<login> {
     String password = passwordController.text.trim();
     // String username = usernameController.text;
 
-     User? user = await _auth.signInWithEmailAndPassword(email, password);
+    User? user = await _auth.signInWithEmailAndPassword(email, password);
 
     saveUserEmail(email);
 
@@ -237,14 +232,12 @@ class _LoginState extends State<login> {
       if (user.emailVerified) {
         showToast(message: "You are successfully signed in");
 
-       
         String? jwtToken = await _generateJwtToken(user);
 
         if (jwtToken != null) {
           await saveJwtToken(jwtToken);
-          startTokenExpiryTimer(jwtToken,context);
+          startTokenExpiryTimer(jwtToken, context);
 
-        
           Navigator.push(
             context as BuildContext,
             MaterialPageRoute(
@@ -262,14 +255,12 @@ class _LoginState extends State<login> {
     }
   }
 }
- 
+
 Future<String?> _generateJwtToken(User user) async {
   try {
-   
     String? idToken = await user.getIdToken();
     print('Received idToken token: $idToken');
 
-     
     final response = await http.post(
       Uri.parse('http://10.0.2.2:8000/users/generateJwtToken'),
       headers: {
@@ -279,7 +270,6 @@ Future<String?> _generateJwtToken(User user) async {
     );
 
     if (response.statusCode == 201) {
-       
       final responseData = jsonDecode(response.body);
       return responseData['token'];
     } else {
@@ -291,23 +281,20 @@ Future<String?> _generateJwtToken(User user) async {
   }
 }
 
- void startTokenExpiryTimer(String jwtToken, BuildContext context) {
+void startTokenExpiryTimer(String jwtToken, BuildContext context) {
   final payload = parseJwt(jwtToken);
   final expiryDate = DateTime.fromMillisecondsSinceEpoch(payload['exp'] * 1000);
   final now = DateTime.now();
   final timeToExpiry = expiryDate.difference(now);
 
   Timer(timeToExpiry, () {
-    
-    deleteJwtToken();  
+    deleteJwtToken();
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(
-          builder: (context) => login()), 
+      MaterialPageRoute(builder: (context) => login()),
     );
   });
 }
-
 
 Map<String, dynamic> parseJwt(String token) {
   final parts = token.split('.');
@@ -341,7 +328,3 @@ void main() {
     home: login(),
   ));
 }
-
-
-
-

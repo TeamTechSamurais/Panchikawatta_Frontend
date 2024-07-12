@@ -8,9 +8,12 @@ import 'package:image_picker/image_picker.dart';
 class ChatRoom extends StatefulWidget {
   final Map<String, dynamic> userMap;
   final String chatRoomId;
-  final String user;
+  //final String user;
 
-  ChatRoom({required this.userMap, required this.chatRoomId, required this.user});
+  ChatRoom({
+    required this.userMap,
+    required this.chatRoomId,
+  }); //required this.user
 
   @override
   _ChatRoomState createState() => _ChatRoomState();
@@ -34,21 +37,20 @@ class _ChatRoomState extends State<ChatRoom> {
             Navigator.pop(context);
           },
         ),
-        title: Row (
+        title: Row(
           children: [
             CircleAvatar(
               radius: 20,
-              backgroundImage: widget.userMap['profile_picture'] == null 
-                ? null 
-                : NetworkImage(widget.userMap['profile_picture']!),
-              child: widget.userMap['profile_picture'] == null 
-                ? const Icon(Icons.person) 
-                : null,
+              backgroundImage: widget.userMap['profile_picture'] == null
+                  ? null
+                  : NetworkImage(widget.userMap['profile_picture']!),
+              child: widget.userMap['profile_picture'] == null
+                  ? const Icon(Icons.person)
+                  : null,
             ),
-
             const SizedBox(width: 10),
-            
-            Text(widget.userMap['name'], style: const TextStyle(color: Color(0xFFFF5C01), fontSize: 25)),
+            Text(widget.userMap['name'],
+                style: const TextStyle(color: Color(0xFFFF5C01), fontSize: 25)),
           ],
         ),
         // actions: [
@@ -60,14 +62,13 @@ class _ChatRoomState extends State<ChatRoom> {
         //   ),
         // ],
         bottom: const PreferredSize(
-          preferredSize: Size.fromHeight(1.0), 
+          preferredSize: Size.fromHeight(1.0),
           child: Divider(
             color: Colors.grey,
             height: 1.0,
           ),
         ),
       ),
-
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -75,71 +76,70 @@ class _ChatRoomState extends State<ChatRoom> {
               height: size.height / 1.25,
               width: size.width,
               child: StreamBuilder<QuerySnapshot>(
-                stream: _firestore
-                  .collection('chatRoom')
-                  .doc(widget.chatRoomId)
-                  .collection('chats')
-                  .orderBy('time', descending: false)
-                  .snapshots(), 
-                builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.data != null) {
-                    return ListView.builder(
-                      itemCount: snapshot.data!.docs.length,
-                      itemBuilder: (context, Index) {
-                        Map<String, dynamic> map = snapshot.data!.docs[Index].data() as Map<String, dynamic>;
-                        return messages(size, map); //Text(snapshot.data!.docs[Index]['message']);
-                      }
-                    );
-                  } else {
-                    return Container();
-                  }
-                }),
-              ),
-            
-              Container(
-                height: size.height / 14,
-                //width: size.width / 1.1,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-
-                    IconButton(
-                      onPressed: sendImage, 
-                      icon: const Icon(Icons.add, color: Color(0xFFFCB891), size: 38),
-                    ),
-
-                    Container(
-                      height: size.height / 10,
-                      width: size.width / 1.5,
-                      child: TextField(
-                        controller: _message,
-                        decoration: InputDecoration(
+                  stream: _firestore
+                      .collection('chatRoom')
+                      .doc(widget.chatRoomId)
+                      .collection('chats')
+                      .orderBy('time', descending: false)
+                      .snapshots(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.data != null) {
+                      return ListView.builder(
+                          itemCount: snapshot.data!.docs.length,
+                          itemBuilder: (context, Index) {
+                            Map<String, dynamic> map =
+                                snapshot.data!.docs[Index].data()
+                                    as Map<String, dynamic>;
+                            return messages(size,
+                                map); //Text(snapshot.data!.docs[Index]['message']);
+                          });
+                    } else {
+                      return Container();
+                    }
+                  }),
+            ),
+            Container(
+              height: size.height / 14,
+              //width: size.width / 1.1,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: sendImage,
+                    icon: const Icon(Icons.add,
+                        color: Color(0xFFFCB891), size: 38),
+                  ),
+                  Container(
+                    height: size.height / 10,
+                    width: size.width / 1.5,
+                    child: TextField(
+                      controller: _message,
+                      decoration: InputDecoration(
                           hintText: 'Type a message',
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide.none
-                          ),
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide.none),
                           filled: true,
-                          fillColor: Color(0xFFFCB891)
-                        ),
-                      ),
+                          fillColor: Color(0xFFFCB891)),
                     ),
-                  
-                    IconButton(
-                      onPressed: onSendMessage, 
-                      icon: const Icon(Icons.send, color: Color(0xFFFCB891), size: 38),
-                    ), 
-                  ],
-                ),
+                  ),
+                  IconButton(
+                    onPressed: onSendMessage,
+                    icon: const Icon(Icons.send,
+                        color: Color(0xFFFCB891), size: 38),
+                  ),
+                ],
               ),
-              _isLoading 
+            ),
+            _isLoading
                 ? const Center(
                     child: CircularProgressIndicator(),
-                  ) 
+                  )
                 : Container(),
-            ],
-          ),
+          ],
         ),
+      ),
     );
   }
 
@@ -149,7 +149,7 @@ class _ChatRoomState extends State<ChatRoom> {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      setState (() {
+      setState(() {
         _isLoading = true;
       });
 
@@ -180,14 +180,9 @@ class _ChatRoomState extends State<ChatRoom> {
       addChatRoomId();
 
       // Increment unread messages count
-      await _firestore
-          .collection('chatRoom')
-          .doc(widget.chatRoomId)
-          .set({
-            'unreadMessages': {
-              widget.user : FieldValue.increment(1)
-            }
-          }, SetOptions(merge: true));
+      await _firestore.collection('chatRoom').doc(widget.chatRoomId).set({
+        'unreadMessages': {widget.userMap['uid']: FieldValue.increment(1)}
+      }, SetOptions(merge: true));
 
       setState(() {
         _isLoading = false;
@@ -195,22 +190,21 @@ class _ChatRoomState extends State<ChatRoom> {
     }
   }
 
-
   // Function to send a message
   void onSendMessage() async {
-    if(_message.text.isNotEmpty) {
+    if (_message.text.isNotEmpty) {
       Map<String, dynamic> message = {
-        'sendby' : _auth.currentUser!.uid,
+        'sendby': _auth.currentUser!.uid,
         'message': _message.text,
-        'time' : FieldValue.serverTimestamp(),
-        'unread' : 'true',
+        'time': FieldValue.serverTimestamp(),
+        'unread': 'true',
       };
 
-      await _firestore 
-        .collection('chatRoom')
-        .doc(widget.chatRoomId)
-        .collection('chats')
-        .add(message);
+      await _firestore
+          .collection('chatRoom')
+          .doc(widget.chatRoomId)
+          .collection('chats')
+          .add(message);
 
       _message.clear();
 
@@ -218,24 +212,24 @@ class _ChatRoomState extends State<ChatRoom> {
       addChatRoomId();
 
       // Ensure chatRoom document has the users field if it doesn't exist
-      final chatRoomDoc = await _firestore.collection('chatRoom').doc(widget.chatRoomId).get();
+      final chatRoomDoc =
+          await _firestore.collection('chatRoom').doc(widget.chatRoomId).get();
       if (!chatRoomDoc.exists) {
         await _firestore.collection('chatRoom').doc(widget.chatRoomId).set({
-          'users': [_auth.currentUser!.uid, widget.user],
+          'users': [_auth.currentUser!.uid, widget.userMap['uid']],
           'unreadMessages': {
-            widget.user: FieldValue.increment(1) // Increment unread messages for the other user
+            widget.userMap['uid']: FieldValue.increment(
+                1) // Increment unread messages for the other user
           },
         });
       } else {
         // Increment unread messages for the other user
-        final otherUserId = chatRoomDoc['users'].firstWhere((userId) => userId != _auth.currentUser!.uid);
+        final otherUserId = chatRoomDoc['users']
+            .firstWhere((userId) => userId != _auth.currentUser!.uid);
         await _firestore.collection('chatRoom').doc(widget.chatRoomId).set({
-          'unreadMessages': {
-            otherUserId: FieldValue.increment(1)
-          },
+          'unreadMessages': {otherUserId: FieldValue.increment(1)},
         }, SetOptions(merge: true));
-      } 
-
+      }
     } else {
       print('Enter a message to send');
     }
@@ -267,7 +261,7 @@ class _ChatRoomState extends State<ChatRoom> {
 
   void addChatRoomId() async {
     String uid = _auth.currentUser!.uid;
-    String otherUid = widget.user;
+    String otherUid = widget.userMap['uid'];
     String chatRoomId = widget.chatRoomId;
 
     DocumentReference userDoc1 = _firestore.collection('users').doc(uid);
@@ -287,7 +281,9 @@ class _ChatRoomState extends State<ChatRoom> {
         transaction.update(userDoc1, {'chatRooms': chatRooms});
       } else {
         transaction.set(userDoc1, {
-          'chatRooms': [{'otherUid': otherUid, 'chatRoomId': chatRoomId}]
+          'chatRooms': [
+            {'otherUid': otherUid, 'chatRoomId': chatRoomId}
+          ]
         });
       }
     });
@@ -306,39 +302,39 @@ class _ChatRoomState extends State<ChatRoom> {
         transaction.update(userDoc2, {'chatRooms': chatRooms});
       } else {
         transaction.set(userDoc2, {
-          'chatRooms': [{'otherUid': uid, 'chatRoomId': chatRoomId}]
+          'chatRooms': [
+            {'otherUid': uid, 'chatRoomId': chatRoomId}
+          ]
         });
       }
     });
   }
 
-
   // Widget to display messages
-  Widget messages(Size size, Map<String,dynamic> map ) {
+  Widget messages(Size size, Map<String, dynamic> map) {
     return Container(
       width: size.width,
-      alignment: map['sendby'] == _auth.currentUser!.uid 
-        ? Alignment.centerRight 
-        : Alignment.centerLeft,
-
+      alignment: map['sendby'] == _auth.currentUser!.uid
+          ? Alignment.centerRight
+          : Alignment.centerLeft,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
         margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
         decoration: BoxDecoration(
-          color: map['sendby'] == _auth.currentUser!.uid 
-            ? Color(0xFFFCB891) 
-            : Colors.grey[300],
+          color: map['sendby'] == _auth.currentUser!.uid
+              ? Color(0xFFFCB891)
+              : Colors.grey[300],
           borderRadius: BorderRadius.circular(10),
         ),
         child: map['imageUrl'] != null
-          ? Image.network(map['imageUrl'])
-          : Text(
-              map['message'],
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 18,
+            ? Image.network(map['imageUrl'])
+            : Text(
+                map['message'],
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 18,
+                ),
               ),
-            ),
       ),
     );
   }

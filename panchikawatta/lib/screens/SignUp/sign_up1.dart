@@ -1,22 +1,18 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
-import 'dart:math';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
-import 'package:panchikawatta/components/drop_down_input_fields.dart';
 import 'package:panchikawatta/dropdowns/district.dart';
 import 'package:panchikawatta/dropdowns/province.dart';
-import 'package:panchikawatta/main.dart';
 import 'package:panchikawatta/screens/SignUp/Registration_successs.dart';
 import 'package:panchikawatta/screens/auth_functions.dart';
 import 'package:panchikawatta/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:panchikawatta/screens/SignUp/sign_up2.dart';
 import 'package:panchikawatta/user_auth/firebase_auth_implementation/firebase_auth_services.dart';
 
 FirebaseStorage _storage = FirebaseStorage.instance;
@@ -118,7 +114,7 @@ class _SignUp1State extends State<sign_up1> {
       } else if (!RegExp(r'[0-9]').hasMatch(value)) {
         return 'Password must contain at least one digit';
       } else {
-        return 'Password must contain at least one special character';
+        return null; //'Password must contain at least one special character';
       }
     }
     return null; // Return null for valid passwords
@@ -553,8 +549,8 @@ class _SignUp1State extends State<sign_up1> {
       if (passwordError != null) {
         _showFillMessage(passwordError);
       } else {
-        String? confirmpassword =
-            validateConfirmPassword(confirmPasswordController.text);
+        // String? confirmpassword =
+        validateConfirmPassword(confirmPasswordController.text);
         if (confirmPasswordController.text != passwordController.text) {
           _showFillMessage(" confirm Password  not match");
           return;
@@ -604,74 +600,74 @@ class _SignUp1State extends State<sign_up1> {
               });
               if (userCredential != null) {
                 // Send email verification and show message
-                bool emailSent = await _auth.sendEmailVerification(
+                // bool emailSent =
+                await _auth.sendEmailVerification(
                     userCredential.user!, context);
 
-                if (userCredential != null) {
-                  // Show dialog informing user to check their email for verification
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text("Verification Email Sent"),
-                        content: Text(
-                          'A verification email has been sent to ${userCredential.user!.email}. Please check your inbox to verify your email address.',
-                        ),
-                        actions: <Widget>[
-                          TextButton(
-                            child: const Text('OK'),
-                            onPressed: () async {
-                              Map<String, dynamic> userData = {
-                                'firstName': firstNameController.text.trim(),
-                                'lastName': lastNameController.text.trim(),
-                                'userName': userNameController.text.trim(),
-                                'email': emailController.text.trim(),
-                                'phoneNo': phoneNoController.text.trim(),
-                                'password': passwordController.text.trim(),
-                                'district': selecteddistrict,
-                                'province': selectedprovince,
-                                'images': imagePath!
-                                // Add other necessary fields here
-                              };
+                // if (userCredential != null) {
+                // Show dialog informing user to check their email for verification
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text("Verification Email Sent"),
+                      content: Text(
+                        'A verification email has been sent to ${userCredential.user!.email}. Please check your inbox to verify your email address.',
+                      ),
+                      actions: <Widget>[
+                        TextButton(
+                          child: const Text('OK'),
+                          onPressed: () async {
+                            Map<String, dynamic> userData = {
+                              'firstName': firstNameController.text.trim(),
+                              'lastName': lastNameController.text.trim(),
+                              'userName': userNameController.text.trim(),
+                              'email': emailController.text.trim(),
+                              'phoneNo': phoneNoController.text.trim(),
+                              'password': passwordController.text.trim(),
+                              'district': selecteddistrict,
+                              'province': selectedprovince,
+                              'images': imagePath!
+                              // Add other necessary fields here
+                            };
 
-                              try {
-                                var response = await http.post(
-                                  Uri.parse('http://10.0.2.2:8000/users/'),
-                                  headers: {
-                                    'Content-Type':
-                                        'application/json; charset=UTF-8',
-                                  },
-                                  body: jsonEncode(userData),
-                                );
-                                if (response.statusCode == 200) {
-                                  final responseData =
-                                      jsonDecode(response.body);
-                                  final userId = responseData['userId'];
-                                  Navigator.of(context).pop(); // Close dialog
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => Registraion_success(
-                                              userId: userId,
-                                            )), // Navigate to success screen
-                                  );
-                                }
-                              } catch (e) {
-                                print('Error: $e');
-                                _showFillMessage(
-                                  'Error registering user. Please try again later.',
+                            try {
+                              var response = await http.post(
+                                Uri.parse('http://10.0.2.2:8000/users/'),
+                                headers: {
+                                  'Content-Type':
+                                      'application/json; charset=UTF-8',
+                                },
+                                body: jsonEncode(userData),
+                              );
+                              if (response.statusCode == 200) {
+                                final responseData = jsonDecode(response.body);
+                                final userId = responseData['userId'];
+                                Navigator.of(context).pop(); // Close dialog
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => Registraion_success(
+                                            userId: userId,
+                                          )), // Navigate to success screen
                                 );
                               }
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                } else {
-                  // Handle case where email verification failed to send
-                  _showFillMessage('Failed to send verification email');
-                }
+                            } catch (e) {
+                              print('Error: $e');
+                              _showFillMessage(
+                                'Error registering user. Please try again later.',
+                              );
+                            }
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+                // } else {
+                //   // Handle case where email verification failed to send
+                //   _showFillMessage('Failed to send verification email');
+                // }
               } else {
                 // Handle case where account creation failed
                 _showFillMessage('The email addreess is already  in use');

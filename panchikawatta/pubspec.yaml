@@ -26,6 +26,7 @@ dependencies:
   shared_preferences: any
   fluttertoast: any
   badges: ^3.0.2
+  firebase_app_check: ^0.3.0+3
 
 dev_dependencies:
   flutter_test:
