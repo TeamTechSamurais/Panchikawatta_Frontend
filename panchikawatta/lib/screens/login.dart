@@ -5,17 +5,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/global/common/toast.dart';
-import 'package:panchikawatta/main.dart';
-import 'package:panchikawatta/rest/rest_api.dart';
 import 'package:panchikawatta/screens/Profile/forgetpassword1.dart';
 import 'package:panchikawatta/screens/SignUp/sign_up1.dart';
 import 'package:panchikawatta/screens/app.dart';
 import 'package:panchikawatta/screens/storage_helper.dart';
 import 'package:panchikawatta/user_auth/firebase_auth_implementation/firebase_auth_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class login extends StatefulWidget {
   @override
@@ -28,14 +24,11 @@ class _LoginState extends State<login> {
   bool _isSigning = false;
    bool _isPasswordVisible = false;
   final FirebaseAuthServices _auth = FirebaseAuthServices();
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  // final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  // final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
-  // TextEditingController _email = TextEditingController();    //shashini
-  // TextEditingController _password = TextEditingController();
-  // bool isLoading = false;
 
   @override
   void dispose() {

@@ -85,7 +85,7 @@ class _ProfilePageState extends State<ProfilePage>
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: const Text('OK'),
+                  child: const Text('Sign Up', style: TextStyle(color: Color(0xFFFF5C01))),
                 ),
               ],
             );
@@ -97,8 +97,7 @@ class _ProfilePageState extends State<ProfilePage>
     final sellerData = await ApiServices.getSellerById(userId);
     bool isSeller = false;
 
-    if (sellerData != null &&
-        (!sellerData.containsKey('status') ||
+    if ((!sellerData.containsKey('status') ||
             sellerData['status'] != 'error')) {
       isSeller = true;
     }
@@ -118,7 +117,7 @@ class _ProfilePageState extends State<ProfilePage>
             return AlertDialog(
               content: Container(
                 width: MediaQuery.of(context).size.width * 0.98,
-                height: MediaQuery.of(context).size.height * 0.65,
+                //height: MediaQuery.of(context).size.height * 0.65,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
