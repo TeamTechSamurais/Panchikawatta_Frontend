@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/models/sparepart.dart';
 import 'package:panchikawatta/screens/User/buy_screen.dart';
@@ -31,10 +30,9 @@ class SparePartsList extends StatelessWidget {
               ),
               itemBuilder: (context, i) {
                 var sparePart = snapshot.data![i];
-                final isBase64 = sparePart.imageUrl.startsWith('/9j');
-                final imageWidget = isBase64
-                    ? Image.memory(
-                        base64Decode(sparePart.imageUrl),
+                final imageWidget = sparePart.imageUrls.isNotEmpty
+                    ? Image.network(
+                        sparePart.imageUrls[0],
                         height: 65,
                         width: 75,
                         errorBuilder: (context, error, stackTrace) {
@@ -45,26 +43,20 @@ class SparePartsList extends StatelessWidget {
                           );
                         },
                       )
-                    : Image.network(
-                        sparePart.imageUrl,
-                        height: 65,
-                        width: 75,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Image.asset(
-                            'assets/images/no_image.png',
-                            height: 73,
-                            width: 81,
-                          );
-                        },
+                    : Image.asset(
+                        'assets/images/no_image.png',
+                        height: 73,
+                        width: 81,
                       );
                 return InkWell(
                   onTap: () {
-                    print('Tapped Sparepart ID: ${sparePart.id}');
+                    int sparePartId = sparePart.id;
+                    print('Sparepart ID: $sparePartId');
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            BuyScreen(sparePartId: sparePart.id),
+                            BuyScreen(sparePartId: sparePartId),
                       ),
                     );
                   },

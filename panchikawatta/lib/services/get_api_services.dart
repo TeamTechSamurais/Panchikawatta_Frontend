@@ -1,4 +1,4 @@
- // ignore_for_file: avoid_print
+// ignore_for_file: avoid_print
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -21,10 +21,10 @@ class GetApiService {
         await http.get(Uri.parse('${Utils.baseUrl}/adListing/getSpareParts'));
 
     if (response.statusCode == 200) {
-      final List<dynamic> sparePartsJson = json.decode(response.body);
-      return sparePartsJson.map((json) => SparePart.fromJson(json)).toList();
+      List<dynamic> data = jsonDecode(response.body);
+      return data.map((json) => SparePart.fromJson(json)).toList();
     } else {
-      throw Exception('Failed to load spareparts');
+      throw Exception('Failed to load spare parts');
     }
   }
 
@@ -40,18 +40,15 @@ class GetApiService {
     }
   }
 
-  Future<SparePart> getSparePartById(int sparePartId) async {
+  Future<SparePart> getSparePartById(int id) async {
     final response = await http
-        .get(Uri.parse('${Utils.baseUrl}/users/spare-parts/$sparePartId'));
+        .get(Uri.parse('${Utils.baseUrl}/adListing/getSparepartById/$id'));
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> jsonResponse = json.decode(response.body);
-      final SparePart sparePart =
-          SparePart.fromJson(jsonResponse); // Directly map to SparePart
-      print(sparePart);
-      return sparePart;
+      Map<String, dynamic> data = jsonDecode(response.body);
+      return SparePart.fromJson(data);
     } else {
-      throw Exception('Failed to load spare part.');
+      throw Exception('Failed to load spare part');
     }
   }
 
@@ -93,61 +90,7 @@ class GetApiService {
       List<dynamic> data = json.decode(response.body);
       return data.map((item) => Service.fromJson(item)).toList();
     } else {
-      throw Exception('Failed to load spare parts');
+      throw Exception('Failed to load services');
     }
   }
-
-  Future<List<SparePart>> fetchFilteredAds({
-    String? province,
-    String? district,
-    String? vehicleMake,
-    String? model,
-    String? origin,
-    String? minPrice,
-    String? maxPrice,
-    List<String>? conditions,
-    List<String>? fuelTypes,
-    String? minYear,
-    String? maxYear,
-  }) async {
-    final queryParameters = {
-      'province': province,
-      'district': district,
-      'vehicleMake': vehicleMake,
-      'model': model,
-      'origin': origin,
-      'minPrice': minPrice,
-      'maxPrice': maxPrice,
-      'conditions': conditions?.join(','),
-      'fuelTypes': fuelTypes?.join(','),
-      'minYear': minYear,
-      'maxYear': maxYear,
-    };
-
-    final uri = Uri.http(
-      Utils.baseUrl,
-      '/adListing/filter',
-      queryParameters
-        ..removeWhere((key, value) => value == null || value.isEmpty),
-    );
-
-    final response = await http.get(uri);
-
-    if (response.statusCode == 200) {
-      List<dynamic> data = json.decode(response.body);
-      return data.map((item) => SparePart.fromJson(item)).toList();
-    } else {
-      throw Exception('Failed to load spare parts');
-    }
-  }
-
-  // Future<List<Map<String, dynamic>>> getUserVehicleReminders(int userId) async {
-  //   final response = await http
-  //       .get(Uri.parse('http://10.0.2.2:8000/users/getReminder/$userId'));
-  //   if (response.statusCode == 200) {
-  //     return List<Map<String, dynamic>>.from(json.decode(response.body));
-  //   } else {
-  //     throw Exception('Failed to load vehicle reminders');
-  //   }
-  // }
 }

@@ -29,10 +29,9 @@ class ServicesList extends StatelessWidget {
                 print(
                     'Service ID: ${service.id}'); // Debugging: Print service ID
 
-                final isBase64 = service.imageUrl.startsWith('/9j');
-                final imageWidget = isBase64
-                    ? Image.memory(
-                        base64Decode(service.imageUrl),
+                final imageWidget = service.imageUrls.isNotEmpty
+                    ? Image.network(
+                        service.imageUrls[0],
                         height: 65,
                         width: 75,
                         errorBuilder: (context, error, stackTrace) {
@@ -43,17 +42,10 @@ class ServicesList extends StatelessWidget {
                           );
                         },
                       )
-                    : Image.network(
-                        service.imageUrl,
-                        height: 65,
-                        width: 75,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Image.asset(
-                            'assets/images/no_image.png',
-                            height: 73,
-                            width: 81,
-                          );
-                        },
+                    : Image.asset(
+                        'assets/images/no_image.png',
+                        height: 73,
+                        width: 81,
                       );
 
                 return InkWell(
