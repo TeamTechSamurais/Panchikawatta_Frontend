@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/screens/Order/buyer_order.dart';
+import 'package:panchikawatta/screens/Order/wishlist.dart';
 
 class BuyerProfile extends StatelessWidget {
   @override
@@ -22,22 +23,27 @@ class BuyerProfile extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    
                     CustomButton(
                       onPressed: () {
-                        // Add your button press logic here
+                        print('Navigating to wishlist');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const WishlistScreen(userId: 1)),
+                        );
                       },
                       text: 'Wishlist',
                     ),
                     CustomButton(
                       onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => BuyerOrderPage(userId: 23,
-                                  
-                                )),
-                      );
-                    },
+                        print('Navigating to BuyerOrderScreen');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => BuyerOrderScreen()),
+                        );
+                      },
                       text: 'Orders',
                     ),
                   ],

@@ -1,10 +1,9 @@
  import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:panchikawatta/screens/User/buy_screen.dart';
 import 'package:panchikawatta/screens/User/filter_sort.dart';
-import 'package:panchikawatta/screens/User/services_list';
-import 'package:panchikawatta/screens/User/spareparts_list';
+import 'package:panchikawatta/screens/User/services_list.dart';
+import 'package:panchikawatta/screens/User/spareparts_list.dart';
 import 'package:panchikawatta/services/get_api_services.dart';
 import 'package:panchikawatta/models/sparepart.dart';
 import 'package:panchikawatta/screens/SignUp/sign_up1.dart';

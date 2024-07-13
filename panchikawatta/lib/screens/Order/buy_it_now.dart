@@ -1,146 +1,75 @@
-// ignore_for_file: library_private_types_in_public_api
-
 import 'package:flutter/material.dart';
-import 'package:email_validator/email_validator.dart';
-import 'package:panchikawatta/components/custom_button.dart';
-import 'package:panchikawatta/services/post_api_service.dart';
-import 'order_successful_screen.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:panchikawatta/constant/utils.dart';
+import 'package:panchikawatta/screens/Order/info.dart';
 
 class BuyNowScreen extends StatefulWidget {
-  final int sparePartId;
-  final int userId;
-
-  const BuyNowScreen({super.key, required this.sparePartId, required this.userId});
-
   @override
   _BuyNowScreenState createState() => _BuyNowScreenState();
 }
 
 class _BuyNowScreenState extends State<BuyNowScreen> {
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _phoneNoController = TextEditingController();
-  final _addressController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
-  bool _isLoading = false;
+  final TextEditingController fullNameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
 
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _phoneNoController.dispose();
-    _addressController.dispose();
-    super.dispose();
-  }
+  String _deliveryMethod = 'COD';
 
-  void _placeOrder() async {
-    if (_formKey.currentState!.validate()) {
-      final name = _nameController.text;
-      final email = _emailController.text;
-      final phoneNO = _phoneNoController.text;
-      final address = _addressController.text;
+  Future<void> placeOrder(BuildContext context) async {
+    String email = emailController.text;
+    String phone = phoneController.text;
 
-      try {
-        setState(() {
-          _isLoading = true;
-        });
+    // Email validation
+    bool emailValid = RegExp(r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(email);
+    if (!emailValid) {
+      _showErrorDialog(context, 'Invalid email format');
+      return;
+    }
 
-        final response = await PostApiService().createOrder(
-          name: name,
-          email: email,
-          address: address,
-          phoneNO: phoneNO,
-          sparePartId: widget.sparePartId,
-          userId: widget.userId,
-          status: 'Confirmed',
-        );
+    // Phone number validation
+    bool phoneValid = RegExp(r"^\d{10}$").hasMatch(phone);
+    if (!phoneValid) {
+      _showErrorDialog(context, 'Phone number must be exactly 10 digits');
+      return;
+    }
 
-        setState(() {
-          _isLoading = false;
-        });
+    final response = await http.post(
+      Uri.parse('${Utils.baseUrl}/adListing/placeOrder'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(<String, String>{
+        'name': fullNameController.text,
+        'email': email,
+        'phoneNO': phone,
+        'address': addressController.text,
+        'deliveryMethod': _deliveryMethod,
+      }),
+    );
 
-        if (response != null && response['orderId'] != null) {
-          _showConfirmationDialog();
-        } else {
-          print('Order creation failed, no orderId returned');
-        }
-      } catch (e) {
-        setState(() {
-          _isLoading = false;
-        });
-        print('Failed to place order: $e');
-      }
+    if (response.statusCode == 201) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => InfoScreen(orderId: json.decode(response.body)['orderId'])),
+      );
+    } else {
+      _showErrorDialog(context, 'Failed to place order');
     }
   }
 
-  void _showConfirmationDialog() {
+  void _showErrorDialog(BuildContext context, String message) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Confirm Order'),
-          content: const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Cash On Delivery:',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 15),
-              Text(
-                '• You Can Pay In Cash To Our Courier When Your Parcel Is Delivered To Your Doorstep.',
-                style: TextStyle(fontSize: 16),
-              ),
-              SizedBox(height: 16),
-              Text(
-                'Order Confirmation:',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 15),
-              Text(
-                '• Before Making The Payment, Please Confirm Your Order Number, Sender Information, And Tracking Number On The Parcel.',
-                style: TextStyle(fontSize: 16),
-              ),
-              SizedBox(height: 35),
-              Text(
-                'Delivery Times:',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 15),
-              Text(
-                '-> Colombo & Suburbs: Within 3 Days\n-> Other Areas: Within 7 Days',
-                style: TextStyle(fontSize: 16),
-              ),
-            ],
-          ),
+          title: Text('Error'),
+          content: Text(message),
           actions: <Widget>[
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const OrderSuccessfulScreen(ads: [],),
-                  ),
-                );
-              },
-              child: const Text('Confirm'),
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('OK'),
             ),
           ],
         );
@@ -152,126 +81,125 @@ class _BuyNowScreenState extends State<BuyNowScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: InkWell(
-          onTap: () {
-            Navigator.pop(context);
-          },
-          child: const Icon(
-            Icons.arrow_back_rounded,
-            size: 30,
-            color: Colors.black,
-          ),
-        ),
-        title: const Text(
-          'Buy Now',
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.w600,
-            color: Color(0xffFF5C01),
-          ),
-        ),
+        title: Text('Buy Now', style: TextStyle(color: Color(0xFFFF5C01))),
         backgroundColor: Colors.white,
-        elevation: 0,
+        iconTheme: IconThemeData(color: Color.fromARGB(255, 0, 0, 0)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextFormField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  hintText: 'Name with Initials',
-                  filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                    borderRadius: BorderRadius.circular(10),
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              child: ListView(
+                children: <Widget>[
+                  TextField(
+                    controller: fullNameController,
+                    decoration: InputDecoration(
+                      labelText: 'Full Name with Initial',
+                      filled: true,
+                      fillColor: Colors.grey[200],
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.transparent),
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.transparent),
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                    ),
                   ),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your name';
-                  }
-                  return null;
-                },
+                  SizedBox(height: 10),
+                  TextField(
+                    controller: emailController,
+                    decoration: InputDecoration(
+                      labelText: 'Email Address',
+                      filled: true,
+                      fillColor: Colors.grey[200],
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.transparent),
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.transparent),
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  TextField(
+                    controller: phoneController,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      labelText: 'Telephone',
+                      filled: true,
+                      fillColor: Colors.grey[200],
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.transparent),
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.transparent),
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  TextField(
+                    controller: addressController,
+                    decoration: InputDecoration(
+                      labelText: 'Address To Deliver',
+                      filled: true,
+                      fillColor: Colors.grey[200],
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.transparent),
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.transparent),
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 40),
+                  Text('Delivery Method', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  ListTile(
+                    title: Text('Cash on Delivery'),
+                    leading: Radio<String>(
+                      value: 'COD',
+                      groupValue: _deliveryMethod,
+                      onChanged: (String? value) {
+                        setState(() {
+                          _deliveryMethod = value!;
+                        });
+                      },
+                      activeColor: Color(0xFFFF5C01),
+                    ),
+                  ),
+                  ListTile(
+                    title: Text('Buy Online'),
+                    leading: Radio<String>(
+                      value: 'Online',
+                      groupValue: _deliveryMethod,
+                      onChanged: null, // Disabled for now
+                      activeColor: Color(0xFFFF5C01),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  hintText: 'Email Address',
-                  filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
-                  }
-                  if (!EmailValidator.validate(value)) {
-                    return 'Please enter a valid email';
-                  }
-                  return null;
-                },
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFFF5C01),
+                minimumSize: Size(double.infinity, 50), // Make the button take the full width
               ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: _phoneNoController,
-                decoration: InputDecoration(
-                  hintText: 'Telephone',
-                  filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your telephone number';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: _addressController,
-                decoration: InputDecoration(
-                  hintText: 'Address To Deliver',
-                  filled: true,
-                  fillColor: Colors.grey[200],
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                maxLines: 3,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your address';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              const Spacer(),
-              if (_isLoading) const CircularProgressIndicator(),
-              if (!_isLoading)
-                SizedBox(
-                  width: double.infinity,
-                  child: CustomButton(
-                    onPressed: _placeOrder,
-                    text: 'Place Order',
-                  ),
-                ),
-            ],
-          ),
+              onPressed: () => placeOrder(context),
+              child: Text('Place Order', style: TextStyle(color: Colors.white)),
+            ),
+          ],
         ),
       ),
     );

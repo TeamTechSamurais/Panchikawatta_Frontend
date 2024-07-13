@@ -7,7 +7,6 @@ import 'package:panchikawatta/screens/services_ads.dart';
 import 'package:panchikawatta/screens/spare_parts_ads.dart';
 
 class SellerProfile extends StatefulWidget {
-  // final int userId;
 
   // SellerProfile({required this.userId});
 
@@ -18,6 +17,8 @@ class SellerProfile extends StatefulWidget {
 class _SellerProfile extends State<SellerProfile>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  
+  get sellerId => 1;
   // Future<Map<String, dynamic>>? _seller;
 
   @override
@@ -59,7 +60,7 @@ class _SellerProfile extends State<SellerProfile>
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => SellerOrderPage(sellerId: 5,)),
+                      MaterialPageRoute(builder: (context) => SellerOrderScreen(sellerId: sellerId,)),
                     );
                   },
                   text: 'View Orders'),

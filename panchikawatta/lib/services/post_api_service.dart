@@ -158,23 +158,22 @@ Future<Map<String, dynamic>?> createOrder({
   //   }
   // }
 
-Future<void> addToFavorites(String userId, String sparePartId) async {
+Future<void> addToFavorites(int userId, int sparePartId) async {
   final response = await http.post(
-    Uri.parse('${Utils.baseUrl}/adListing/addfavorite'),
+    Uri.parse('${Utils.baseUrl}/adListing/add-to-favorites'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
-    body: jsonEncode(<String, String>{
+    body: jsonEncode({
       'userId': userId,
       'sparePartId': sparePartId,
     }),
   );
 
-  if (response.statusCode != 200) {
+  if (response.statusCode != 201) { // Check for 201 status code if resource is being created
     throw Exception('Failed to add to favorites: ${response.body}');
   }
 }
-
 
 
 }

@@ -1,33 +1,32 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
-import 'package:panchikawatta/models/sparepart.dart';
 import 'package:panchikawatta/screens/Order/buy_it_now.dart';
 import 'package:panchikawatta/screens/Order/wishlist.dart';
 import 'package:panchikawatta/services/get_api_services.dart';
 import 'package:panchikawatta/services/post_api_service.dart';
+import 'package:panchikawatta/models/sparepart.dart' as model;
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class BuyScreen extends StatefulWidget {
   final int sparePartId;
 
-  const BuyScreen({super.key, required this.sparePartId});
+  const BuyScreen({Key? key, required this.sparePartId}) : super(key: key);
 
   @override
   State<BuyScreen> createState() => _BuyScreenState();
 }
 
 class _BuyScreenState extends State<BuyScreen> {
-  late Future<SparePart> futureSparePart;
+  late Future<model.SparePart> futureSparePart;
   final double _padding = 20.0;
   final GetApiService getApiService = GetApiService();
   final PostApiService postApiService = PostApiService();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   User? get currentUser => _auth.currentUser;
-  int? get userId => currentUser?.uid.hashCode;
-
-  // Replace this with your actual logic to get the user ID
-  //int get userId => 2; // Define a valid userId
+  int? get userId => 2;
 
   @override
   void initState() {
@@ -62,14 +61,23 @@ class _BuyScreenState extends State<BuyScreen> {
           GestureDetector(
             onTap: () async {
               try {
-                await postApiService.addToFavorites(userId! as String, widget.sparePartId as String);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Added to favorites')),
-                );
+                await postApiService.addToFavorites(
+                    userId!,
+                    widget
+                        .sparePartId); // Assume userId and sparePartId are already int
+                if (mounted) {
+                  // Check if the widget is still part of the tree
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Added to favorites')),
+                  );
+                }
               } catch (e) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Failed to add to favorites: $e')),
-                );
+                if (mounted) {
+                  // Check if the widget is still part of the tree
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Failed to add to favorites: $e')),
+                  );
+                }
               }
             },
             child: const Icon(
@@ -81,7 +89,7 @@ class _BuyScreenState extends State<BuyScreen> {
           const SizedBox(width: 30)
         ],
       ),
-      body: FutureBuilder<SparePart>(
+      body: FutureBuilder<model.SparePart>(
         future: futureSparePart,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -93,13 +101,10 @@ class _BuyScreenState extends State<BuyScreen> {
           } else {
             var sparePart = snapshot.data!;
             return Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal: _padding), // Apply common padding
+              padding: EdgeInsets.symmetric(horizontal: _padding),
               child: Column(
                 children: [
-                  const SizedBox(
-                    height: 30,
-                  ),
+                  const SizedBox(height: 30),
                   Center(
                     child: Container(
                       height: 300,
@@ -111,79 +116,22 @@ class _BuyScreenState extends State<BuyScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
                   Center(
                     child: CustomButton(
                       onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => BuyNowScreen(sparePartId: widget.sparePartId, userId: userId!)),
-                      );
-                    },
-                      text: '              Buy it Now              ',
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => BuyNowScreen()),
+                        );
+                      },
+                      text: 'Buy it Now',
                     ),
-                  ),
-                  const SizedBox(
-                    height: 10,
                   ),
                   const Divider(
                     color: Colors.grey,
                     thickness: 1.5,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Text(
-                        sparePart.title,
-                        style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Rs. ${sparePart.price}',
-                        style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black),
-                      ),
-                      const SizedBox(width: 100),
-                      GestureDetector(
-                        onTap: () {
-                          // Add code to call the phone number here
-                        },
-                        child: const Icon(
-                          Icons.local_phone_rounded,
-                          color: Color(0xFFFF5C01),
-                          size: 35,
-                        ),
-                      ),
-                      const SizedBox(width: 30),
-                      GestureDetector(
-                        onTap: () {
-                          // Add code to call the phone number here
-                        },
-                        child: const Icon(
-                          Icons.mail_rounded,
-                          color: Color(0xFFFF5C01),
-                          size: 35,
-                        ),
-                      ),
-                    ],
                   ),
                   Expanded(
                     child: SingleChildScrollView(
@@ -192,199 +140,22 @@ class _BuyScreenState extends State<BuyScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
+                            TextDetail(title: 'Make:', value: sparePart.make),
+                            TextDetail(title: 'Model:', value: sparePart.model),
+                            TextDetail(
+                                title: 'Year:',
+                                value: sparePart.year.toString()),
+                            TextDetail(
+                                title: 'Condition:',
+                                value: sparePart.condition),
+                            TextDetail(title: 'Fuel:', value: sparePart.fuel),
+                            TextDetail(
+                                title: 'Origin:', value: sparePart.origin),
                             const Divider(
                               color: Colors.grey,
                               thickness: 1,
                             ),
-                            Center(
-                              child: Container(
-                                constraints:
-                                    const BoxConstraints(maxWidth: 180),
-                                child: Table(
-                                  columnWidths: const {
-                                    0: FixedColumnWidth(100.0),
-                                    1: FlexColumnWidth(),
-                                  },
-                                  defaultVerticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  children: [
-                                    TableRow(
-                                      children: [
-                                        const Padding(
-                                          padding:
-                                              EdgeInsets.symmetric(vertical: 5),
-                                          child: Text(
-                                            'Make:',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600,
-                            color: Color.fromARGB(255, 87, 87, 87)
-                                            ),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 5),
-                                          child: Text(
-                                            sparePart.make,
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    TableRow(
-                                      children: [
-                                        const Padding(
-                                          padding:
-                                              EdgeInsets.symmetric(vertical: 5),
-                                          child: Text(
-                                            'Model:',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600,
-                            color: Color.fromARGB(255, 87, 87, 87)
-                                            ),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 5),
-                                          child: Text(
-                                            sparePart.model,
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    TableRow(
-                                      children: [
-                                        const Padding(
-                                          padding:
-                                              EdgeInsets.symmetric(vertical: 5),
-                                          child: Text(
-                                            'Year:',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600,
-                            color: Color.fromARGB(255, 87, 87, 87)
-                                            ),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 5),
-                                          child: Text(
-                                            sparePart.year.toString(),
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    TableRow(
-                                      children: [
-                                        const Padding(
-                                          padding:
-                                              EdgeInsets.symmetric(vertical: 5),
-                                          child: Text(
-                                            'Condition:',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600,
-                            color: Color.fromARGB(255, 87, 87, 87)
-                                            ),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 5),
-                                          child: Text(
-                                            sparePart.condition,
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    TableRow(
-                                      children: [
-                                        const Padding(
-                                          padding:
-                                              EdgeInsets.symmetric(vertical: 5),
-                                          child: Text(
-                                            'Fuel:',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600,
-                            color: Color.fromARGB(255, 87, 87, 87)
-                                            ),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 5),
-                                          child: Text(
-                                            sparePart.fuel,
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    TableRow(
-                                      children: [
-                                        const Padding(
-                                          padding:
-                                              EdgeInsets.symmetric(vertical: 5),
-                                          child: Text(
-                                            'Origin:',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600,
-                            color: Color.fromARGB(255, 87, 87, 87)
-                                            ),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 5),
-                                          child: Text(
-                                            sparePart.origin,
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const Divider(
-                              color: Colors.grey,
-                              thickness: 1,
-                            ),
-                            const Text(
+                            Text(
                               'Description:',
                               style: TextStyle(
                                 fontSize: 16,
@@ -414,6 +185,39 @@ class _BuyScreenState extends State<BuyScreen> {
             );
           }
         },
+      ),
+    );
+  }
+
+  Widget TextDetail({required String title, required String value}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 1,
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Color.fromARGB(255, 87, 87, 87),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

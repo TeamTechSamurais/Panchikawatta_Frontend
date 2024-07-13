@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/models/service.dart';
-import 'package:panchikawatta/screens/User/wishlist.dart';
+import 'package:panchikawatta/screens/Order/wishlist.dart';
 import 'package:panchikawatta/services/get_api_services.dart';
 
 class ServiceScreen extends StatefulWidget {
@@ -48,21 +48,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
               fontSize: 28,
               fontWeight: FontWeight.w500),
         ),
-        actions: [
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const WishlistScreen()),
-              );
-            },
-            child: const Icon(
-              Icons.favorite_outline,
-              size: 30,
-              color: Color(0xFFFF5C01),
-            ),
-          ),
-          const SizedBox(width: 30)
+        actions: const [
         ],
       ),
       body: FutureBuilder<Service>(
