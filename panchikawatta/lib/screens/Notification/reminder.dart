@@ -20,7 +20,7 @@ class _ReminderPageState extends State<ReminderPage> {
   @override
   void initState() {
     super.initState();
-    futureReminders = getUserVehicleReminders(20); // Provide the userId
+    futureReminders = getUserVehicleReminders(1); // Provide the userId
   }
 
   Future<List<Vehicle>> getUserVehicleReminders(int userId) async {

@@ -1,7 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api, avoid_print, use_build_context_synchronously, file_names
-
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -9,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/components/add_image.dart';
+import 'package:panchikawatta/dropdowns/service_type.dart';
 import 'package:panchikawatta/screens/AdPost/post_success.dart';
-import 'package:panchikawatta/screens/QuickHelp/abs_light_action.dart';
 import 'package:panchikawatta/services/post_api_service.dart';
 
 FirebaseAuth _auth = FirebaseAuth.instance;
@@ -30,6 +27,7 @@ class _ServicePostState extends State<ServicePost> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
+  String? _selectedServiceType;
 
   void _setImage(int index, XFile? imagepath) {
     setState(() {
@@ -82,8 +80,11 @@ class _ServicePostState extends State<ServicePost> {
       print('Title: $title');
       print('Description: $description');
       print('Price: $price');
+      print('Service Type: $_selectedServiceType');
 
-      if (title.isEmpty || description.isEmpty) {
+      if (title.isEmpty ||
+          description.isEmpty ||
+          _selectedServiceType == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Please fill all required fields')),
         );
@@ -152,6 +153,15 @@ class _ServicePostState extends State<ServicePost> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    ServiceType(
+                      selectedService: _selectedServiceType,
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedServiceType = value;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 20),
                     TextField(
                       controller: _titleController,
                       decoration: InputDecoration(

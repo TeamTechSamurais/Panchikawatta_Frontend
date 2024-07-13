@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
+import 'package:panchikawatta/screens/app.dart';
 import 'package:panchikawatta/screens/profile_page.dart';
 import 'package:panchikawatta/screens/search_page1.dart';
 
@@ -38,9 +39,7 @@ class PostSuccess extends StatelessWidget {
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const search_page1(
-                        ads: [],
-                      ),
+                      builder: (context) => const MyHomePage(),
                     ),
                     (Route<dynamic> route) =>
                         false, // This removes all routes from the stack

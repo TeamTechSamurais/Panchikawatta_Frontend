@@ -90,63 +90,7 @@ class GetApiService {
       List<dynamic> data = json.decode(response.body);
       return data.map((item) => Service.fromJson(item)).toList();
     } else {
-      throw Exception('Failed to load spare parts');
+      throw Exception('Failed to load services');
     }
   }
-
-  Future<List<SparePart>> fetchFilteredAds({
-    String? province,
-    String? district,
-    String? vehicleMake,
-    String? type,
-    String? model,
-    String? origin,
-    String? minPrice,
-    String? maxPrice,
-    List<String>? conditions,
-    List<String>? fuelTypes,
-    String? minYear,
-    String? maxYear,
-  }) async {
-    final queryParameters = {
-      'province': province,
-      'district': district,
-      'vehicleMake': vehicleMake,
-      'type': type,
-      'model': model,
-      'origin': origin,
-      'minPrice': minPrice,
-      'maxPrice': maxPrice,
-      'conditions': conditions?.join(','),
-      'fuelTypes': fuelTypes?.join(','),
-      'minYear': minYear,
-      'maxYear': maxYear,
-    };
-
-    final uri = Uri.http(
-      Utils.baseUrl,
-      '/adListing/filter',
-      queryParameters
-        ..removeWhere((key, value) => value == null || value.isEmpty),
-    );
-
-    final response = await http.get(uri);
-
-    if (response.statusCode == 200) {
-      List<dynamic> data = json.decode(response.body);
-      return data.map((item) => SparePart.fromJson(item)).toList();
-    } else {
-      throw Exception('Failed to load spare parts');
-    }
-  }
-
-  // Future<List<Map<String, dynamic>>> getUserVehicleReminders(int userId) async {
-  //   final response = await http
-  //       .get(Uri.parse('http://10.0.2.2:8000/users/getReminder/$userId'));
-  //   if (response.statusCode == 200) {
-  //     return List<Map<String, dynamic>>.from(json.decode(response.body));
-  //   } else {
-  //     throw Exception('Failed to load vehicle reminders');
-  //   }
-  // }
 }

@@ -42,6 +42,8 @@ class _AdPostState extends State<AdPost> {
   String? _selectedFuel;
   final TextEditingController _yearController = TextEditingController();
 
+  get sellerId => 1;
+
   void _setImage(int index, XFile? imagepath) {
     setState(() {
       _images[index] = imagepath;
@@ -114,7 +116,7 @@ class _AdPostState extends State<AdPost> {
       List<String> downloadUrls = await _uploadImages(_images);
 
       final sparePart = await widget.apiService.postSparePart(
-        sellerId: 5, // replace with actual seller ID
+        sellerId: sellerId, // replace with actual seller ID
         title: title,
         description: description,
         price: price,

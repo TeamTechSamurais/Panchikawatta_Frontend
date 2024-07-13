@@ -56,6 +56,7 @@ class PostApiService {
   //Post Services
   Future<Service> postService({
     required int sellerId,
+    String? type,
     required String title,
     required String description,
     required String price,
@@ -67,6 +68,7 @@ class PostApiService {
       final body = jsonEncode({
         'sellerId': sellerId,
         'title': title,
+        'type': type,
         'description': description,
         'price': price,
         'imageUrls': imageUrls,

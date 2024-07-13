@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
+import 'package:panchikawatta/screens/app.dart';
 import 'package:panchikawatta/screens/profile_page.dart';
 import 'package:panchikawatta/screens/search_page1.dart';
 
@@ -48,10 +49,7 @@ class PostUnsuccess extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                        builder: (context) => search_page1(
-                              ads: const [],
-                            )),
+                    MaterialPageRoute(builder: (context) => MyHomePage()),
                   );
                 },
               ),

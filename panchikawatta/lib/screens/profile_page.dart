@@ -22,6 +22,7 @@ class _ProfilePageState extends State<ProfilePage>
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   bool _isSeller = false;
   int? _userId;
+  String? _email;
   final TextEditingController _businessName = TextEditingController();
   final TextEditingController _businessAddress = TextEditingController();
   final TextEditingController _businessPhone = TextEditingController();
@@ -47,6 +48,10 @@ class _ProfilePageState extends State<ProfilePage>
     final String? email = prefs.getString('userEmail');
 
     if (email != null) {
+      setState(() {
+        _email = email;
+      });
+
       final querySnapshot = await _firestore
           .collection('users')
           .where('email', isEqualTo: email)
@@ -230,7 +235,7 @@ class _ProfilePageState extends State<ProfilePage>
           title: const Text('My Profile',
               style: TextStyle(
                   color: Color(0xFFFF5C01),
-                  fontSize: 28,
+                  fontSize: 25,
                   fontWeight: FontWeight.bold)),
           actions: [
             PopupMenuButton<String>(
@@ -306,18 +311,18 @@ class _ProfilePageState extends State<ProfilePage>
                     const SizedBox(height: 20),
                     Center(
                       child: CircleAvatar(
-                          radius: 80,
+                          radius: 60,
                           backgroundImage: profilePictureUrl != null
                               ? NetworkImage(profilePictureUrl!)
                               : null,
                           child: profilePictureUrl == null
                               ? const Icon(
                                   Icons.person,
-                                  size: 80,
+                                  size: 60,
                                 )
                               : null),
                     ),
-                    const SizedBox(height: 25),
+                    const SizedBox(height: 10),
                     Center(
                         child: Text(
                       '${user['userName']}',
@@ -325,7 +330,7 @@ class _ProfilePageState extends State<ProfilePage>
                         fontSize: 18,
                       ),
                     )),
-                    const SizedBox(height: 25),
+                    const SizedBox(height: 10),
                     TabBar(
                       controller: _tabController,
                       tabs: [
@@ -335,24 +340,24 @@ class _ProfilePageState extends State<ProfilePage>
                         _individualTab('Seller'),
                       ],
                       labelColor: const Color(0xFFFF5C01),
-                      unselectedLabelColor: Color(0x80000000),
+                      unselectedLabelColor: const Color(0x80000000),
                       indicatorColor: Colors.transparent,
                       indicatorSize: TabBarIndicatorSize.tab,
-                      labelPadding: EdgeInsets.all(0),
-                      indicatorPadding: EdgeInsets.all(0),
+                      labelPadding: const EdgeInsets.all(0),
+                      indicatorPadding: const EdgeInsets.all(0),
                       dividerColor: Colors.transparent,
                     ),
                     Container(
-                      height: 2000,
+                      height: 1500,
                       child: TabBarView(
                         controller: _tabController,
                         children: [
-                          BuyerProfile(),
+                          BuyerProfile(_email),
                           _isSeller ? SellerProfile() : Container(),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
                   ],
                 ),
               );
