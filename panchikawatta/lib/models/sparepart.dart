@@ -10,6 +10,7 @@ class SparePart {
   final String condition;
   final String fuel;
   final int year;
+  final int sellerId;
 
   SparePart({
     required this.id,
@@ -23,6 +24,7 @@ class SparePart {
     required this.condition,
     required this.fuel,
     required this.year,
+    required this.sellerId,
   }) : imageUrl = imageUrl ?? 'assets/images/no_image.png';
 
   factory SparePart.fromJson(Map<String, dynamic> json) {
@@ -38,6 +40,7 @@ class SparePart {
       condition: json['condition'] ?? 'Unknown',
       fuel: json['fuel'] ?? 'Unknown',
       year: json['year'] ?? 0,
+      sellerId: json['sellerId'] ?? 0,
     );
   }
 }

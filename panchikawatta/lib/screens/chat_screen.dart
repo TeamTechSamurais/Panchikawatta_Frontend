@@ -143,7 +143,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         builder: (_) => ChatRoom(
                           chatRoomId: roomId,
                           userMap: searchResults![index],
-                          user : searchResults![index]['uid']
+                          //user : searchResults![index]['uid']
                         )
                       )
                     );
@@ -346,7 +346,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                                 builder: (_) => ChatRoom(
                                                   chatRoomId: chatRoomId as String, //roomId
                                                   userMap: {'uid': otherUserId, 'name': userDisplayName, 'profile_picture': userDisplayPicture},  //searchResults![index],
-                                                  user: otherUserId,
+                                                  //user: otherUserId,
                                                 )
                                               )
                                             );
