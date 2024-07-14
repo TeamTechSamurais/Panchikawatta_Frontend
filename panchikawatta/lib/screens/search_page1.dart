@@ -85,12 +85,12 @@ class _SearchPage1State extends State<search_page1> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, size: 30),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
+        // leading: IconButton(
+        //   icon: const Icon(Icons.arrow_back_rounded, size: 30),
+        //   onPressed: () {
+        //     Navigator.pop(context);
+        //   },
+        // ),
         elevation: 0,
         actions: [
           Row(

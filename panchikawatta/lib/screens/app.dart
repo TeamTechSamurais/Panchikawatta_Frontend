@@ -11,12 +11,14 @@ import 'package:panchikawatta/screens/search_page1.dart';
 
 class MyApp extends StatelessWidget {
   final String initialRoute;
+  final GlobalKey<NavigatorState> navigatorKey;
 
-  const MyApp({Key? key, required this.initialRoute}) : super(key: key);
+  const MyApp({Key? key, required this.initialRoute, required this.navigatorKey}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       title: 'My App',
       theme: ThemeData(
         primarySwatch: Colors.blue,

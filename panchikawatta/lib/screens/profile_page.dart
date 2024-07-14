@@ -4,6 +4,7 @@ import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/components/input_fields.dart';
 import 'package:panchikawatta/screens/Profile/buyer_profile.dart';
 import 'package:panchikawatta/screens/api_service.dart';
+import 'package:panchikawatta/screens/chat_screen.dart';
 import 'package:panchikawatta/screens/delete_and_edit_my_profile.dart';
 import 'package:panchikawatta/screens/edit_profile_page.dart';
 import 'package:panchikawatta/screens/seller_profile.dart';
@@ -265,6 +266,14 @@ class _ProfilePageState extends State<ProfilePage>
                       },
                     );
                     break;
+
+                  case 'chat':
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ChatScreen()),
+                    );
+                    break;
                 }
               },
               itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -280,6 +289,10 @@ class _ProfilePageState extends State<ProfilePage>
                   value: 'Logout',
                   child: Text('Logout',
                       style: TextStyle(color: Color(0xFFFF5C01))),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'chat',
+                  child: Text('chat'),
                 ),
               ],
             ),
