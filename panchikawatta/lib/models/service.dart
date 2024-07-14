@@ -1,24 +1,29 @@
 class Service {
   final int id;
+  String type;
   final String title;
   final String description;
-  String imageUrl;
+  final int price;
+  final List<String> imageUrls;
 
   Service({
     required this.id,
+    this.type = '',
     required this.title,
     required this.description,
-    String? imageUrl,
-  }) : imageUrl = imageUrl ?? 'no_image.png';
+    required this.price,
+    required this.imageUrls,
+  });
 
   factory Service.fromJson(Map<String, dynamic> json) {
     return Service(
-      id: json['id'] ?? 0,
+      id: json['serviceId'],
+      type: json['type'] ?? '',
       title: json['title'] ?? 'Unknown',
       description: json['description'] ?? 'No description',
-      imageUrl: json['imageUrl'] ?? 'No image',
+      price: json['price'] ?? 0,
+      imageUrls:
+          json['imageUrls'] != null ? List<String>.from(json['imageUrls']) : [],
     );
   }
-
-  get price => null;
 }

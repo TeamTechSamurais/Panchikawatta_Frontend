@@ -15,8 +15,9 @@ class _ChatScreenState extends State<ChatScreen> {
   bool _isSearching = false;
   bool _isSelecting = false;
   final FocusNode _searchfocusNode = FocusNode();
-  final TextEditingController _searchController = TextEditingController();  
-  List<Map<String, dynamic>>? searchResults = []; //Empty list of maps, where each map has string keys and values of any type (dynamic).
+  final TextEditingController _searchController = TextEditingController();
+  List<Map<String, dynamic>>? searchResults =
+      []; //Empty list of maps, where each map has string keys and values of any type (dynamic).
   String? currentUserId;
   final _auth = FirebaseAuth.instance;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -29,22 +30,27 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   @override
-  void initState() {  //This function will call when the _buildSearchResults() widget is loaded
+  void initState() {
+    //This function will call when the _buildSearchResults() widget is loaded
     super.initState();
     currentUserId = FirebaseAuth.instance.currentUser!.uid;  //Get the current user's id
 
     _searchController.addListener(() {  //Listen to the changes in the search field. This will call every time the searchText change
+
       if (_searchController.text.isEmpty) {
-        return ;  //If the search field is empty, do nothing.
+        return; //If the search field is empty, do nothing.
       } else {
-        onSearch(_searchController.text); //If the search field is not empty, call the onSearch function.
+        onSearch(_searchController
+            .text); //If the search field is not empty, call the onSearch function.
       }
     });
   }
 
   @override
-  void dispose() {  //This function will call when the _buildSearchResults() widget is disposed/permanently removed from the screen
-    _searchController.dispose();  //cleans up the resources used by _searchController.
+  void dispose() {
+    //This function will call when the _buildSearchResults() widget is disposed/permanently removed from the screen
+    _searchController
+        .dispose(); //cleans up the resources used by _searchController.
     super.dispose();
   }
 
@@ -140,7 +146,6 @@ class _ChatScreenState extends State<ChatScreen> {
       selectedChatRooms.clear();
     });
   }
-
 
   Widget _buildSearchResults() {
     final results = searchResults;
@@ -393,10 +398,108 @@ class _ChatScreenState extends State<ChatScreen> {
                   } else {
                     print('Item at index $index is not a Map<String, dynamic>');
                   }
+                  _isSearching = !_isSearching;
+                });
+              },
+            ),
+          ],
+        ),
+        body: _isSearching
+            ? _buildSearchResults()
+            : StreamBuilder<DocumentSnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(_auth.currentUser!.uid)
+                    .snapshots(), //get the document of the current user
+                builder: (context, snapshot) {
+                  if (snapshot.hasData && snapshot.data != null) {
+                    final chatrooms = snapshot.data?.data();
+                    final chatRooms = chatrooms is Map<String, dynamic>
+                        ? (chatrooms['chatRooms'] as List<dynamic>? ?? [])
+                            .toList()
+                        : []; //(snapshot.data!.data() as Map<String, dynamic>)['chatRooms'] as List<dynamic>;
 
-                  if (chatRoomId == null) {
-                    return const SizedBox.shrink();
-                  }
+                    if (chatRooms.isEmpty) {
+                      return const Center(
+                        child: Text('You have not chat with anyone',
+                            style: TextStyle(fontSize: 20)),
+                      );
+                    }
+
+                    return ListView.builder(
+                      itemCount: chatRooms.length,
+                      itemBuilder: (context, index) {
+                        final item = chatRooms[index];
+                        Map<String, dynamic>? chatRoomMap;
+                        String? chatRoomId;
+
+                        if (item is Map<String, dynamic>) {
+                          chatRoomMap = item;
+                          final id = chatRoomMap['chatRoomId'];
+
+                          if (id is String) {
+                            chatRoomId = id;
+                          } else {
+                            print('chatRoomId is not a String');
+                          }
+                        } else {
+                          print(
+                              'Item at index $index is not a Map<String, dynamic>');
+                        }
+
+                        if (chatRoomId == null) {
+                          return const SizedBox.shrink();
+                        }
+
+                        final otherUserId =
+                            chatRoomMap?['otherUid'] as String? ??
+                                'defaultUserId';
+
+                        return StreamBuilder<QuerySnapshot>(
+                            stream: _firestore
+                                .collection('chatRoom')
+                                .doc(chatRoomId)
+                                .collection('chats')
+                                .orderBy('time', descending: true)
+                                .snapshots(),
+                            builder: (context, chatSnapshot) {
+                              if (chatSnapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
+                              if (chatSnapshot.hasError) {
+                                return const Center(
+                                  child: Text('An error occurred'),
+                                );
+                              }
+                              if (!chatSnapshot.hasData ||
+                                  chatSnapshot.data!.docs.isEmpty) {
+                                return const SizedBox.shrink();
+                              }
+
+                              final chatDocs = chatSnapshot.data!.docs;
+
+                              final lastMessage = chatDocs.first;
+
+                              return FutureBuilder<DocumentSnapshot>(
+                                  future: _firestore
+                                      .collection('users')
+                                      .doc(otherUserId)
+                                      .get(),
+                                  builder: (context, userSnapshot) {
+                                    // if (userSnapshot.connectionState == ConnectionState.waiting) { // && userSnapshot.hasData) {
+                                    //   return const Center(
+                                    //     child: CircularProgressIndicator(),
+                                    //   );
+                                    // }
+
+                                    if (userSnapshot.hasError) {
+                                      return const Center(
+                                        child: Text('An error occurred'),
+                                      );
+                                    }
 
                   final otherUserId = chatRoomMap?['otherUid'] as String? ?? 'defaultUserId';
 

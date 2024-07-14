@@ -1,17 +1,13 @@
-// ignore_for_file: use_super_parameters, library_private_types_in_public_api, use_build_context_synchronously, avoid_print
-
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/dropdowns/condition.dart';
-import 'package:panchikawatta/dropdowns/district.dart';
 import 'package:panchikawatta/dropdowns/fuel.dart';
 import 'package:panchikawatta/dropdowns/origin.dart';
-import 'package:panchikawatta/dropdowns/province.dart';
 import 'package:panchikawatta/dropdowns/vehicle_make.dart';
 import 'package:panchikawatta/dropdowns/vehicle_model.dart';
-import 'package:panchikawatta/screens/search_page.dart';
-import 'package:panchikawatta/screens/search_page1.dart';
-import 'package:panchikawatta/services/get_api_services.dart';
+import 'package:panchikawatta/dropdowns/vehicle_type.dart';
+import 'package:panchikawatta/screens/app.dart';
+import 'package:panchikawatta/services/filter_api_service.dart';
 
 class FilterSortScreen extends StatefulWidget {
   const FilterSortScreen({Key? key}) : super(key: key);
@@ -21,8 +17,7 @@ class FilterSortScreen extends StatefulWidget {
 }
 
 class _FilterSortScreenState extends State<FilterSortScreen> {
-  String? selectedProvince;
-  String? selectedDistrict;
+  String? selectedVehicleType;
   String? selectedVehicleMake;
   String? selectedModel;
   String? selectedOrigin;
@@ -35,14 +30,10 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
   Set<String> selectedConditions = {};
   String? selectedFuel;
 
-  get minYearController => null;
-  get maxYearController => null;
-
   Future<void> fetchFilteredAds() async {
     try {
-      final ads = await GetApiService().fetchFilteredAds(
-        province: selectedProvince,
-        district: selectedDistrict,
+      final ads = await FilterApiService().fetchFilteredAds(
+        type: selectedVehicleType,
         vehicleMake: selectedVehicleMake,
         model: selectedModel,
         origin: selectedOrigin,
@@ -56,9 +47,7 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => search_page1(
-            ads: ads,
-          ),
+          builder: (context) => const MyHomePage(),
         ),
       );
     } catch (error) {
@@ -76,7 +65,7 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Filter and Sort',
+          'Filter Results',
           style: TextStyle(
             color: Color(0xFFFF5C01),
             fontSize: 27,
@@ -88,41 +77,24 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
         padding: const EdgeInsets.all(20.0),
         child: ListView(
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: ProvinceDropdown(
-                    selectedProvince: selectedProvince,
-                    onChanged: (String? province) {
-                      setState(() {
-                        selectedProvince = province;
-                        selectedDistrict =
-                            null; // Reset district when province changes
-                      });
-                    },
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: DistrictDropdown(
-                    selectedDistrict: selectedDistrict,
-                    selectedProvince: selectedProvince,
-                    onChanged: (String? district) {
-                      setState(() {
-                        selectedDistrict = district;
-                      });
-                    },
-                  ),
-                ),
-              ],
+            VehicleType(
+              selectedType: selectedVehicleType,
+              onChanged: (String? type) {
+                setState(() {
+                  selectedVehicleType = type;
+                  selectedVehicleMake = null;
+                  selectedModel = null;
+                });
+              },
             ),
             const SizedBox(height: 16),
             VehicleMake(
               selectedMake: selectedVehicleMake,
+              makes: vehicleMakeToModels[selectedVehicleMake] ?? [],
               onChanged: (String? make) {
                 setState(() {
                   selectedVehicleMake = make;
-                  selectedModel = null; // Reset model when make changes
+                  selectedModel = null;
                 });
               },
             ),
@@ -190,9 +162,14 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
               children: [
                 Expanded(
                   child: TextField(
-                    controller: minYearController,
+                    controller: TextEditingController(text: selectedMinYear),
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(labelText: 'Min Year'),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedMinYear = value;
+                      });
+                    },
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -200,9 +177,14 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: TextField(
-                    controller: maxYearController,
+                    controller: TextEditingController(text: selectedMaxYear),
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(labelText: 'Max Year'),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedMaxYear = value;
+                      });
+                    },
                   ),
                 ),
               ],
@@ -214,8 +196,6 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
                 CustomButton(
                   onPressed: () {
                     setState(() {
-                      selectedProvince = null;
-                      selectedDistrict = null;
                       selectedVehicleMake = null;
                       selectedModel = null;
                       selectedOrigin = null;

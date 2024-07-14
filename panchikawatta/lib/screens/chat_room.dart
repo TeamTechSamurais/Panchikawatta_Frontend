@@ -13,7 +13,10 @@ class ChatRoom extends StatefulWidget {
 
   static const route = '/chat_room';
 
-  ChatRoom({required this.userMap, required this.chatRoomId, });  //required this.user
+  ChatRoom({
+    required this.userMap,
+    required this.chatRoomId,
+  }); //required this.user
 
   @override
   _ChatRoomState createState() => _ChatRoomState();
@@ -81,14 +84,13 @@ class _ChatRoomState extends State<ChatRoom> {
             ]
           : [],
         bottom: const PreferredSize(
-          preferredSize: Size.fromHeight(1.0), 
+          preferredSize: Size.fromHeight(1.0),
           child: Divider(
             color: Colors.grey,
             height: 1.0,
           ),
         ),
       ),
-
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -140,30 +142,28 @@ class _ChatRoomState extends State<ChatRoom> {
                         decoration: InputDecoration(
                           hintText: 'Type a message',
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide.none
-                          ),
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide.none),
                           filled: true,
-                          fillColor: Color(0xFFFCB891)
-                        ),
-                      ),
+                          fillColor: Color(0xFFFCB891)),
                     ),
-                  
-                    IconButton(
-                      onPressed: onSendMessage, 
-                      icon: const Icon(Icons.send, color: Color(0xFFFCB891), size: 38),
-                    ), 
-                  ],
-                ),
+                  ),
+                  IconButton(
+                    onPressed: onSendMessage,
+                    icon: const Icon(Icons.send,
+                        color: Color(0xFFFCB891), size: 38),
+                  ),
+                ],
               ),
-              _isLoading 
+            ),
+            _isLoading
                 ? const Center(
                     child: CircularProgressIndicator(),
-                  ) 
+                  )
                 : Container(),
-            ],
-          ),
+          ],
         ),
+      ),
     );
   }
 
@@ -178,7 +178,7 @@ class _ChatRoomState extends State<ChatRoom> {
     String chatRoomId = widget.chatRoomId;
 
     if (pickedFile != null) {
-      setState (() {
+      setState(() {
         _isLoading = true;
       });
 
@@ -209,14 +209,9 @@ class _ChatRoomState extends State<ChatRoom> {
       addChatRoomId();
 
       // Increment unread messages count
-      await _firestore
-          .collection('chatRoom')
-          .doc(widget.chatRoomId)
-          .set({
-            'unreadMessages': {
-              widget.userMap['uid'] : FieldValue.increment(1)
-            }
-          }, SetOptions(merge: true));
+      await _firestore.collection('chatRoom').doc(widget.chatRoomId).set({
+        'unreadMessages': {widget.userMap['uid']: FieldValue.increment(1)}
+      }, SetOptions(merge: true));
 
       setState(() {
         _isLoading = false;
@@ -242,31 +237,32 @@ class _ChatRoomState extends State<ChatRoom> {
         'unread' : 'true',
       };
 
-      await _firestore 
-        .collection('chatRoom')
-        .doc(widget.chatRoomId)
-        .collection('chats')
-        .add(message);
+      await _firestore
+          .collection('chatRoom')
+          .doc(widget.chatRoomId)
+          .collection('chats')
+          .add(message);
 
       // Add the chatRoomId to the user's document when a message is sent
       addChatRoomId();
 
       // Ensure chatRoom document has the users field if it doesn't exist
-      final chatRoomDoc = await _firestore.collection('chatRoom').doc(widget.chatRoomId).get();
+      final chatRoomDoc =
+          await _firestore.collection('chatRoom').doc(widget.chatRoomId).get();
       if (!chatRoomDoc.exists) {
         await _firestore.collection('chatRoom').doc(widget.chatRoomId).set({
           'users': [_auth.currentUser!.uid, widget.userMap['uid']],
           'unreadMessages': {
-            widget.userMap['uid']: FieldValue.increment(1) // Increment unread messages for the other user
+            widget.userMap['uid']: FieldValue.increment(
+                1) // Increment unread messages for the other user
           },
         });
       } else {
         // Increment unread messages for the other user
-        final otherUserId = chatRoomDoc['users'].firstWhere((userId) => userId != _auth.currentUser!.uid);
+        final otherUserId = chatRoomDoc['users']
+            .firstWhere((userId) => userId != _auth.currentUser!.uid);
         await _firestore.collection('chatRoom').doc(widget.chatRoomId).set({
-          'unreadMessages': {
-            otherUserId: FieldValue.increment(1)
-          },
+          'unreadMessages': {otherUserId: FieldValue.increment(1)},
         }, SetOptions(merge: true));
       }
 
@@ -332,7 +328,9 @@ class _ChatRoomState extends State<ChatRoom> {
       } else {
         // If the document doesn't exist or has no data, create it with the chatRooms field
         transaction.set(userDoc1, {
-          'chatRooms': [{'otherUid': otherUid, 'chatRoomId': chatRoomId}]
+          'chatRooms': [
+            {'otherUid': otherUid, 'chatRoomId': chatRoomId}
+          ]
         });
       }
     });
@@ -361,7 +359,9 @@ class _ChatRoomState extends State<ChatRoom> {
       } else {
         // If the document doesn't exist or has no data, create it with the chatRooms field
         transaction.set(userDoc2, {
-          'chatRooms': [{'otherUid': uid, 'chatRoomId': chatRoomId}]
+          'chatRooms': [
+            {'otherUid': uid, 'chatRoomId': chatRoomId}
+          ]
         });
       }
     });

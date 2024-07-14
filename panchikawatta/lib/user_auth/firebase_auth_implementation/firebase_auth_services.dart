@@ -54,5 +54,7 @@ Future<bool> isEmailVerified(User user) async {
     await user.reload();
     return user.emailVerified;
   }
+
+  User? get currentUser => _auth.currentUser;
 }
  

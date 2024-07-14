@@ -1,28 +1,34 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-// import 'package:card_swiper/card_swiper.dart';
 import 'package:panchikawatta/components/custom_button.dart';
-import 'package:panchikawatta/screens/User/wishlist.dart';
-import 'package:panchikawatta/models/sparepart.dart';
+import 'package:panchikawatta/screens/Order/buy_it_now.dart';
 import 'package:panchikawatta/screens/api_service.dart';
 import 'package:panchikawatta/screens/chat_room.dart';
 import 'package:panchikawatta/services/get_api_services.dart';
+import 'package:panchikawatta/services/post_api_service.dart';
+import 'package:panchikawatta/models/sparepart.dart' as model;
+import 'package:card_swiper/card_swiper.dart';
 
 class BuyScreen extends StatefulWidget {
   final int sparePartId;
 
-  const BuyScreen({super.key, required this.sparePartId});
+  const BuyScreen({Key? key, required this.sparePartId}) : super(key: key);
 
   @override
   State<BuyScreen> createState() => _BuyScreenState();
 }
 
 class _BuyScreenState extends State<BuyScreen> {
-  late Future<SparePart> futureSparePart;
-  final double _padding = 20.0; // Define common padding value
+  late Future<model.SparePart> futureSparePart;
+  final double _padding = 20.0;
+  final GetApiService getApiService = GetApiService();
+  final PostApiService postApiService = PostApiService();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  User? get currentUser => _auth.currentUser;
+  int? get userId => 2;
   final _firestore = FirebaseFirestore.instance;
-  final _auth = FirebaseAuth.instance;
   late String otherUserId = '';
   late String userDisplayName = '';
   late String? userDisplayPicture = '';
@@ -30,21 +36,28 @@ class _BuyScreenState extends State<BuyScreen> {
   String chatRoomId(String user1, String user2) {
     List<String> users = [user1, user2];
     users.sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
-
     return users.join("");
   }
 
   @override
   void initState() {
     super.initState();
+
+    // Verify the ID received
+    print('Received Sparepart ID in BuyScreen: ${widget.sparePartId}');
+
+    // Fetch the spare part using the received ID
     futureSparePart = GetApiService().getSparePartById(widget.sparePartId);
   }
 
-  Future<void> _fetchUser (int sellerId) async {
+  Future<void> _fetchUser(int sellerId) async {
     final Map<String, dynamic> seller = await ApiServices.getUserById(sellerId);
     final sellerEmail = seller['email'];
 
-    final querySnapshot = await _firestore.collection('user').where('email', isEqualTo: sellerEmail).get();
+    final querySnapshot = await _firestore
+        .collection('user')
+        .where('email', isEqualTo: sellerEmail)
+        .get();
     if (querySnapshot.docs.isNotEmpty) {
       final doc = querySnapshot.docs.first;
 
@@ -83,11 +96,22 @@ class _BuyScreenState extends State<BuyScreen> {
         ),
         actions: [
           GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const WishlistScreen()),
-              );
+            onTap: () async {
+              try {
+                await postApiService.addToFavorites(
+                    userId!, widget.sparePartId);
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Added to favorites')),
+                  );
+                }
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Failed to add to favorites: $e')),
+                  );
+                }
+              }
             },
             child: const Icon(
               Icons.favorite_outline,
@@ -98,7 +122,7 @@ class _BuyScreenState extends State<BuyScreen> {
           const SizedBox(width: 30)
         ],
       ),
-      body: FutureBuilder<SparePart>(
+      body: FutureBuilder<model.SparePart>(
         future: futureSparePart,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -110,102 +134,97 @@ class _BuyScreenState extends State<BuyScreen> {
           } else {
             var sparePart = snapshot.data!;
             return Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal: _padding), // Apply common padding
+              padding: EdgeInsets.symmetric(horizontal: _padding),
               child: Column(
                 children: [
-                  const SizedBox(
-                    height: 30,
-                  ),
+                  const SizedBox(height: 30),
                   Center(
                     child: Container(
                       height: 300,
                       width: double.infinity,
                       color: Colors.transparent,
-                      child: Image.asset(
-                        'assets/images/R.png',
-                        fit: BoxFit.contain,
+                      child: Swiper(
+                        itemCount: sparePart.imageUrls.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Image.network(
+                            sparePart.imageUrls[index],
+                            fit: BoxFit.contain,
+                          );
+                        },
+                        pagination: SwiperPagination(),
+                        control: SwiperControl(),
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
                   Center(
                     child: CustomButton(
                       onPressed: () {
-                        // Add your buy logic here
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => BuyNowScreen()),
+                        );
                       },
-                      text: '              Buy it Now              ',
+                      text: 'Buy it Now',
                     ),
-                  ),
-                  const SizedBox(
-                    height: 10,
                   ),
                   const Divider(
                     color: Colors.grey,
                     thickness: 1.5,
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Text(
                         sparePart.title,
                         style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black),
+                          fontSize: 22,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         'Rs. ${sparePart.price}',
                         style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black),
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                        ),
                       ),
                       const SizedBox(width: 100),
                       GestureDetector(
-                        onTap: () {
-                          // Add code to call the phone number here
-                        },
-                        child: const Icon(
-                          Icons.local_phone_rounded,
-                          color: Color(0xFFFF5C01),
-                          size: 35,
-                        ),
-                      ),
-                      const SizedBox(width: 30),
-                      GestureDetector(
                         onTap: () async {
+                          final sellerId = sparePart
+                              .sellerId; // Get the seller ID from the spare part table
+                          await _fetchUser(
+                              sellerId); // Fetch the user ID from the firestore
 
-                          final sellerId = sparePart.sellerId;  // Get the seller ID from the spare part table
-                          await _fetchUser(sellerId); // Fetch the user ID from the firestore
-
-                          //Generate chat room ID
+                          // Generate chat room ID
                           String roomId = chatRoomId(
-                            _auth.currentUser!.uid ,
+                            _auth.currentUser!.uid,
                             otherUserId,
                           );
 
-                          //Navigate to the chat room
+                          // Navigate to the chat room
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (_) => ChatRoom(
                                 chatRoomId: roomId,
-                                userMap: {'uid': otherUserId, 'name': userDisplayName, 'profile_picture': userDisplayPicture},
-                              )
-                            )
+                                userMap: {
+                                  'uid': otherUserId,
+                                  'name': userDisplayName,
+                                  'profile_picture': userDisplayPicture
+                                },
+                              ),
+                            ),
                           );
                         },
                         child: const Icon(
@@ -223,10 +242,7 @@ class _BuyScreenState extends State<BuyScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            const Divider(
-                              color: Colors.grey,
-                              thickness: 1,
-                            ),
+                            const Divider(color: Colors.grey, thickness: 1),
                             Center(
                               child: Container(
                                 constraints:
@@ -244,27 +260,9 @@ class _BuyScreenState extends State<BuyScreen> {
                                         const Padding(
                                           padding:
                                               EdgeInsets.symmetric(vertical: 5),
-                                          child: Text(
-                                            'Make:',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
-                                            ),
-                                          ),
+                                          child: Text('Title:'),
                                         ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 5),
-                                          child: Text(
-                                            sparePart.make,
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
+                                        Text(sparePart.title),
                                       ],
                                     ),
                                     TableRow(
@@ -272,27 +270,9 @@ class _BuyScreenState extends State<BuyScreen> {
                                         const Padding(
                                           padding:
                                               EdgeInsets.symmetric(vertical: 5),
-                                          child: Text(
-                                            'Model:',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
-                                            ),
-                                          ),
+                                          child: Text('Price:'),
                                         ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 5),
-                                          child: Text(
-                                            sparePart.model,
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
+                                        Text('Rs. ${sparePart.price}'),
                                       ],
                                     ),
                                     TableRow(
@@ -300,27 +280,9 @@ class _BuyScreenState extends State<BuyScreen> {
                                         const Padding(
                                           padding:
                                               EdgeInsets.symmetric(vertical: 5),
-                                          child: Text(
-                                            'Year:',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
-                                            ),
-                                          ),
+                                          child: Text('Description:'),
                                         ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 5),
-                                          child: Text(
-                                            sparePart.year.toString(),
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
+                                        Text(sparePart.description),
                                       ],
                                     ),
                                     TableRow(
@@ -328,108 +290,14 @@ class _BuyScreenState extends State<BuyScreen> {
                                         const Padding(
                                           padding:
                                               EdgeInsets.symmetric(vertical: 5),
-                                          child: Text(
-                                            'Condition:',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
-                                            ),
-                                          ),
+                                          child: Text('Seller ID:'),
                                         ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 5),
-                                          child: Text(
-                                            sparePart.condition,
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    TableRow(
-                                      children: [
-                                        const Padding(
-                                          padding:
-                                              EdgeInsets.symmetric(vertical: 5),
-                                          child: Text(
-                                            'Fuel:',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 5),
-                                          child: Text(
-                                            sparePart.fuel,
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    TableRow(
-                                      children: [
-                                        const Padding(
-                                          padding:
-                                              EdgeInsets.symmetric(vertical: 5),
-                                          child: Text(
-                                            'Origin:',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 5),
-                                          child: Text(
-                                            sparePart.origin,
-                                            style: const TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
+                                        Text('${sparePart.sellerId}'),
                                       ],
                                     ),
                                   ],
                                 ),
                               ),
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            const Text(
-                              'Description',
-                              style: TextStyle(
-                                  fontSize: 21,
-                                  fontWeight: FontWeight.w500,
-                                  color: Color(0xFFFF5C01)),
-                            ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            Text(
-                              sparePart.description,
-                              style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.black),
                             ),
                           ],
                         ),
@@ -441,6 +309,39 @@ class _BuyScreenState extends State<BuyScreen> {
             );
           }
         },
+      ),
+    );
+  }
+
+  Widget TextDetail({required String title, required String value}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 1,
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Color.fromARGB(255, 87, 87, 87),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Colors.black,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

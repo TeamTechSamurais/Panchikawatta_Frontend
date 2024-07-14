@@ -23,7 +23,7 @@ class login extends StatefulWidget {
 
 class _LoginState extends State<login> {
   bool _isSigning = false;
-   bool _isPasswordVisible = false;
+  bool _isPasswordVisible = false;
   final FirebaseAuthServices _auth = FirebaseAuthServices();
   // final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   // final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -103,7 +103,7 @@ class _LoginState extends State<login> {
                   ),
                 ),
               ),
-               TextFieldContainer(
+              TextFieldContainer(
                 child: TextField(
                   controller: passwordController,
                   obscureText: !_isPasswordVisible, // Change this line
@@ -113,7 +113,9 @@ class _LoginState extends State<login> {
                     border: InputBorder.none,
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                        _isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
                       ),
                       onPressed: () {
                         setState(() {
@@ -219,7 +221,7 @@ class _LoginState extends State<login> {
     String password = passwordController.text.trim();
     // String username = usernameController.text;
 
-     User? user = await _auth.signInWithEmailAndPassword(email, password);
+    User? user = await _auth.signInWithEmailAndPassword(email, password);
 
     saveUserEmail(email);
 
@@ -231,12 +233,11 @@ class _LoginState extends State<login> {
       if (user.emailVerified) {
         showToast(message: "You are successfully signed in");
 
-       
         String? jwtToken = await _generateJwtToken(user);
 
         if (jwtToken != null) {
           await saveJwtToken(jwtToken);
-          startTokenExpiryTimer(jwtToken,context);
+          startTokenExpiryTimer(jwtToken, context);
 
           FirebaseApi firebaseApi = FirebaseApi();
           await firebaseApi.initNotifications();
@@ -258,14 +259,12 @@ class _LoginState extends State<login> {
     }
   }
 }
- 
+
 Future<String?> _generateJwtToken(User user) async {
   try {
-   
     String? idToken = await user.getIdToken();
     print('Received idToken token: $idToken');
 
-     
     final response = await http.post(
       Uri.parse('http://10.0.2.2:8000/users/generateJwtToken'),
       headers: {
@@ -275,7 +274,6 @@ Future<String?> _generateJwtToken(User user) async {
     );
 
     if (response.statusCode == 201) {
-       
       final responseData = jsonDecode(response.body);
       return responseData['token'];
     } else {
@@ -287,23 +285,20 @@ Future<String?> _generateJwtToken(User user) async {
   }
 }
 
- void startTokenExpiryTimer(String jwtToken, BuildContext context) {
+void startTokenExpiryTimer(String jwtToken, BuildContext context) {
   final payload = parseJwt(jwtToken);
   final expiryDate = DateTime.fromMillisecondsSinceEpoch(payload['exp'] * 1000);
   final now = DateTime.now();
   final timeToExpiry = expiryDate.difference(now);
 
   Timer(timeToExpiry, () {
-    
-    deleteJwtToken();  
+    deleteJwtToken();
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(
-          builder: (context) => login()), 
+      MaterialPageRoute(builder: (context) => login()),
     );
   });
 }
-
 
 Map<String, dynamic> parseJwt(String token) {
   final parts = token.split('.');
@@ -337,7 +332,3 @@ void main() {
     home: login(),
   ));
 }
-
-
-
-

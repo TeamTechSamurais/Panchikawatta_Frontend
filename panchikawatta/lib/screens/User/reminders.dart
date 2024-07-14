@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:panchikawatta/models/vehicle.dart';
+
 class ReminderScreen extends StatefulWidget {
   const ReminderScreen({super.key});
 
@@ -35,7 +37,7 @@ class _ReminderScreenState extends State<ReminderScreen> {
 
   Future<void> markAsDone(int vehicleId) async {
     final response = await http
-        .delete(Uri.parse('http://localhost:5000/api/reminders/$vehicleId'));
+        .delete(Uri.parse('http://localhost:8000/users/markAsDone/$vehicleId'));
     if (response.statusCode == 200) {
       fetchVehicles(); // Refresh the list after deletion
     } else {
