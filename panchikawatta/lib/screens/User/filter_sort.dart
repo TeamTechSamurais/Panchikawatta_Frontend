@@ -9,8 +9,7 @@ import 'package:panchikawatta/dropdowns/origin.dart';
 import 'package:panchikawatta/dropdowns/province.dart';
 import 'package:panchikawatta/dropdowns/vehicle_make.dart';
 import 'package:panchikawatta/dropdowns/vehicle_model.dart';
-import 'package:panchikawatta/screens/search_page.dart';
-import 'package:panchikawatta/screens/search_page1.dart';
+import 'package:panchikawatta/screens/app.dart';
 import 'package:panchikawatta/services/get_api_services.dart';
 
 class FilterSortScreen extends StatefulWidget {
@@ -56,9 +55,7 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => search_page1(
-            ads: ads,
-          ),
+          builder: (context) => const MyHomePage(),
         ),
       );
     } catch (error) {

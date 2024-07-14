@@ -1,4 +1,4 @@
- // ignore_for_file: avoid_print
+// ignore_for_file: avoid_print
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -33,10 +33,12 @@ class GetApiService {
         await http.get(Uri.parse('${Utils.baseUrl}/adListing/getServices'));
 
     if (response.statusCode == 200) {
-      final List<dynamic> servicesJson = json.decode(response.body);
+      final jsonResponse = jsonDecode(response.body);
+      print(jsonResponse); // Print the JSON response for debugging
+      final List<dynamic> servicesJson = jsonDecode(response.body);
       return servicesJson.map((json) => Service.fromJson(json)).toList();
     } else {
-      throw Exception('Failed to load spareparts');
+      throw Exception('Failed to load service');
     }
   }
 
@@ -56,21 +58,19 @@ class GetApiService {
   }
 
   Future<Service> getServiceById(int serviceId) async {
-    print(
-        'Fetching service with ID: $serviceId'); // Debugging: Print service ID
+    print('Fetching service with ID: $serviceId');
     final url = '${Utils.baseUrl}/users/services/$serviceId';
-    print('URL: $url'); // Debugging: Print URL
+    print('URL: $url');
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonResponse = json.decode(response.body);
-      print('JSON Response: $jsonResponse'); // Debugging: Print JSON response
+      print('JSON Response: $jsonResponse');
       final Service service = Service.fromJson(jsonResponse);
-      print('Service Object: $service'); // Debugging: Print Service object
+      print('Service Object: $service');
       return service;
     } else {
-      print(
-          'Failed to load services: ${response.body}'); // Print the error response
+      print('Failed to load services: ${response.body}');
       throw Exception('Failed to load services');
     }
   }
@@ -141,8 +141,9 @@ class GetApiService {
     }
   }
 
-Future<List<SparePart>> getUserFavorites(int userId) async {
-    final response = await http.get(Uri.parse('${Utils.baseUrl}/getFavorites/$userId'));
+  Future<List<SparePart>> getUserFavorites(int userId) async {
+    final response =
+        await http.get(Uri.parse('${Utils.baseUrl}/getFavorites/$userId'));
 
     if (response.statusCode == 200) {
       List<dynamic> jsonData = jsonDecode(response.body);

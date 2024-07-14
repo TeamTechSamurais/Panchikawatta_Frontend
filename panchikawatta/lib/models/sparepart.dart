@@ -1,46 +1,49 @@
 class SparePart {
   final int id;
+  final int sellerId;
   final String title;
   final String description;
-  String imageUrl;
   final int price;
+  final String type;
   final String make;
   final String model;
   final String origin;
   final String condition;
   final String fuel;
   final int year;
-  final int sellerId;
+  final List<String> imageUrls;
 
   SparePart({
     required this.id,
+    required this.sellerId,
     required this.title,
     required this.description,
-    String? imageUrl,
     required this.price,
+    required this.type,
     required this.make,
     required this.model,
     required this.origin,
     required this.condition,
     required this.fuel,
     required this.year,
-    required this.sellerId,
-  }) : imageUrl = imageUrl ?? 'assets/images/no_image.png';
+    required this.imageUrls,
+  });
 
   factory SparePart.fromJson(Map<String, dynamic> json) {
     return SparePart(
       id: json['sparePartId'] ?? 0,
-      title: json['title'] ?? 'Unknown',
-      description: json['description'] ?? 'No description',
-      imageUrl: json['imageUrl'] ?? 'assets/images/no_image.png',
-      price: json['price'] ?? 0,
-      make: json['make'] ?? 'Unknown',
-      model: json['model'] ?? 'Unknown',
-      origin: json['origin'] ?? 'Unknown',
-      condition: json['condition'] ?? 'Unknown',
-      fuel: json['fuel'] ?? 'Unknown',
-      year: json['year'] ?? 0,
       sellerId: json['sellerId'] ?? 0,
+      title: json['title'] ?? '',
+      description: json['description'] ?? '',
+      price: json['price'] ?? 0,
+      type: json['type'] ?? '',
+      make: json['make'] ?? '',
+      model: json['model'] ?? '',
+      origin: json['origin'] ?? '',
+      condition: json['condition'] ?? '',
+      fuel: json['fuel'] ?? '',
+      year: json['year'] ?? 0,
+      imageUrls: List<String>.from(json['imageUrls'] ?? []),
     );
   }
 }

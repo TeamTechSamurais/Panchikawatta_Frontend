@@ -29,32 +29,41 @@ class ServicesList extends StatelessWidget {
                 print(
                     'Service ID: ${service.id}'); // Debugging: Print service ID
 
-                final isBase64 = service.imageUrl.startsWith('/9j');
-                final imageWidget = isBase64
-                    ? Image.memory(
-                        base64Decode(service.imageUrl),
-                        height: 65,
-                        width: 75,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Image.asset(
-                            'assets/images/no_image.png',
-                            height: 73,
-                            width: 81,
-                          );
-                        },
+                // Check if imageUrls is not empty and take the first image
+                final imageUrl =
+                    service.imageUrls.isNotEmpty ? service.imageUrls[0] : '';
+                final isBase64 = imageUrl.startsWith('/9j');
+                final imageWidget = imageUrl.isEmpty
+                    ? Image.asset(
+                        'assets/images/no_image.png',
+                        height: 73,
+                        width: 81,
                       )
-                    : Image.network(
-                        service.imageUrl,
-                        height: 65,
-                        width: 75,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Image.asset(
-                            'assets/images/no_image.png',
-                            height: 73,
-                            width: 81,
+                    : isBase64
+                        ? Image.memory(
+                            base64Decode(imageUrl),
+                            height: 65,
+                            width: 75,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                'assets/images/no_image.png',
+                                height: 73,
+                                width: 81,
+                              );
+                            },
+                          )
+                        : Image.network(
+                            imageUrl,
+                            height: 65,
+                            width: 75,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                'assets/images/no_image.png',
+                                height: 73,
+                                width: 81,
+                              );
+                            },
                           );
-                        },
-                      );
 
                 return InkWell(
                   onTap: () {

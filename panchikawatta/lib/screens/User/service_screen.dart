@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/models/service.dart';
-import 'package:panchikawatta/screens/Order/wishlist.dart';
 import 'package:panchikawatta/services/get_api_services.dart';
 
 class ServiceScreen extends StatefulWidget {
@@ -48,8 +47,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
               fontSize: 28,
               fontWeight: FontWeight.w500),
         ),
-        actions: const [
-        ],
+        actions: const [],
       ),
       body: FutureBuilder<Service>(
         future: futureService,
@@ -67,41 +65,31 @@ class _ServiceScreenState extends State<ServiceScreen> {
                   horizontal: _padding), // Apply common padding
               child: Column(
                 children: [
-                  const SizedBox(
-                    height: 30,
-                  ),
+                  const SizedBox(height: 30),
                   Center(
                     child: Container(
                       height: 300,
                       width: double.infinity,
                       color: Colors.transparent,
-                      child: Image.asset(
-                        'assets/images/R.png',
-                        fit: BoxFit.contain,
+                      child: Swiper(
+                        itemCount: service.imageUrls.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Image.network(
+                            service.imageUrls[index],
+                            fit: BoxFit.contain,
+                          );
+                        },
+                        pagination: SwiperPagination(),
+                        control: SwiperControl(),
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Center(
-                    child: CustomButton(
-                      onPressed: () {
-                        // Add your buy logic here
-                      },
-                      text: '              Buy it Now              ',
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
                   const Divider(
                     color: Colors.grey,
                     thickness: 1.5,
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -114,9 +102,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -162,9 +148,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                               color: Colors.grey,
                               thickness: 1,
                             ),
-                            const SizedBox(
-                              height: 20,
-                            ),
+                            const SizedBox(height: 20),
                             const Text(
                               'Description',
                               style: TextStyle(
@@ -172,9 +156,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                   fontWeight: FontWeight.w500,
                                   color: Color(0xFFFF5C01)),
                             ),
-                            const SizedBox(
-                              height: 5,
-                            ),
+                            const SizedBox(height: 5),
                             Text(
                               service.description,
                               style: const TextStyle(

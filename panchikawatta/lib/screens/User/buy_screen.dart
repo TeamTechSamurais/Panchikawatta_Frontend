@@ -1,17 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/screens/Order/buy_it_now.dart';
-import 'package:panchikawatta/screens/Order/wishlist.dart';
 import 'package:panchikawatta/screens/api_service.dart';
 import 'package:panchikawatta/screens/chat_room.dart';
 import 'package:panchikawatta/services/get_api_services.dart';
 import 'package:panchikawatta/services/post_api_service.dart';
 import 'package:panchikawatta/models/sparepart.dart' as model;
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:card_swiper/card_swiper.dart';
 
 class BuyScreen extends StatefulWidget {
   final int sparePartId;
@@ -39,7 +36,6 @@ class _BuyScreenState extends State<BuyScreen> {
   String chatRoomId(String user1, String user2) {
     List<String> users = [user1, user2];
     users.sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
-
     return users.join("");
   }
 
@@ -49,11 +45,14 @@ class _BuyScreenState extends State<BuyScreen> {
     futureSparePart = GetApiService().getSparePartById(widget.sparePartId);
   }
 
-  Future<void> _fetchUser (int sellerId) async {
+  Future<void> _fetchUser(int sellerId) async {
     final Map<String, dynamic> seller = await ApiServices.getUserById(sellerId);
     final sellerEmail = seller['email'];
 
-    final querySnapshot = await _firestore.collection('user').where('email', isEqualTo: sellerEmail).get();
+    final querySnapshot = await _firestore
+        .collection('user')
+        .where('email', isEqualTo: sellerEmail)
+        .get();
     if (querySnapshot.docs.isNotEmpty) {
       final doc = querySnapshot.docs.first;
 
@@ -95,18 +94,14 @@ class _BuyScreenState extends State<BuyScreen> {
             onTap: () async {
               try {
                 await postApiService.addToFavorites(
-                    userId!,
-                    widget
-                        .sparePartId); // Assume userId and sparePartId are already int
+                    userId!, widget.sparePartId);
                 if (mounted) {
-                  // Check if the widget is still part of the tree
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Added to favorites')),
                   );
                 }
               } catch (e) {
                 if (mounted) {
-                  // Check if the widget is still part of the tree
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Failed to add to favorites: $e')),
                   );
@@ -143,9 +138,16 @@ class _BuyScreenState extends State<BuyScreen> {
                       height: 300,
                       width: double.infinity,
                       color: Colors.transparent,
-                      child: Image.asset(
-                        'assets/images/R.png',
-                        fit: BoxFit.contain,
+                      child: Swiper(
+                        itemCount: sparePart.imageUrls.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Image.network(
+                            sparePart.imageUrls[index],
+                            fit: BoxFit.contain,
+                          );
+                        },
+                        pagination: SwiperPagination(),
+                        control: SwiperControl(),
                       ),
                     ),
                   ),
@@ -166,66 +168,58 @@ class _BuyScreenState extends State<BuyScreen> {
                     color: Colors.grey,
                     thickness: 1.5,
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Text(
                         sparePart.title,
                         style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black),
+                          fontSize: 22,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         'Rs. ${sparePart.price}',
                         style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black),
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                        ),
                       ),
                       const SizedBox(width: 100),
                       GestureDetector(
-                        onTap: () {
-                          // Add code to call the phone number here
-                        },
-                        child: const Icon(
-                          Icons.local_phone_rounded,
-                          color: Color(0xFFFF5C01),
-                          size: 35,
-                        ),
-                      ),
-                      const SizedBox(width: 30),
-                      GestureDetector(
                         onTap: () async {
+                          final sellerId = sparePart
+                              .sellerId; // Get the seller ID from the spare part table
+                          await _fetchUser(
+                              sellerId); // Fetch the user ID from the firestore
 
-                          final sellerId = sparePart.sellerId;  // Get the seller ID from the spare part table
-                          await _fetchUser(sellerId); // Fetch the user ID from the firestore
-
-                          //Generate chat room ID
+                          // Generate chat room ID
                           String roomId = chatRoomId(
-                            _auth.currentUser!.uid ,
+                            _auth.currentUser!.uid,
                             otherUserId,
                           );
 
-                          //Navigate to the chat room
+                          // Navigate to the chat room
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (_) => ChatRoom(
                                 chatRoomId: roomId,
-                                userMap: {'uid': otherUserId, 'name': userDisplayName, 'profile_picture': userDisplayPicture},
-                              )
-                            )
+                                userMap: {
+                                  'uid': otherUserId,
+                                  'name': userDisplayName,
+                                  'profile_picture': userDisplayPicture
+                                },
+                              ),
+                            ),
                           );
                         },
                         child: const Icon(
@@ -246,11 +240,13 @@ class _BuyScreenState extends State<BuyScreen> {
                             TextDetail(title: 'Make:', value: sparePart.make),
                             TextDetail(title: 'Model:', value: sparePart.model),
                             TextDetail(
-                                title: 'Year:',
-                                value: sparePart.year.toString()),
+                              title: 'Year:',
+                              value: sparePart.year.toString(),
+                            ),
                             TextDetail(
-                                title: 'Condition:',
-                                value: sparePart.condition),
+                              title: 'Condition:',
+                              value: sparePart.condition,
+                            ),
                             TextDetail(title: 'Fuel:', value: sparePart.fuel),
                             TextDetail(
                                 title: 'Origin:', value: sparePart.origin),
@@ -258,7 +254,7 @@ class _BuyScreenState extends State<BuyScreen> {
                               color: Colors.grey,
                               thickness: 1,
                             ),
-                            Text(
+                            const Text(
                               'Description:',
                               style: TextStyle(
                                 fontSize: 16,
@@ -302,7 +298,7 @@ class _BuyScreenState extends State<BuyScreen> {
             flex: 1,
             child: Text(
               title,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: Color.fromARGB(255, 87, 87, 87),
