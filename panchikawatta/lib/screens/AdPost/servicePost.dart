@@ -1,11 +1,18 @@
-// ignore_for_file: library_private_types_in_public_api, avoid_print, use_build_context_synchronously, file_names
-
+import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/components/add_image.dart';
+import 'package:panchikawatta/dropdowns/service_type.dart';
 import 'package:panchikawatta/screens/AdPost/post_success.dart';
 import 'package:panchikawatta/services/post_api_service.dart';
+
+FirebaseAuth _auth = FirebaseAuth.instance;
+FirebaseFirestore _firestore = FirebaseFirestore.instance;
+FirebaseStorage _storage = FirebaseStorage.instance;
 
 class ServicePost extends StatefulWidget {
   ServicePost({super.key});
@@ -19,37 +26,79 @@ class _ServicePostState extends State<ServicePost> {
   final List<XFile?> _images = List<XFile?>.filled(1, null);
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _priceController = TextEditingController();
+  String? _selectedServiceType;
 
-  void _setImage(int index, XFile? image) {
+  void _setImage(int index, XFile? imagepath) {
     setState(() {
-      _images[index] = image;
+      _images[index] = imagepath;
     });
+  }
+
+  Future<List<String>> _uploadImages(List<XFile?> images) async {
+    List<String> downloadUrls = [];
+    for (XFile? imagepath in images) {
+      if (imagepath != null) {
+        String downloadUrl = await _uploadImage(imagepath);
+        downloadUrls.add(downloadUrl);
+      } else {
+        print("Error: Image path is null");
+      }
+      print("Download URLs: $downloadUrls");
+    }
+    return downloadUrls;
+  }
+
+  Future<String> _uploadImage(XFile imagepath) async {
+    try {
+      File file = File(imagepath.path);
+
+      // Upload the file to Firebase Storage
+      TaskSnapshot snapshot = await _storage
+          .ref('service_images/${file.path.split('/').last}')
+          .putFile(file);
+
+      // Get the download URL of the uploaded image
+      String downloadUrl = await snapshot.ref.getDownloadURL();
+      print("\nImage uploaded successfully");
+      return downloadUrl;
+    } catch (e) {
+      // Handle any errors that occur during the process
+      print("Error uploading image: $e");
+      throw e; // Optionally rethrow the exception to handle it elsewhere if needed
+    }
   }
 
   Future<void> _postService() async {
     try {
       final title = _titleController.text;
       final description = _descriptionController.text;
-      final image = _images[0];
+      final price = int.tryParse(_priceController.text);
       const int sellerId = 1; // Replace this with the actual seller ID
 
       // Debug prints to check the values
       print('Title: $title');
       print('Description: $description');
-      print('Image: ${image?.path}');
+      print('Price: $price');
+      print('Service Type: $_selectedServiceType');
 
-      if (title.isEmpty || description.isEmpty) {
+      if (title.isEmpty ||
+          description.isEmpty ||
+          _selectedServiceType == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Please fill all required fields')),
         );
         return;
       }
 
+      List<String> downloadUrls = await _uploadImages(_images);
+
       final response = await widget.apiService.postService(
         sellerId: sellerId,
         title: title,
         description: description,
-        image: image,
+        price: price.toString(),
+        imageUrls: downloadUrls,
       );
 
       // Debug print response
@@ -104,12 +153,13 @@ class _ServicePostState extends State<ServicePost> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Title',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    ServiceType(
+                      selectedService: _selectedServiceType,
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedServiceType = value;
+                        });
+                      },
                     ),
                     const SizedBox(height: 20),
                     TextField(
@@ -122,14 +172,6 @@ class _ServicePostState extends State<ServicePost> {
                         ),
                         filled: true,
                         fillColor: const Color(0xFFEBEBEB),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      'Description',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -154,8 +196,21 @@ class _ServicePostState extends State<ServicePost> {
                       maxLines: null,
                     ),
                     const SizedBox(height: 20),
+                    TextField(
+                      controller: _priceController,
+                      decoration: InputDecoration(
+                        hintText: 'Price',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none,
+                        ),
+                        filled: true,
+                        fillColor: const Color(0xFFEBEBEB),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
                     const Text(
-                      'Add Image',
+                      'Add Images',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -164,13 +219,29 @@ class _ServicePostState extends State<ServicePost> {
                     const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: List.generate(1, (index) {
-                        return AddImage(
+                      children: [
+                        AddImage(
                           size: 70,
-                          color: const Color(0xFF999999),
-                          onImageSelected: (image) => _setImage(index, image),
-                        );
-                      }),
+                          color: Colors.grey,
+                          onImageSelected: (image) {
+                            _setImage(0, image);
+                          },
+                        ),
+                        AddImage(
+                          size: 70,
+                          color: Colors.grey,
+                          onImageSelected: (image) {
+                            _setImage(1, image);
+                          },
+                        ),
+                        AddImage(
+                          size: 70,
+                          color: Colors.grey,
+                          onImageSelected: (image) {
+                            _setImage(2, image);
+                          },
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 20),
                   ],

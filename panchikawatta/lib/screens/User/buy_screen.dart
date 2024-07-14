@@ -42,6 +42,11 @@ class _BuyScreenState extends State<BuyScreen> {
   @override
   void initState() {
     super.initState();
+
+    // Verify the ID received
+    print('Received Sparepart ID in BuyScreen: ${widget.sparePartId}');
+
+    // Fetch the spare part using the received ID
     futureSparePart = GetApiService().getSparePartById(widget.sparePartId);
   }
 
@@ -237,40 +242,60 @@ class _BuyScreenState extends State<BuyScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            TextDetail(title: 'Make:', value: sparePart.make),
-                            TextDetail(title: 'Model:', value: sparePart.model),
-                            TextDetail(
-                              title: 'Year:',
-                              value: sparePart.year.toString(),
-                            ),
-                            TextDetail(
-                              title: 'Condition:',
-                              value: sparePart.condition,
-                            ),
-                            TextDetail(title: 'Fuel:', value: sparePart.fuel),
-                            TextDetail(
-                                title: 'Origin:', value: sparePart.origin),
-                            const Divider(
-                              color: Colors.grey,
-                              thickness: 1,
-                            ),
-                            const Text(
-                              'Description:',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.black,
-                              ),
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Text(
-                                sparePart.description,
-                                textAlign: TextAlign.justify,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.black,
+                            const Divider(color: Colors.grey, thickness: 1),
+                            Center(
+                              child: Container(
+                                constraints:
+                                    const BoxConstraints(maxWidth: 180),
+                                child: Table(
+                                  columnWidths: const {
+                                    0: FixedColumnWidth(100.0),
+                                    1: FlexColumnWidth(),
+                                  },
+                                  defaultVerticalAlignment:
+                                      TableCellVerticalAlignment.middle,
+                                  children: [
+                                    TableRow(
+                                      children: [
+                                        const Padding(
+                                          padding:
+                                              EdgeInsets.symmetric(vertical: 5),
+                                          child: Text('Title:'),
+                                        ),
+                                        Text(sparePart.title),
+                                      ],
+                                    ),
+                                    TableRow(
+                                      children: [
+                                        const Padding(
+                                          padding:
+                                              EdgeInsets.symmetric(vertical: 5),
+                                          child: Text('Price:'),
+                                        ),
+                                        Text('Rs. ${sparePart.price}'),
+                                      ],
+                                    ),
+                                    TableRow(
+                                      children: [
+                                        const Padding(
+                                          padding:
+                                              EdgeInsets.symmetric(vertical: 5),
+                                          child: Text('Description:'),
+                                        ),
+                                        Text(sparePart.description),
+                                      ],
+                                    ),
+                                    TableRow(
+                                      children: [
+                                        const Padding(
+                                          padding:
+                                              EdgeInsets.symmetric(vertical: 5),
+                                          child: Text('Seller ID:'),
+                                        ),
+                                        Text('${sparePart.sellerId}'),
+                                      ],
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),

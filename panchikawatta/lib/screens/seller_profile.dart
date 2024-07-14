@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/screens/AdPost/adType.dart';
 import 'package:panchikawatta/screens/Order/seller_order.dart';

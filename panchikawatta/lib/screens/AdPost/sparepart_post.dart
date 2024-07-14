@@ -1,7 +1,10 @@
 // ignore_for_file: use_build_context_synchronously, avoid_print, library_private_types_in_public_api, file_names
-
+import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/components/add_image.dart';
 import 'package:panchikawatta/screens/AdPost/post_unsuccess.dart';
@@ -11,7 +14,12 @@ import 'package:panchikawatta/dropdowns/fuel_post.dart';
 import 'package:panchikawatta/dropdowns/origin.dart';
 import 'package:panchikawatta/dropdowns/vehicle_make.dart';
 import 'package:panchikawatta/dropdowns/vehicle_model.dart';
+import 'package:panchikawatta/dropdowns/vehicle_type.dart';
 import 'package:panchikawatta/screens/AdPost/post_success.dart';
+
+FirebaseAuth _auth = FirebaseAuth.instance;
+FirebaseFirestore _firestore = FirebaseFirestore.instance;
+FirebaseStorage _storage = FirebaseStorage.instance;
 
 class AdPost extends StatefulWidget {
   AdPost({super.key});
@@ -22,10 +30,11 @@ class AdPost extends StatefulWidget {
 }
 
 class _AdPostState extends State<AdPost> {
-  final List<XFile?> _images = List<XFile?>.filled(1, null);
+  final List<XFile?> _images = List<XFile?>.filled(3, null);
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
+  String? _selectedType;
   String? _selectedMake;
   String? _selectedModel;
   String? _selectedOrigin;
@@ -33,10 +42,46 @@ class _AdPostState extends State<AdPost> {
   String? _selectedFuel;
   final TextEditingController _yearController = TextEditingController();
 
-  void _setImage(int index, XFile? image) {
+  get sellerId => 1;
+
+  void _setImage(int index, XFile? imagepath) {
     setState(() {
-      _images[index] = image;
+      _images[index] = imagepath;
     });
+  }
+
+  Future<List<String>> _uploadImages(List<XFile?> images) async {
+    List<String> downloadUrls = [];
+    for (XFile? imagepath in images) {
+      if (imagepath != null) {
+        String downloadUrl = await _uploadImage(imagepath);
+        downloadUrls.add(downloadUrl);
+      } else {
+        print("Error: Image path is null");
+      }
+      print("Download URLs: $downloadUrls");
+    }
+    return downloadUrls;
+  }
+
+  Future<String> _uploadImage(XFile imagepath) async {
+    try {
+      File file = File(imagepath.path);
+
+      // Upload the file to Firebase Storage
+      TaskSnapshot snapshot = await _storage
+          .ref('sparepart_image/${file.path.split('/').last}')
+          .putFile(file);
+
+      // Get the download URL of the uploaded image
+      String downloadUrl = await snapshot.ref.getDownloadURL();
+      print("\nImage uploaded successfully");
+      return downloadUrl;
+    } catch (e) {
+      // Handle any errors that occur during the process
+      print("Error uploading image: $e");
+      throw e; // Optionally rethrow the exception to handle it elsewhere if needed
+    }
   }
 
   Future<void> _postSparePart() async {
@@ -44,7 +89,7 @@ class _AdPostState extends State<AdPost> {
       final title = _titleController.text;
       final description = _descriptionController.text;
       final price = int.tryParse(_priceController.text);
-      final image = _images[0];
+      final type = _selectedType;
       final make = _selectedMake;
       final model = _selectedModel;
       final origin = _selectedOrigin;
@@ -55,6 +100,7 @@ class _AdPostState extends State<AdPost> {
       if (title.isEmpty ||
           description.isEmpty ||
           price == null ||
+          type == null ||
           make == null ||
           model == null ||
           origin == null ||
@@ -64,18 +110,25 @@ class _AdPostState extends State<AdPost> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Please fill all required fields')),
         );
-        print('Title: $title');
-        print('Description: $description');
-        print('Price: $price');
-        print('Image: $image');
-        print('Make: $make');
-        print('Model: $model');
-        print('Origin: $origin');
-        print('Condition: $condition');
-        print('Fuel: $fuel');
-        print('Year: $year');
         return;
       }
+
+      List<String> downloadUrls = await _uploadImages(_images);
+
+      final sparePart = await widget.apiService.postSparePart(
+        sellerId: sellerId, // replace with actual seller ID
+        title: title,
+        description: description,
+        price: price,
+        imageUrls: downloadUrls,
+        type: type,
+        make: make,
+        model: model,
+        origin: origin,
+        condition: condition,
+        fuel: fuel,
+        year: year,
+      );
 
       Navigator.push(
         context,
@@ -184,13 +237,14 @@ class _AdPostState extends State<AdPost> {
                         filled: true,
                         fillColor: const Color(0xFFEBEBEB),
                       ),
+                      keyboardType: TextInputType.number,
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 10),
               const Text(
-                'Add Image',
+                'Add Images',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -199,13 +253,29 @@ class _AdPostState extends State<AdPost> {
               const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: List.generate(1, (index) {
-                  return AddImage(
+                children: [
+                  AddImage(
                     size: 70,
-                    color: const Color(0xFF999999),
-                    onImageSelected: (image) => _setImage(index, image),
-                  );
-                }),
+                    color: Colors.grey,
+                    onImageSelected: (image) {
+                      _setImage(0, image);
+                    },
+                  ),
+                  AddImage(
+                    size: 70,
+                    color: Colors.grey,
+                    onImageSelected: (image) {
+                      _setImage(1, image);
+                    },
+                  ),
+                  AddImage(
+                    size: 70,
+                    color: Colors.grey,
+                    onImageSelected: (image) {
+                      _setImage(2, image);
+                    },
+                  ),
+                ],
               ),
               const SizedBox(height: 10),
               Container(
@@ -217,102 +287,99 @@ class _AdPostState extends State<AdPost> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: VehicleMake(
-                            selectedMake: _selectedMake,
-                            onChanged: (String? make) {
-                              setState(() {
-                                _selectedMake = make;
-                              });
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: VehicleModel(
-                            selectedModel: _selectedModel,
-                            models: vehicleMakeToModels[_selectedMake] ?? [],
-                            onChanged: (String? model) {
-                              setState(() {
-                                _selectedModel = model;
-                              });
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: _yearController,
-                            decoration: const InputDecoration(
-                              hintText: 'Year',
-                              hintStyle: TextStyle(
-                                fontSize: 16,
-                                color: Color(0xCC000000),
-                                fontWeight: FontWeight.normal,
-                              ),
-                              filled: true,
-                              fillColor: Color.fromARGB(255, 255, 255, 255),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: OriginDropdown(
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedOrigin = value;
-                              });
-                            },
-                            selectedOrigin: _selectedOrigin,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Condition(
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedCondition = value;
-                              });
-                            },
-                            selectedCondition: _selectedCondition,
-                          ),
-                        ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: Fuel(
-                            onChanged: (value) {
-                              setState(() {
-                                _selectedFuel = value;
-                              });
-                            },
-                            selectedFuel: _selectedFuel,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Center(
-                      child: CustomButton(
-                        onPressed: () async {
-                          await _postSparePart();
-                        },
-                        text: 'Submit',
+                    const Text(
+                      'Select relevant vehicle details',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
+                    ),
+                    const SizedBox(height: 20),
+                    VehicleType(
+                      selectedType: _selectedType,
+                      onChanged: (String? value) {
+                        setState(() {
+                          _selectedType = value;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    VehicleMake(
+                      selectedMake: _selectedMake,
+                      makes: vehicleTypeToMakes[_selectedType] ?? [],
+                      onChanged: (String? value) {
+                        setState(() {
+                          _selectedMake = value;
+                          _selectedModel =
+                              null; // Reset model when make changes
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    VehicleModel(
+                      selectedModel: _selectedModel,
+                      models: vehicleMakeToModels[_selectedMake] ?? [],
+                      onChanged: (String? value) {
+                        setState(() {
+                          _selectedModel = value;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    OriginDropdown(
+                      selectedOrigin: _selectedOrigin,
+                      onChanged: (String? value) {
+                        setState(() {
+                          _selectedOrigin = value;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    Condition(
+                      selectedCondition: _selectedCondition,
+                      onChanged: (String? value) {
+                        setState(() {
+                          _selectedCondition = value;
+                        });
+                      },
+                    ),
+                    Fuel(
+                      selectedFuel: _selectedFuel,
+                      onChanged: (String? value) {
+                        setState(() {
+                          _selectedFuel = value;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: _yearController,
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.all(5),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none,
+                        ),
+                        hintText: 'Year',
+                        hintStyle: const TextStyle(
+                          fontSize: 16,
+                          color: Color(0xCC000000),
+                          fontWeight: FontWeight.normal,
+                        ),
+                        filled: true,
+                        fillColor: const Color(0xFFEBEBEB),
+                      ),
+                      keyboardType: TextInputType.number,
                     ),
                   ],
                 ),
               ),
+              const SizedBox(height: 20),
+              CustomButton(
+                text: 'Post Ad',
+                onPressed: _postSparePart,
+              ),
+              const SizedBox(height: 30),
             ],
           ),
         ),

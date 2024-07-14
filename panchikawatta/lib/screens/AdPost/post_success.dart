@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
+import 'package:panchikawatta/screens/app.dart';
 import 'package:panchikawatta/screens/profile_page.dart';
+import 'package:panchikawatta/screens/search_page1.dart';
 
 class PostSuccess extends StatelessWidget {
   const PostSuccess({super.key});
@@ -32,12 +34,12 @@ class PostSuccess extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               CustomButton(
-                text: 'Go to Profile',
+                text: 'Back to Home',
                 onPressed: () {
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ProfilePage(),
+                      builder: (context) => const MyHomePage(),
                     ),
                     (Route<dynamic> route) =>
                         false, // This removes all routes from the stack
