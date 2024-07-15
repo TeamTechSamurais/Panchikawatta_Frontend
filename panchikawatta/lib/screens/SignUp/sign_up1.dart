@@ -1,4 +1,4 @@
-import 'dart:async';
+ import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 import 'dart:math';
@@ -584,7 +584,7 @@ class _SignUp1State extends State<sign_up1> {
                   userNameController.text.trim(),
                   passwordController.text,
                   emailController.text.trim(),
-                  imagePath!);
+                  imagePath);
               // User? user = userCredential?.user;
 if (imagePath != null) {
         // Upload the image to Firebase Storage
@@ -597,7 +597,7 @@ if (imagePath != null) {
 
         // Get the download URL
         downloadUrl = await snapshot.ref.getDownloadURL();
-         print("Profile picture URL: $downloadUrl");
+        // print("Profile picture URL: $downloadUrl");
       }
               setState(() {
                 _isSigningUp = false;
@@ -634,7 +634,7 @@ if (imagePath != null) {
                                 'password': passwordController.text.trim(),
                                 'district': selecteddistrict,
                                 'province': selectedprovince,
-                                'images':imagePath!
+                                'imageUrls':downloadUrl ,
                                 // Add other necessary fields here
                               };
 

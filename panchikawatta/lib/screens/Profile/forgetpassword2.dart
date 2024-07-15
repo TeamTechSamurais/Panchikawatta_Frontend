@@ -1,174 +1,158 @@
-import 'package:panchikawatta/screens/Profile/forgetpassword3.dart';
-import 'package:panchikawatta/screens/login.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
-import 'package:panchikawatta/screens/SignUp/sign_up1.dart';
-import 'package:panchikawatta/main.dart';
-import 'package:flutter/services.dart';
+  
+ import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class forget_password2 extends StatefulWidget {
-  const forget_password2({Key? key}) : super(key: key);
+class ForgetPassword1 extends StatefulWidget {
+  const ForgetPassword1({Key? key}) : super(key: key);
 
   @override
-  _reset1State createState() => _reset1State();
+  _ForgetPassword1State createState() => _ForgetPassword1State();
 }
 
-class _reset1State extends State<forget_password2> {
+class _ForgetPassword1State extends State<ForgetPassword1> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _newPasswordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _newPasswordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _resetPassword() async {
+    try {
+      String email = _emailController.text.trim();
+      String newPassword = _newPasswordController.text.trim();
+
+      if (email.isEmpty || newPassword.isEmpty) {
+        throw Exception('Please enter both email and new password.');
+      }
+
+      // Send new password to your backend
+      await _sendNewPasswordToBackend(email, newPassword);
+
+      // Show success dialog
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Text('Password updated successfully.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context); // Close the dialog
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      print('Error resetting password: $e'); // Print the error message to debug
+      String errorMessage = 'An error occurred: $e';
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            content: Text(errorMessage),
+          );
+        },
+      );
+    }
+  }
+
+  Future<void> _sendNewPasswordToBackend(String email, String newPassword) async {
+    final url = Uri.parse('http://10.0.2.2:8000/users/resetPassword');
+    final response = await http.post(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'email': email,
+        'newPassword': newPassword,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update password in backend.');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 55),
+          padding: EdgeInsets.symmetric(horizontal: 25, vertical: 60),
           child: Column(
-            children: <Widget>[
-              SizedBox(height: 40),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 55),
-                child: Row(
-                  children: [
-                    SizedBox(width: 10),
-                    Text(
-                      "Verification",
-                      style: TextStyle(
-                        color: Color(0xFFFF5C01),
-                        fontSize: 28,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(height: 10),
+              Text(
+                "Forgot Password",
+                style: TextStyle(
+                  color: Color(0xFFFF5C01),
+                  fontSize: 28,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               SizedBox(height: 20),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 30, horizontal: 10),
                 child: Text(
-                  "Enter Verification Code",
+                  "Enter Email Address",
                   style: TextStyle(
                     color: Color(0xFF000000),
-                    fontSize: 16,
+                    fontSize: 18,
                     fontWeight: FontWeight.w400,
                   ),
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(
-                    height: 68,
-                    width: 60,
-                    child: TextField(
-                      onChanged: (value) {
-                        if (value.length == 1) {
-                          FocusScope.of(context).nextFocus();
-                        }
-                      },
-                      decoration: const InputDecoration(hintText: "0"),
-                      style: Theme.of(context).textTheme.headline6,
-                      keyboardType: TextInputType.number,
-                      textAlign: TextAlign.center,
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(1),
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
+              SizedBox(height: 20),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                child: TextField(
+                  controller: _emailController,
+                  cursorColor: Colors.black,
+                  style: TextStyle(color: Colors.black),
+                  decoration: InputDecoration(
+                    hintText: "example@gmail.com",
+                    filled: true,
+                    fillColor: Color.fromRGBO(238, 237, 236, 1),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(40),
+                      borderSide: BorderSide.none,
                     ),
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: 15, horizontal: 40),
                   ),
-                  SizedBox(
-                    height: 68,
-                    width: 60,
-                    child: TextField(
-                      onChanged: (value) {
-                        if (value.length == 1) {
-                          FocusScope.of(context).nextFocus();
-                        }
-                      },
-                      decoration: const InputDecoration(hintText: "0"),
-                      style: Theme.of(context).textTheme.headline6,
-                      keyboardType: TextInputType.number,
-                      textAlign: TextAlign.center,
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(1),
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 68,
-                    width: 60,
-                    child: TextField(
-                      onChanged: (value) {
-                        if (value.length == 1) {
-                          FocusScope.of(context).nextFocus();
-                        }
-                      },
-                      decoration: const InputDecoration(hintText: "0"),
-                      style: Theme.of(context).textTheme.headline6,
-                      keyboardType: TextInputType.number,
-                      textAlign: TextAlign.center,
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(1),
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 68,
-                    width: 60,
-                    child: TextField(
-                      onChanged: (value) {
-                        if (value.length == 1) {
-                          FocusScope.of(context).nextFocus();
-                        }
-                      },
-                      decoration: const InputDecoration(hintText: "0"),
-                      style: Theme.of(context).textTheme.headline6,
-                      keyboardType: TextInputType.number,
-                      textAlign: TextAlign.center,
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(1),
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
-                    ),
-                  ),
-                ],
+                ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 30),
-                    child: Text(
-                      "If you didn’t receive a code",
-                      style: TextStyle(
-                        color: Color(0xFF000000),
-                      ),
+              SizedBox(height: 20),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                child: TextField(
+                  controller: _newPasswordController,
+                  cursorColor: Colors.black,
+                  style: TextStyle(color: Colors.black),
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    hintText: "New Password",
+                    filled: true,
+                    fillColor: Color.fromRGBO(238, 237, 236, 1),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(40),
+                      borderSide: BorderSide.none,
                     ),
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: 15, horizontal: 40),
                   ),
-                  GestureDetector(
-                    onTap: () {},
-                    child: MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: Text(
-                        "Resend",
-                        style: TextStyle(
-                          color: Color(0xFFFF8000),
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                      onEnter: (PointerEnterEvent event) {
-                        // Change color when hovering
-                        // Update the text style
-                        // You can directly set the color here
-                        // Or you can define a new TextStyle object with the desired color
-                      },
-                      onExit: (PointerExitEvent event) {
-                        // Restore original TextStyle when not hovering
-                      },
-                    ),
-                  ),
-                ],
+                ),
               ),
               SizedBox(height: 30),
               Container(
@@ -176,13 +160,7 @@ class _reset1State extends State<forget_password2> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(29),
                   child: TextButton(
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => forget_password3()),
-                      );
-                    },
+                    onPressed: _resetPassword,
                     style: ButtonStyle(
                       padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
                         EdgeInsets.symmetric(vertical: 15, horizontal: 40),
@@ -192,48 +170,8 @@ class _reset1State extends State<forget_password2> {
                       ),
                     ),
                     child: Text(
-                      "send",
+                      "Send",
                       style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 20),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 30, horizontal: 10),
-                child: Text(
-                  "Do you have an Account?",
-                  style: TextStyle(
-                    color: Color(0xFF000000),
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ),
-              SizedBox(height: 30),
-              Container(
-                width: size.width * 0.8,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(29),
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => login()),
-                      );
-                    },
-                    style: ButtonStyle(
-                      padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                        EdgeInsets.symmetric(vertical: 15, horizontal: 40),
-                      ),
-                      backgroundColor: MaterialStateProperty.all<Color>(
-                        Color.fromARGB(255, 244, 242, 242),
-                      ),
-                    ),
-                    child: Text(
-                      "Sign in",
-                      style: TextStyle(
-                          color: const Color.fromARGB(255, 59, 53, 53)),
                     ),
                   ),
                 ),
@@ -242,27 +180,6 @@ class _reset1State extends State<forget_password2> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class TextFieldContainer extends StatelessWidget {
-  final Widget child;
-
-  const TextFieldContainer({Key? key, required this.child}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 5),
-      width: size.width * 0.9,
-      decoration: BoxDecoration(
-        color: Color.fromRGBO(246, 243, 243, 0.8),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: child,
     );
   }
 }

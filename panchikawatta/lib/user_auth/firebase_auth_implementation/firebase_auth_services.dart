@@ -1,10 +1,11 @@
- import 'package:firebase_auth/firebase_auth.dart';
+ import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/global/common/toast.dart';
 
 class FirebaseAuthServices {
   FirebaseAuth _auth = FirebaseAuth.instance;
-
+ final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   Future<User?> signUpWithEmailAndPassword(
       String email, String Password) async {
     try {
@@ -54,5 +55,18 @@ Future<bool> isEmailVerified(User user) async {
     await user.reload();
     return user.emailVerified;
   }
+
+
+  Future<bool> isAdmin(User user) async {
+    try {
+      DocumentSnapshot adminSnapshot =
+          await _firestore.collection('admins').doc(user.uid).get();
+      return adminSnapshot.exists;
+    } catch (e) {
+      print("Error checking admin status: $e");
+      return false;
+    }
+  }
 }
+
  

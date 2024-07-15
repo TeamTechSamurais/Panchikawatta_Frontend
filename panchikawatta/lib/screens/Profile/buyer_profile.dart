@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
+import 'package:panchikawatta/screens/SignUp/Vehicledetails1.dart';
+import 'package:panchikawatta/screens/SignUp/add_vehicle_details.dart';
+import 'package:panchikawatta/screens/User/vehicle_details.dart';
 
 class BuyerProfile extends StatelessWidget {
   @override
@@ -68,6 +71,11 @@ class BuyerProfile extends StatelessWidget {
                   ),
                   CustomButton(
                       onPressed: () {
+                          Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>AddVehicleDetails()),
+                        );
                         // Add your button press logic here
                       },
                       text: "Add Vehicle")

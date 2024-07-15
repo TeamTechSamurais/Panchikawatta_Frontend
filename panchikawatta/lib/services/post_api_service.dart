@@ -19,7 +19,7 @@ class PostApiService {
     required String origin,
     required String condition,
     required String fuel,
-    required int year,
+    required int year, required List<String> imageUrls, required String userId, required String type,
   }) async {
     try {
       final url = Uri.parse('${Utils.baseUrl}/adPosting/postSparePart');

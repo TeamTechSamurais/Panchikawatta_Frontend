@@ -77,7 +77,7 @@ class browse extends StatelessWidget {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const MyHomePage()),
+                          builder: (context) => const MyHomePage(ads: [])),
                     );
                   },
                   style: ButtonStyle(

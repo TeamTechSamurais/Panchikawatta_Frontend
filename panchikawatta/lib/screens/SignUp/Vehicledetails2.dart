@@ -12,7 +12,7 @@ import 'package:panchikawatta/screens/login.dart';
 
 class Vehicledetails2 extends StatefulWidget {
   final int vehicleId,userId;
- 
+ final String? imagePath;
   final String? selectedPhotoPath;
 
   Vehicledetails2({
@@ -20,7 +20,7 @@ class Vehicledetails2 extends StatefulWidget {
     required this.vehicleId,
     required this.userId,
     this.selectedPhotoPath,
-    String? type,
+    String? type, this.imagePath,
   }) : super(key: key);
 
   @override
@@ -78,7 +78,7 @@ class _Vehicledetails2State extends State<Vehicledetails2> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-      //  automaticallyImplyLeading: false,
+       automaticallyImplyLeading: false,
         title: Padding(
           padding:
               const EdgeInsets.only(left: 80.0), // Adjust the value as needed
@@ -97,11 +97,11 @@ class _Vehicledetails2State extends State<Vehicledetails2> {
                 height: 150,
                 width: 200,
                 child: Stack(
-                  children: [
-                    if (selectedPhotoPath != null)
+                    children: [
+                    if (widget.imagePath != null)
                       Positioned.fill(
                         child: Image.file(
-                          File(selectedPhotoPath!),
+                          File(widget.imagePath!),
                           fit: BoxFit.cover,
                         ),
                       )

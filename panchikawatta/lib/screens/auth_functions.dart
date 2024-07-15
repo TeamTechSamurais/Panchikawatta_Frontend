@@ -186,9 +186,9 @@ void updateUser(
               CustomButton(
                 onPressed: () {
                   Navigator.of(context).pop(); // Close the dialog
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (context) => ProfilePage()),
-                  );
+                  // Navigator.of(context).pushReplacement(
+                  //   MaterialPageRoute(builder: (context) => ProfilePage()),
+                  // );
                 },
                 text: 'OK'
               ),

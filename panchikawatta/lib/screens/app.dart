@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
       initialRoute: initialRoute,
       routes: {
         '/login': (context) => const SplashScreen(),
-        '/home': (context) => MyHomePage(),
+        '/home': (context) => MyHomePage( ads: []),
         '/SplashScreen': (context) => SplashScreen(),
         // Define other routes here
       },
@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+  const MyHomePage({Key? key, required List ads}) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();

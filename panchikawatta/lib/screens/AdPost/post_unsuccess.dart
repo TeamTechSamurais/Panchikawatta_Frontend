@@ -1,8 +1,10 @@
-// ignore_for_file: prefer_const_constructors, unused_import
+ // ignore_for_file: prefer_const_constructors, unused_import
 
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
+import 'package:panchikawatta/main.dart';
 import 'package:panchikawatta/screens/profile_page.dart';
+import 'package:panchikawatta/screens/search_page1.dart';
 
 class PostUnsuccess extends StatelessWidget {
   // ignore: use_super_parameters
@@ -39,6 +41,18 @@ class PostUnsuccess extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => ProfilePage()),
+                  );
+                },
+              ),
+              CustomButton(
+                text: 'Back to home',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => MyHomePage(
+                              ads: const [],
+                            )),
                   );
                 },
               ),

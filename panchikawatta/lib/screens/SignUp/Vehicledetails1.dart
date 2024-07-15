@@ -408,6 +408,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:panchikawatta/dropdowns/vehicle_make.dart';
+import 'package:panchikawatta/dropdowns/vehicle_model.dart';
+import 'package:panchikawatta/dropdowns/vehicle_type.dart';
  import 'package:panchikawatta/screens/SignUp/Vehicledetails2.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/components/input_fields.dart';
@@ -416,41 +419,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:panchikawatta/screens/auth_functions.dart';
-
-Map<String, List<String>> vehicleMakes = {
-  'Car': ['Toyota', 'Honda', 'Nissan'],
-  'Motorcycle': ['Honda', 'Yamaha', 'Suzuki'],
-  'Three-Wheeler (Tuk Tuk)': ['Bajaj', 'Piaggio', 'TVS'],
-  'Truck': ['Ford', 'Chevrolet', 'Dodge'],
-  'Bus': ['Volvo', 'Mercedes-Benz', 'MAN'],
-  'Van': ['Ford Transit', 'Mercedes-Benz Sprinter', 'Toyota Hiace'],
-  'SUV': ['Jeep', 'Ford', 'Land Rover'],
-  'Pickup Truck': ['Ford F-150', 'Chevrolet Silverado', 'Toyota Tacoma'],
-};
-
-Map<String, List<String>> vehicleModels = {
-  'Toyota': ['Corolla', 'Camry', 'Rav4'],
-  'Honda': ['Civic', 'Accord', 'CR-V'],
-  'Nissan': ['Altima', 'Sentra', 'Rogue'],
-  'Ford': ['Fusion', 'Escape', 'Explorer'],
-  'Chevrolet': ['Malibu', 'Equinox', 'Tahoe'],
-  'Dodge': ['Charger', 'Durango', 'Ram 1500'],
-  'Jeep': ['Wrangler', 'Grand Cherokee', 'Cherokee'],
-  'Land Rover': ['Range Rover', 'Discovery', 'Defender'],
-};
-
-List<String> vehicleTypes = [
-  'Car',
-  'Motorcycle',
-  'Three-Wheeler (Tuk Tuk)',
-  'Truck',
-  'Bus',
-  'Van',
-  'SUV',
-  'Pickup Truck',
-  'Convertible',
-  'Hatchback',
-];
+ 
 FirebaseAuth _auth = FirebaseAuth.instance;
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
 FirebaseStorage _storage = FirebaseStorage.instance;
@@ -678,25 +647,14 @@ Future<String> uploadVehiclePhoto(String uid, String imagePath) async {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                       
-                        Container(
-                          width: MediaQuery.of(context).size.width * 0.4,
-                          child: DropdownButton<String>(
-                            isExpanded: true,
-                            value: selectedtype,
-                            hint: Text('Type'),
-                            onChanged: (value) {
+                         Expanded(
+                          child: VehicleType(
+                            selectedType: selectedtype,
+                            onChanged: (String? value) {
                               setState(() {
                                 selectedtype = value;
-                                selectedmake =
-                                    null; 
                               });
                             },
-                            items: vehicleTypes.map((type) {
-                              return DropdownMenuItem<String>(
-                                value: type,
-                                child: Text(type),
-                              );
-                            }).toList(),
                           ),
                         ),
                         Container(
@@ -705,16 +663,15 @@ Future<String> uploadVehiclePhoto(String uid, String imagePath) async {
                             isExpanded: true,
                             value: selectedmake,
                             hint: Text('Make'),
-                            onChanged: (value) {
+                            onChanged: (String? value) {
                               setState(() {
                                 selectedmake = value;
-                                selectedmodel =
-                                    null; 
+                                 
                               });
                             },
                             items: selectedtype != null &&
-                                    vehicleMakes[selectedtype!] != null
-                                ? vehicleMakes[selectedtype!]!.map((make) {
+                                   vehicleTypeToMakes  [selectedtype!] != null
+                                ? vehicleTypeToMakes [selectedtype!]!.map((make) {
                                     return DropdownMenuItem<String>(
                                       value: make,
                                       child: Text(make),
@@ -725,7 +682,7 @@ Future<String> uploadVehiclePhoto(String uid, String imagePath) async {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 15),
+                    const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -735,15 +692,15 @@ Future<String> uploadVehiclePhoto(String uid, String imagePath) async {
                           child: DropdownButton<String>(
                             isExpanded: true,
                             value: selectedmodel,
-                            hint: Text('Model'),
+                           hint: Text('Model'),
                             onChanged: (value) {
                               setState(() {
                                 selectedmodel = value;
                               });
                             },
                             items: selectedmake != null &&
-                                    vehicleModels[selectedmake!] != null
-                                ? vehicleModels[selectedmake!]!.map((model) {
+                                    vehicleMakeToModels[selectedmake!] != null
+                                ? vehicleMakeToModels[selectedmake!]!.map((model) {
                                     return DropdownMenuItem<String>(
                                       value: model,
                                       child: Text(model),
@@ -869,6 +826,7 @@ Future<String> uploadVehiclePhoto(String uid, String imagePath) async {
               builder: (context) => Vehicledetails2(
                 vehicleId: vehicleId,
                 userId: userId,
+                 imagePath: imagePath,
               ),
             ),
           );

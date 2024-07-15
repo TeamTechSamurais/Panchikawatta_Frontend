@@ -124,7 +124,7 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
                   selectedVehicleMake = make;
                   selectedModel = null; // Reset model when make changes
                 });
-              },
+              }, makes: [],
             ),
             const SizedBox(height: 16),
             VehicleModel(
