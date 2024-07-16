@@ -24,31 +24,16 @@ class ServicePost extends StatefulWidget {
 }
 
 class _ServicePostState extends State<ServicePost> {
-  final List<XFile?> _images = List<XFile?>.filled(3, null);
+  XFile? _image;
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   String? _selectedServiceType;
 
-  void _setImage(int index, XFile? imagepath) {
+  void _setImage(XFile? imagepath) {
     setState(() {
-      if (index < _images.length) {
-        _images[index] = imagepath;
-      }
+      _image = imagepath;
     });
-  }
-
-  Future<List<String>> _uploadImages(List<XFile?> images) async {
-    List<String> downloadUrls = [];
-    for (XFile? imagepath in images) {
-      if (imagepath != null) {
-        String downloadUrl = await _uploadImage(imagepath);
-        downloadUrls.add(downloadUrl);
-      } else {
-        print("Error: Image path is null");
-      }
-    }
-    return downloadUrls;
   }
 
   Future<String> _uploadImage(XFile imagepath) async {
@@ -95,15 +80,19 @@ class _ServicePostState extends State<ServicePost> {
         return;
       }
 
-      List<String> downloadUrls = await _uploadImages(_images);
+      String downloadUrl = '';
+      if (_image != null) {
+        downloadUrl = await _uploadImage(_image!);
+      } else {
+        print("Error: Image is null");
+      }
 
       final response = await widget.apiService.postService(
         sellerId: sellerId!,
         title: title,
         description: description,
         price: price.toString(),
-        imageUrls: downloadUrls,
-        type: _selectedServiceType, // Ensure service type is included
+        imageUrls: [downloadUrl],
       );
 
       // Debug print response
@@ -224,16 +213,15 @@ class _ServicePostState extends State<ServicePost> {
                     const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: List.generate(
-                        _images.length,
-                        (index) => AddImage(
+                      children: [
+                        AddImage(
                           size: 70,
                           color: Colors.grey,
                           onImageSelected: (image) {
-                            _setImage(index, image);
+                            _setImage(image);
                           },
-                        ),
-                      ),
+                        )
+                      ],
                     ),
                     const SizedBox(height: 20),
                   ],

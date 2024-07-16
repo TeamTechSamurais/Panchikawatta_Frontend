@@ -65,7 +65,7 @@ class _reset1State extends State<forget_password2> {
                         }
                       },
                       decoration: const InputDecoration(hintText: "0"),
-                      style: Theme.of(context).textTheme.headline6,
+                      style: Theme.of(context).textTheme.titleLarge,
                       keyboardType: TextInputType.number,
                       textAlign: TextAlign.center,
                       inputFormatters: [
@@ -84,7 +84,7 @@ class _reset1State extends State<forget_password2> {
                         }
                       },
                       decoration: const InputDecoration(hintText: "0"),
-                      style: Theme.of(context).textTheme.headline6,
+                      style: Theme.of(context).textTheme.titleLarge,
                       keyboardType: TextInputType.number,
                       textAlign: TextAlign.center,
                       inputFormatters: [
@@ -103,7 +103,7 @@ class _reset1State extends State<forget_password2> {
                         }
                       },
                       decoration: const InputDecoration(hintText: "0"),
-                      style: Theme.of(context).textTheme.headline6,
+                      style: Theme.of(context).textTheme.titleLarge,
                       keyboardType: TextInputType.number,
                       textAlign: TextAlign.center,
                       inputFormatters: [
@@ -122,7 +122,7 @@ class _reset1State extends State<forget_password2> {
                         }
                       },
                       decoration: const InputDecoration(hintText: "0"),
-                      style: Theme.of(context).textTheme.headline6,
+                      style: Theme.of(context).textTheme.titleLarge,
                       keyboardType: TextInputType.number,
                       textAlign: TextAlign.center,
                       inputFormatters: [

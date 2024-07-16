@@ -22,7 +22,7 @@ class OrderPlacedSuccessfullyScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => MyHomePage()),
+                  MaterialPageRoute(builder: (context) => const MyHomePage()),
                 );
               },
               child: Text('Leave', style: TextStyle(color: Colors.white)),

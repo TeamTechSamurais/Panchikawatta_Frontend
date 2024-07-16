@@ -35,7 +35,7 @@ class _SearchPage1State extends State<search_page1> {
   @override
   void initState() {
     super.initState();
-    _spareParts = GetApiService().searchSpareparts('');
+    _spareParts = GetApiService().getSpareParts();
     _services = GetApiService().getServices();
     _userProfile = _getUserProfile();
     _userProfile.then((snapshot) {

@@ -2,7 +2,6 @@
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
 import 'package:panchikawatta/constant/utils.dart';
 import 'package:panchikawatta/models/service.dart';
 import 'package:panchikawatta/models/sparepart.dart';

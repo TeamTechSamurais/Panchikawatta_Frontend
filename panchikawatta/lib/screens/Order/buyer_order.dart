@@ -1,207 +1,113 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:panchikawatta/constant/utils.dart';
-import 'package:panchikawatta/screens/Order/info.dart';
+import 'package:panchikawatta/services/order_api_services.dart';
 
-class BuyerOrderScreen extends StatefulWidget {
-  @override
-  _BuyerOrderScreenState createState() => _BuyerOrderScreenState();
-}
+class BuyerOrderScreen extends StatelessWidget {
+  final int userId; // Pass the userId instead of token
 
-class _BuyerOrderScreenState extends State<BuyerOrderScreen> {
-  final TextEditingController fullNameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
-  final TextEditingController addressController = TextEditingController();
-
-  String _deliveryMethod = 'COD';
-
-  Future<void> placeOrder(BuildContext context) async {
-    String email = emailController.text;
-    String phone = phoneController.text;
-
-    // Email validation
-    bool emailValid = RegExp(r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(email);
-    if (!emailValid) {
-      _showErrorDialog(context, 'Invalid email format');
-      return;
-    }
-
-    // Phone number validation
-    bool phoneValid = RegExp(r"^\d{10}$").hasMatch(phone);
-    if (!phoneValid) {
-      _showErrorDialog(context, 'Phone number must be exactly 10 digits');
-      return;
-    }
-
-    final response = await http.post(
-      Uri.parse('${Utils.baseUrl}/orders'),
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(<String, String>{
-        'name': fullNameController.text,
-        'email': email,
-        'phoneNO': phone,
-        'address': addressController.text,
-        'deliveryMethod': _deliveryMethod,
-      }),
-    );
-
-    if (response.statusCode == 201) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => InfoScreen(orderId: json.decode(response.body)['orderId'])),
-      );
-    } else {
-      _showErrorDialog(context, 'Failed to place order');
-    }
-  }
-
-  void _showErrorDialog(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Error'),
-          content: Text(message),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  BuyerOrderScreen({required this.userId});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Buy Now', style: TextStyle(color: Color(0xFFFF5C01))),
-        backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Color.fromARGB(255, 0, 0, 0)),
+        title: Text('My Orders'),
+        backgroundColor: Color(0xFFFF5C01),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
+      body: FutureBuilder(
+        future: ApiService.getBuyerOrders(userId), // Fetch orders by userId
+        builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            final orders = snapshot.data!;
+            return ListView.builder(
+              itemCount: orders.length,
+              itemBuilder: (context, index) {
+                final order = orders[index];
+                return OrderCard(order: order, userId: userId);
+              },
+            );
+          }
+        },
+      ),
+    );
+  }
+}
+
+class OrderCard extends StatelessWidget {
+  final Map<String, dynamic> order;
+  final int userId;
+
+  OrderCard({required this.order, required this.userId});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.all(8.0),
+      child: Padding(
+        padding: EdgeInsets.all(16.0),
         child: Column(
-          children: <Widget>[
-            Expanded(
-              child: ListView(
-                children: <Widget>[
-                  TextField(
-                    controller: fullNameController,
-                    decoration: InputDecoration(
-                      labelText: 'Full Name with Initial',
-                      filled: true,
-                      fillColor: Colors.grey[200],
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.transparent),
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.transparent),
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  TextField(
-                    controller: emailController,
-                    decoration: InputDecoration(
-                      labelText: 'Email Address',
-                      filled: true,
-                      fillColor: Colors.grey[200],
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.transparent),
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.transparent),
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  TextField(
-                    controller: phoneController,
-                    keyboardType: TextInputType.phone,
-                    decoration: InputDecoration(
-                      labelText: 'Telephone',
-                      filled: true,
-                      fillColor: Colors.grey[200],
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.transparent),
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.transparent),
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  TextField(
-                    controller: addressController,
-                    decoration: InputDecoration(
-                      labelText: 'Address To Deliver',
-                      filled: true,
-                      fillColor: Colors.grey[200],
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0)),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.transparent),
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.transparent),
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 40),
-                  Text('Delivery Method', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  ListTile(
-                    title: Text('Cash on Delivery'),
-                    leading: Radio<String>(
-                      value: 'COD',
-                      groupValue: _deliveryMethod,
-                      onChanged: (String? value) {
-                        setState(() {
-                          _deliveryMethod = value!;
-                        });
-                      },
-                      activeColor: Color(0xFFFF5C01),
-                    ),
-                  ),
-                  ListTile(
-                    title: Text('Buy Online'),
-                    leading: Radio<String>(
-                      value: 'Online',
-                      groupValue: _deliveryMethod,
-                      onChanged: null, // Disabled for now
-                      activeColor: Color(0xFFFF5C01),
-                    ),
-                  ),
-                ],
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Order ID: ${order['orderId']}'),
+            Text('Title: ${order['sparePart']['title']}'),
+            OrderStatusStepper(status: order['status']),
+            if (order['status'] == 'Dispatched')
+              ElevatedButton(
+                onPressed: () async {
+                  await ApiService.markOrderAsDelivered(order['orderId'], userId);
+                  // Implement logic to refresh the list
+                },
+                style: ElevatedButton.styleFrom(backgroundColor: Color(0xFFFF5C01)),
+                child: Text('Mark as Delivered'),
               ),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFFF5C01),
-                minimumSize: Size(double.infinity, 50), // Make the button take the full width
-              ),
-              onPressed: () => placeOrder(context),
-              child: Text('Place Order', style: TextStyle(color: Colors.white)),
-            ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class OrderStatusStepper extends StatelessWidget {
+  final String status;
+
+  OrderStatusStepper({required this.status});
+
+  @override
+  Widget build(BuildContext context) {
+    int currentStep;
+    if (status == 'Processing') {
+      currentStep = 0;
+    } else if (status == 'Dispatched') {
+      currentStep = 1;
+    } else {
+      currentStep = 2;
+    }
+
+    return Stepper(
+      currentStep: currentStep,
+      steps: [
+        Step(
+          title: Text('Processing'),
+          content: Container(),
+          isActive: currentStep >= 0,
+          state: currentStep >= 0 ? StepState.complete : StepState.indexed,
+        ),
+        Step(
+          title: Text('Dispatched'),
+          content: Container(),
+          isActive: currentStep >= 1,
+          state: currentStep >= 1 ? StepState.complete : StepState.indexed,
+        ),
+        Step(
+          title: Text('Delivered'),
+          content: Container(),
+          isActive: currentStep >= 2,
+          state: currentStep >= 2 ? StepState.complete : StepState.indexed,
+        ),
+      ],
     );
   }
 }
