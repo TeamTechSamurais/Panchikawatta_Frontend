@@ -1,5 +1,4 @@
 // ignore_for_file: avoid_print
-// ignore_for_file: avoid_print
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -43,9 +42,10 @@ class GetApiService {
     }
   }
 
-  Future<SparePart> getSparePartById(int id) async {
+  Future<SparePart> getSparePartById(int sparePartId) async {
     final response = await http
-        .get(Uri.parse('${Utils.baseUrl}/adListing/getSparepartById/$id'));
+        .get(Uri.parse('${Utils.baseUrl}/users/spare-parts/$sparePartId'));
+    print('Fetching spare part from URL: $Uri');
 
     if (response.statusCode == 200) {
       Map<String, dynamic> data = jsonDecode(response.body);

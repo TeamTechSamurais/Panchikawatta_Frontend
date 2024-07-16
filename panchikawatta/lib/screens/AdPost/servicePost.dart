@@ -9,6 +9,7 @@ import 'package:panchikawatta/components/add_image.dart';
 import 'package:panchikawatta/dropdowns/service_type.dart';
 import 'package:panchikawatta/screens/AdPost/post_success.dart';
 import 'package:panchikawatta/services/post_api_service.dart';
+import 'package:panchikawatta/global/globals.dart' as globals;
 
 FirebaseAuth _auth = FirebaseAuth.instance;
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -23,7 +24,7 @@ class ServicePost extends StatefulWidget {
 }
 
 class _ServicePostState extends State<ServicePost> {
-  final List<XFile?> _images = List<XFile?>.filled(1, null);
+  final List<XFile?> _images = List<XFile?>.filled(3, null);
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
@@ -31,7 +32,9 @@ class _ServicePostState extends State<ServicePost> {
 
   void _setImage(int index, XFile? imagepath) {
     setState(() {
-      _images[index] = imagepath;
+      if (index < _images.length) {
+        _images[index] = imagepath;
+      }
     });
   }
 
@@ -44,7 +47,6 @@ class _ServicePostState extends State<ServicePost> {
       } else {
         print("Error: Image path is null");
       }
-      print("Download URLs: $downloadUrls");
     }
     return downloadUrls;
   }
@@ -74,17 +76,19 @@ class _ServicePostState extends State<ServicePost> {
       final title = _titleController.text;
       final description = _descriptionController.text;
       final price = int.tryParse(_priceController.text);
-      const int sellerId = 1; // Replace this with the actual seller ID
+      int? sellerId = globals.userId;
 
       // Debug prints to check the values
       print('Title: $title');
       print('Description: $description');
       print('Price: $price');
       print('Service Type: $_selectedServiceType');
+      print('Seller ID: $sellerId');
 
       if (title.isEmpty ||
           description.isEmpty ||
-          _selectedServiceType == null) {
+          _selectedServiceType == null ||
+          price == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Please fill all required fields')),
         );
@@ -94,11 +98,12 @@ class _ServicePostState extends State<ServicePost> {
       List<String> downloadUrls = await _uploadImages(_images);
 
       final response = await widget.apiService.postService(
-        sellerId: sellerId,
+        sellerId: sellerId!,
         title: title,
         description: description,
         price: price.toString(),
         imageUrls: downloadUrls,
+        type: _selectedServiceType, // Ensure service type is included
       );
 
       // Debug print response
@@ -219,29 +224,16 @@ class _ServicePostState extends State<ServicePost> {
                     const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        AddImage(
+                      children: List.generate(
+                        _images.length,
+                        (index) => AddImage(
                           size: 70,
                           color: Colors.grey,
                           onImageSelected: (image) {
-                            _setImage(0, image);
+                            _setImage(index, image);
                           },
                         ),
-                        AddImage(
-                          size: 70,
-                          color: Colors.grey,
-                          onImageSelected: (image) {
-                            _setImage(1, image);
-                          },
-                        ),
-                        AddImage(
-                          size: 70,
-                          color: Colors.grey,
-                          onImageSelected: (image) {
-                            _setImage(2, image);
-                          },
-                        ),
-                      ],
+                      ),
                     ),
                     const SizedBox(height: 20),
                   ],

@@ -16,6 +16,7 @@ import 'package:panchikawatta/dropdowns/vehicle_make.dart';
 import 'package:panchikawatta/dropdowns/vehicle_model.dart';
 import 'package:panchikawatta/dropdowns/vehicle_type.dart';
 import 'package:panchikawatta/screens/AdPost/post_success.dart';
+import 'package:panchikawatta/global/globals.dart' as globals;
 
 FirebaseAuth _auth = FirebaseAuth.instance;
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -30,7 +31,7 @@ class AdPost extends StatefulWidget {
 }
 
 class _AdPostState extends State<AdPost> {
-  final List<XFile?> _images = List<XFile?>.filled(3, null);
+  final List<XFile?> _images = List<XFile?>.filled(1, null);
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
@@ -41,8 +42,6 @@ class _AdPostState extends State<AdPost> {
   String? _selectedCondition;
   String? _selectedFuel;
   final TextEditingController _yearController = TextEditingController();
-
-  get sellerId => 1;
 
   void _setImage(int index, XFile? imagepath) {
     setState(() {
@@ -116,7 +115,7 @@ class _AdPostState extends State<AdPost> {
       List<String> downloadUrls = await _uploadImages(_images);
 
       final sparePart = await widget.apiService.postSparePart(
-        sellerId: sellerId, // replace with actual seller ID
+        sellerId: globals.userId!,
         title: title,
         description: description,
         price: price,

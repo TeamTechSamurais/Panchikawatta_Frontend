@@ -9,6 +9,7 @@ import 'package:panchikawatta/services/get_api_services.dart';
 import 'package:panchikawatta/services/post_api_service.dart';
 import 'package:panchikawatta/models/sparepart.dart' as model;
 import 'package:card_swiper/card_swiper.dart';
+import 'package:panchikawatta/global/globals.dart' as globals;
 
 class BuyScreen extends StatefulWidget {
   final int sparePartId;
@@ -27,7 +28,7 @@ class _BuyScreenState extends State<BuyScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   User? get currentUser => _auth.currentUser;
-  int? get userId => 2;
+  int? get userId => globals.userId;
   final _firestore = FirebaseFirestore.instance;
   late String otherUserId = '';
   late String userDisplayName = '';

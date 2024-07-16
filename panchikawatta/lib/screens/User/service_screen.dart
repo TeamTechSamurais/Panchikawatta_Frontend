@@ -68,20 +68,21 @@ class _ServiceScreenState extends State<ServiceScreen> {
                   const SizedBox(height: 30),
                   Center(
                     child: Container(
-                      height: 300,
+                      height: 260,
                       width: double.infinity,
                       color: Colors.transparent,
-                      child: Swiper(
-                        itemCount: service.imageUrls.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Image.network(
-                            service.imageUrls[index],
-                            fit: BoxFit.contain,
-                          );
-                        },
-                        pagination: SwiperPagination(),
-                        control: SwiperControl(),
-                      ),
+                      child: Image.network(service.imageUrls[0]),
+                      // child: Swiper(
+                      //   itemCount: service.imageUrls.length,
+                      //   itemBuilder: (BuildContext context, int index) {
+                      //     return Image.network(
+                      //       service.imageUrls[index],
+                      //       fit: BoxFit.contain,
+                      //     );
+                      //   },
+                      //   pagination: SwiperPagination(),
+                      //   control: SwiperControl(),
+                      // ),
                     ),
                   ),
                   const SizedBox(height: 10),
