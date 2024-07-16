@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
+import 'package:panchikawatta/global/common/toast.dart';
 import 'package:panchikawatta/screens/AdPost/adType.dart';
 import 'package:panchikawatta/screens/Order/seller_order.dart';
+import 'package:panchikawatta/screens/api_service.dart';
 import 'package:panchikawatta/screens/services_ads.dart';
 import 'package:panchikawatta/screens/spare_parts_ads.dart';
 
 class SellerProfile extends StatefulWidget {
+  final int userId;
 
-  // SellerProfile({required this.userId});
+  SellerProfile({required this.userId});
 
   @override
   _SellerProfile createState() => _SellerProfile();
@@ -16,21 +19,40 @@ class SellerProfile extends StatefulWidget {
 class _SellerProfile extends State<SellerProfile>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  
-  get sellerId => 1;
-  // Future<Map<String, dynamic>>? _seller;
+  Map<String, dynamic>? _seller;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    // fetchSeller();
+    fetchSeller();
   }
 
-  // void fetchSeller() {
-  //   // Fetch the seller's data from the database
-  //   _seller =  ApiServices.getSellerById(widget.userId);
-  // }
+  void fetchSeller() async {
+    try {
+      final sellerData = await ApiServices.getSellerById(widget.userId);
+
+      // if (sellerData['status'] == 'error') {
+      //   print('Error fetching seller data: ${sellerData['message']}');
+      //   // Show a snackbar with the error message
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     SnackBar(
+      //       content: Text(sellerData['message']),
+      //     ),
+      //   );
+      // } else {
+      //   setState(() {
+      //     _seller = sellerData;
+      //   });
+      // }
+      setState(() {
+        _seller = sellerData;
+      });
+    } catch (e) {
+      print('Error fetching seller data: $e');
+      showToast(message: 'An error occurred while fetching seller data.');
+    }
+  }
 
   @override
   void dispose() {
@@ -41,10 +63,72 @@ class _SellerProfile extends State<SellerProfile>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
+      body: _seller == null
+          ? const Center(child: CircularProgressIndicator())
+      : SingleChildScrollView(
         child: Column(
           children: [
             const SizedBox(height: 20),
+
+            Center(
+              child: Text(
+                _seller!['businessName'],
+                style: const TextStyle(
+                  fontSize: 30,
+                  color: Color(0xFFFF5C01),
+                  fontWeight: FontWeight.bold,
+                ),
+              )
+            ),
+
+            // const SizedBox(height: 10),
+
+            Center(
+              child: Text(
+                _seller!['businessDescription'],
+                style: const TextStyle(
+                  fontSize: 20,
+                  color: Colors.black,
+                ),
+              )
+            ),
+
+            const SizedBox(height: 20),
+
+            Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.location_on, color: Colors.black),
+                  Text(
+                    _seller!['businessAddress'],
+                    style: const TextStyle(
+                      fontSize: 20,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.phone , color: Colors.black),
+                  Text(
+                    _seller!['businessPhoneNo'],
+                    style: const TextStyle(
+                      fontSize: 20,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
             Center(
               child: CustomButton(
                   onPressed: () {
@@ -59,7 +143,7 @@ class _SellerProfile extends State<SellerProfile>
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => SellerOrderScreen(sellerId: sellerId,)),
+                      MaterialPageRoute(builder: (context) => SellerOrderScreen(sellerId: widget.userId,)),
                     );
                   },
                   text: 'View Orders'),

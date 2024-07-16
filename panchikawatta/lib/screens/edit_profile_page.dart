@@ -2,8 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
-import 'package:panchikawatta/components/drop_down_input_fields.dart';
+// import 'package:panchikawatta/components/drop_down_input_fields.dart';
 import 'package:panchikawatta/components/input_fields.dart';
+import 'package:panchikawatta/dropdowns/district.dart';
+import 'package:panchikawatta/dropdowns/province.dart';
 import 'package:panchikawatta/screens/api_service.dart';
 import 'package:panchikawatta/screens/auth_functions.dart';
 import 'dart:io';
@@ -20,6 +22,8 @@ class _EditProfilePageState extends State<EditProfilePage>{
   bool isLoading = true;
   bool isUpdating = false;
   String? profilePictureUrl;
+  String? selectedprovince;
+  String? selecteddistrict;
   final formKey = GlobalKey<FormState>();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -29,8 +33,8 @@ class _EditProfilePageState extends State<EditProfilePage>{
   final TextEditingController _password = TextEditingController();
   final TextEditingController _email = TextEditingController();
   final TextEditingController _phone = TextEditingController();
-  final TextEditingController _district = TextEditingController();
-  final TextEditingController _province = TextEditingController();
+  // final TextEditingController _district = TextEditingController();
+  // final TextEditingController _province = TextEditingController();
   String? email;
 
   @override
@@ -76,8 +80,8 @@ class _EditProfilePageState extends State<EditProfilePage>{
           _userName.text = user['userName'] ?? '';
           _email.text = user['email'] ?? '';
           _phone.text = user['phoneNo'] ?? '';
-          _district.text = user['district'] ?? '';
-          _province.text = user['province'] ?? '';
+          selecteddistrict = user['district'] ?? '';
+          selectedprovince = user['province'] ?? '';
           isLoading = false;
         });
       }
@@ -263,51 +267,62 @@ class _EditProfilePageState extends State<EditProfilePage>{
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Flexible(
+
+                          Expanded(
                             child: Container(
-                              color: const Color(0xFFFAFAFA), // to visualize the container
-                              child: DropdownInputField(  // use the custom DropdownInputField widget
-                                dropdownItems: const ['Ampara', 'Anuradhapura', 'Badulla', 'Batticaloa', 'Colombo', 'Galle', 'Gampaha', 'Hambantota', 'Jaffna', 'Kalutara', 'Kandy', 'Kegalle', 'Kilinochchi', 'Kurunegala', 'Mannar', 'Matale', 'Matara', 'Monaragala', 'Mullaitivu', 'Nuwara Eliya', 'Polonnaruwa', 'Puttalam', 'Ratnapura', 'Trincomalee', 'Vavuniya'],
-                                hintText: 'District',
-                                initialValue: _district.text,
-                                validator: (value) {
-                                  if (value!.isEmpty) { 
-                                    _showFillMessage("Please enter your province"); 
-                                  }
-                                  return null;
+                              decoration: BoxDecoration(
+                                color: const Color.fromARGB(255, 241, 239, 237), 
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: ProvinceDropdown(
+                                selectedProvince: selectedprovince,
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    selectedprovince = newValue;
+                                    // Clear the selected district when province changes
+                                    selecteddistrict = null;
+                                  });
                                 },
                               ),
-                            ),
+                            )
                           ),
-
                           const SizedBox(width: 10),
-
-                          Flexible (
+                          Expanded(
                             child: Container(
-                              color: const Color(0xFFFAFAFA), // to visualize the container
-                              child: DropdownInputField(  // use the custom DropdownInputField widget
-                                dropdownItems: const ['Central', 'Eastern', 'North Central', 'Northern', 'North Western', 'Sabaragamuwa', 'Southern', 'Uva', 'Western'],
-                                hintText: 'Province',
-                                initialValue: _province.text,
-                                validator: (value) {
-                                  if (value!.isEmpty) { 
-                                    _showFillMessage("Please enter your province"); 
-                                  }
-                                  return null;
+                              decoration: BoxDecoration(
+                                color: const Color.fromARGB(255, 241, 239, 237), 
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: DistrictDropdown(
+                                selectedProvince: selectedprovince,
+                                selectedDistrict: selecteddistrict,
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    selecteddistrict = newValue;
+                                  });
                                 },
                               ),
                             ),
                           ),
-                                
                         ],
                       ),
 
-                      const SizedBox(height: 15),
+                      const SizedBox(height: 30),
 
                       ElevatedButton(
                         onPressed: () {
                           
                           if (formKey.currentState?.validate() ?? false) {
+
+                            if (selectedprovince == null) {
+                              _showFillMessage('Please select a province');
+                              return;
+                            }
+
+                            if (selecteddistrict == null) {
+                              _showFillMessage('Please select a district');
+                              return;
+                            }
 
                             setState(() {
                               isUpdating = true;
@@ -375,9 +390,9 @@ class _EditProfilePageState extends State<EditProfilePage>{
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFFF5C01),
-                          minimumSize: Size(MediaQuery.of(context).size.width * 0.8, 40),
+                          minimumSize: Size(MediaQuery.of(context).size.width * 0.8, 50),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
+                            borderRadius: BorderRadius.circular(25),
                           ),
                         ),
                         child: isUpdating
@@ -407,8 +422,8 @@ class _EditProfilePageState extends State<EditProfilePage>{
       _userName.text, 
       _email.text, 
       _phone.text, 
-      _district.text, 
-      _province.text
+      selectedprovince, 
+      selecteddistrict
     );
   }
 

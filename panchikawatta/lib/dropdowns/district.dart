@@ -33,7 +33,7 @@ class DistrictDropdown extends StatelessWidget {
     return DropdownButtonFormField<String>(
       value: selectedDistrict,
       decoration: const InputDecoration(labelText: 'District',
-      
+          border: InputBorder.none,
       ),
       items: districts.map((district) {
         return DropdownMenuItem<String>(

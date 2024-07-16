@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/input_fields.dart';
 import 'package:panchikawatta/screens/chat_room.dart';
@@ -16,8 +15,7 @@ class _ChatScreenState extends State<ChatScreen> {
   bool _isSelecting = false;
   final FocusNode _searchfocusNode = FocusNode();
   final TextEditingController _searchController = TextEditingController();
-  List<Map<String, dynamic>>? searchResults =
-      []; //Empty list of maps, where each map has string keys and values of any type (dynamic).
+  List<Map<String, dynamic>>? searchResults = []; //Empty list of maps, where each map has string keys and values of any type (dynamic).
   String? currentUserId;
   final _auth = FirebaseAuth.instance;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -109,7 +107,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _deleteSelectedChats() async {
     for (String chatRoomId in selectedChatRooms) {
       // Delete chat room from Firestore
-      await _firestore.collection('chatRoom').doc(chatRoomId).delete();
+      // await _firestore.collection('chatRoom').doc(chatRoomId).delete();
 
       // Remove chat room from current user's chatRooms field
       DocumentSnapshot currentUserSnapshot = await _firestore.collection('users').doc(currentUserId).get();
@@ -122,23 +120,23 @@ class _ChatScreenState extends State<ChatScreen> {
       });
 
       // Get the other userId from the chatRoom object
-      String otherUserId = chatRoomToRemove['otherUid'];
+      // String otherUserId = chatRoomToRemove['otherUid'];
 
-      // Remove chat room from other user's chatRooms field
-      DocumentSnapshot otherUserSnapshot = await _firestore.collection('users').doc(otherUserId).get();
-      Map<String, dynamic> otherUserData = otherUserSnapshot.data() as Map<String, dynamic>;
-      List<dynamic> otherUserChatRooms = otherUserData['chatRooms'];
-      var otherChatRoomToRemove = otherUserChatRooms.firstWhere((chatRoom) => chatRoom['chatRoomId'] == chatRoomId);
+      // // Remove chat room from other user's chatRooms field
+      // DocumentSnapshot otherUserSnapshot = await _firestore.collection('users').doc(otherUserId).get();
+      // Map<String, dynamic> otherUserData = otherUserSnapshot.data() as Map<String, dynamic>;
+      // List<dynamic> otherUserChatRooms = otherUserData['chatRooms'];
+      // var otherChatRoomToRemove = otherUserChatRooms.firstWhere((chatRoom) => chatRoom['chatRoomId'] == chatRoomId);
 
-      await _firestore.collection('users').doc(otherUserId).update({
-        'chatRooms': FieldValue.arrayRemove([otherChatRoomToRemove]),
-      });
+      // await _firestore.collection('users').doc(otherUserId).update({
+      //   'chatRooms': FieldValue.arrayRemove([otherChatRoomToRemove]),
+      // });
 
-      // Delete images from Firebase Storage
-      ListResult result = await FirebaseStorage.instance.ref('chat_images/$chatRoomId').listAll();
-      for (Reference fileRef in result.items) {
-        await fileRef.delete();
-      }
+      // // Delete images from Firebase Storage
+      // ListResult result = await FirebaseStorage.instance.ref('chat_images/$chatRoomId').listAll();
+      // for (Reference fileRef in result.items) {
+      //   await fileRef.delete();
+      // }
     }
 
     setState(() {
@@ -268,9 +266,9 @@ class _ChatScreenState extends State<ChatScreen> {
                     ? badges.Badge(
                         badgeContent: Text(
                           unreadMessages.toString(),
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
                         ),
-                        badgeStyle: badges.BadgeStyle(
+                        badgeStyle: const badges.BadgeStyle(
                           badgeColor: Color(0xFFFF5C01),
                         ),
                       )
@@ -303,24 +301,18 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: !_isSelecting 
-          ? _isSearching 
-            ? Container() 
-            : IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.black, size: 26),
+        automaticallyImplyLeading: false,
+        leading: _isSelecting 
+          ? IconButton(
+              icon: const Icon(Icons.close, color: Colors.black, size: 26),
               onPressed: () {
-                Navigator.pop(context);
+                setState(() {
+                  _isSelecting = false;
+                  selectedChatRooms.clear();
+                });
               },
             )
-          : IconButton(
-            icon: const Icon(Icons.close, color: Colors.black, size: 26),
-            onPressed: () {
-              setState(() {
-                _isSelecting = false;
-                selectedChatRooms.clear();
-              });
-            },
-          ),
+          : null,
         title: !_isSelecting
           ? _isSearching 
             ? Flex(
@@ -336,7 +328,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               ],
             ) 
-            : const Text('Chats', style: TextStyle(color: Color(0xFFFF5C01), fontSize: 28))
+            : null //const Text('Chats', style: TextStyle(color: Color(0xFFFF5C01), fontSize: 28))
           : Text(
             '${selectedChatRooms.length} selected',
             style: const TextStyle(color: Colors.black, fontSize: 20),
@@ -362,49 +354,7 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
       ),
 
-      body: _isSearching 
-        ? _buildSearchResults() 
-        : StreamBuilder<DocumentSnapshot>(
-          stream: _firestore.collection('users').doc(_auth.currentUser!.uid).snapshots(), //get the document of the current user
-          builder: (context, snapshot) {
-            if (snapshot.hasData && snapshot.data != null) {
-              final chatrooms = snapshot.data?.data() ;
-              final chatRooms = chatrooms is Map<String, dynamic> 
-                                  ? (chatrooms['chatRooms'] as List<dynamic>? ?? []).toList()  
-                                  : [] ; 
-
-              if (chatRooms.isEmpty) {
-                return const Center(
-                  child: Text('You have not chat with anyone', style: TextStyle(fontSize: 20)),
-                );
-              }
-
-              return ListView.builder(
-                itemCount: chatRooms.length,
-                itemBuilder: (context, index) {
-                  final item = chatRooms[index]; 
-                  Map<String, dynamic>? chatRoomMap ;
-                  String? chatRoomId ;
-
-                  if (item is Map<String, dynamic>) {
-                    chatRoomMap = item;
-                    final id = chatRoomMap['chatRoomId'] ;
-
-                    if (id is String) {
-                      chatRoomId = id;
-                    } else {
-                      print('chatRoomId is not a String');
-                    }
-                  } else {
-                    print('Item at index $index is not a Map<String, dynamic>');
-                  }
-                  _isSearching = !_isSearching;
-                });
-              },
-            ),
-          ],
-        ),
-        body: _isSearching
+      body: _isSearching
             ? _buildSearchResults()
             : StreamBuilder<DocumentSnapshot>(
                 stream: FirebaseFirestore.instance
@@ -443,17 +393,14 @@ class _ChatScreenState extends State<ChatScreen> {
                             print('chatRoomId is not a String');
                           }
                         } else {
-                          print(
-                              'Item at index $index is not a Map<String, dynamic>');
+                          print('Item at index $index is not a Map<String, dynamic>');
                         }
 
                         if (chatRoomId == null) {
                           return const SizedBox.shrink();
                         }
 
-                        final otherUserId =
-                            chatRoomMap?['otherUid'] as String? ??
-                                'defaultUserId';
+                        final otherUserId = chatRoomMap?['otherUid'] as String? ?? 'defaultUserId';
 
                         return StreamBuilder<QuerySnapshot>(
                             stream: _firestore
@@ -463,8 +410,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                 .orderBy('time', descending: true)
                                 .snapshots(),
                             builder: (context, chatSnapshot) {
-                              if (chatSnapshot.connectionState ==
-                                  ConnectionState.waiting) {
+                              if (chatSnapshot.connectionState == ConnectionState.waiting) {
                                 return const Center(
                                   child: CircularProgressIndicator(),
                                 );
@@ -479,9 +425,9 @@ class _ChatScreenState extends State<ChatScreen> {
                                 return const SizedBox.shrink();
                               }
 
-                              final chatDocs = chatSnapshot.data!.docs;
+                              // final chatDocs = chatSnapshot.data!.docs;
 
-                              final lastMessage = chatDocs.first;
+                              // final lastMessage = chatDocs.first;
 
                               return FutureBuilder<DocumentSnapshot>(
                                   future: _firestore
@@ -501,9 +447,9 @@ class _ChatScreenState extends State<ChatScreen> {
                                       );
                                     }
 
-                  final otherUserId = chatRoomMap?['otherUid'] as String? ?? 'defaultUserId';
+                                    final otherUserId = chatRoomMap?['otherUid'] as String? ?? 'defaultUserId';
 
-                  return StreamBuilder<QuerySnapshot>(
+                                    return StreamBuilder<QuerySnapshot>(
                     stream: _firestore
                       .collection('chatRoom')
                       .doc(chatRoomId)
@@ -559,8 +505,12 @@ class _ChatScreenState extends State<ChatScreen> {
                         );
                     }
                   );
-                },
-              ); 
+                                  },
+                              ); 
+                            }
+                        );
+                      },
+                    );
             } else if (snapshot.hasError) {
               return const Center(
                 child: Text('An error occurred'),

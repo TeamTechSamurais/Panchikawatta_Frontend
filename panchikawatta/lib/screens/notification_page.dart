@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:panchikawatta/screens/Notification/chat.dart';
 import 'package:panchikawatta/screens/Notification/reminder.dart';
+import 'package:panchikawatta/screens/chat_screen.dart';
 
 class NotificationPage extends StatelessWidget {
   const NotificationPage({super.key});
@@ -11,6 +11,7 @@ class NotificationPage extends StatelessWidget {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           bottom: const TabBar(
             indicatorColor: Color(0xffFF5C01),
             labelColor: Color(0xffFF5C01),
@@ -20,10 +21,17 @@ class NotificationPage extends StatelessWidget {
             tabs: [Tab(text: 'Chats'), Tab(text: 'Reminders')],
           ),
         ),
-        body: const TabBarView(
+        body: Column(
           children: [
-            ChatsPage(),
-            ReminderPage(),
+            SizedBox(height: 20), // Adjust the height as needed
+            Expanded(
+              child: TabBarView(
+                children: [
+                  ChatScreen(),
+                  const ReminderPage(),
+                ],
+              ),
+            ),
           ],
         ),
       ),

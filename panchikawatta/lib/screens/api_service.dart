@@ -5,7 +5,7 @@ class ApiServices {
   static const String baseURL = "http://10.0.2.2:8000/profile"; //10.10.4.22
 
   static Future<Map<String, dynamic>> getUserByEmail(String email) async {
-    //print('inside the getUserByEmail function');
+    print('inside the getUserByEmail function');
     try {
       final response = await http
           .get(Uri.parse('$baseURL/users/$email'))
@@ -78,6 +78,29 @@ class ApiServices {
     }
   }
 
+  static Future<Map<String, dynamic>> registerSeller(
+      Map<String, dynamic> data) async {
+    try {
+      final response = await http
+          .post(
+            Uri.parse('http://10.0.2.2:8000/users/b'),
+            headers: <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+            body: jsonEncode(data),
+          )
+          .timeout(const Duration(seconds: 10));
+
+      if (response.statusCode == 201) {
+        return json.decode(response.body);
+      } else {
+        return {"status": "error", "message": "Seller registration failed"};
+      }
+    } catch (e) {
+      return {"status": "error", "message": "An error occurred"};
+    }
+  }
+
   static Future<Map<String, dynamic>> getSellerById(int id) async {
     try {
       final response = await http
@@ -94,12 +117,12 @@ class ApiServices {
     }
   }
 
-  static Future<Map<String, dynamic>> registerSeller(
-      Map<String, dynamic> data) async {
+  static Future<Map<String, dynamic>> updateSeller(
+      int id, Map<String, dynamic> data) async {
     try {
       final response = await http
-          .post(
-            Uri.parse('http://10.0.2.2:8000/users/b'),
+          .put(
+            Uri.parse('$baseURL/update-seller/$id'),
             headers: <String, String>{
               'Content-Type': 'application/json; charset=UTF-8',
             },
@@ -110,7 +133,7 @@ class ApiServices {
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
-        return {"status": "error", "message": "Seller registration failed"};
+        return {"status": "error", "message": "Seller not found"};
       }
     } catch (e) {
       return {"status": "error", "message": "An error occurred"};
