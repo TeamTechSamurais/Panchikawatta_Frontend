@@ -117,8 +117,8 @@ class ReminderCard extends StatelessWidget {
                 Column(
                   children: [
                     Image.network(
-                      vehicle.imageUrls.isNotEmpty
-                          ? vehicle.imageUrls[0]
+                      vehicle.imageUrl.isNotEmpty
+                          ? vehicle.imageUrl
                           : 'https://via.placeholder.com/150',
                       width: 110,
                       height: 110,

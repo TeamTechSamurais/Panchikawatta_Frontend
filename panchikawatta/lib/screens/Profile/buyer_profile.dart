@@ -18,6 +18,7 @@ class BuyerProfile extends StatefulWidget {
 
 class _BuyerProfileState extends State<BuyerProfile> {
   List<Vehicle> vehicles = [];
+  String errorMessage = '';
 
   @override
   void initState() {
@@ -47,18 +48,43 @@ class _BuyerProfileState extends State<BuyerProfile> {
 
   Future<void> fetchVehicles() async {
     if (globals.userId != null) {
-      final response = await http.get(
-        Uri.parse('http://10.0.2.2:8000/users/getVehicles/${globals.userId}'),
-      );
-      if (response.statusCode == 200) {
+      try {
+        final response = await http.get(
+          Uri.parse('http://10.0.2.2:8000/users/getVehicles/${globals.userId}'),
+        );
+
+        if (response.statusCode == 200) {
+          final List<dynamic> decodedBody = json.decode(response.body);
+          if (decodedBody.isEmpty) {
+            setState(() {
+              errorMessage = 'No vehicles found';
+              vehicles = [];
+            });
+          } else {
+            setState(() {
+              vehicles =
+                  decodedBody.map((json) => Vehicle.fromJson(json)).toList();
+              errorMessage =
+                  ''; // Clear the error message if vehicles are found
+            });
+          }
+        } else {
+          setState(() {
+            errorMessage = 'No vehicles registered';
+            vehicles = [];
+          });
+        }
+      } catch (e) {
         setState(() {
-          vehicles = List<Map<String, dynamic>>.from(json.decode(response.body))
-              .map((json) => Vehicle.fromJson(json))
-              .toList();
+          errorMessage = 'An error occurred: $e';
+          vehicles = [];
         });
-      } else {
-        throw Exception('Failed to load vehicles');
       }
+    } else {
+      setState(() {
+        errorMessage = 'User ID is null';
+        vehicles = [];
+      });
     }
   }
 
@@ -146,57 +172,72 @@ class _BuyerProfileState extends State<BuyerProfile> {
                 ],
               ),
             ),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: vehicles.length,
-              itemBuilder: (context, index) {
-                final vehicle = vehicles[index];
-                return Card(
-                  margin:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                  elevation: 3,
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.all(10),
-                    leading: vehicle.imageUrls.isNotEmpty
-                        ? Image.network(
-                            vehicle.imageUrls[0],
-                            width: 70,
-                            height: 50,
-                            fit: BoxFit.cover,
-                          )
-                        : const Icon(Icons.image_not_supported, size: 50),
-                    title: Text(
-                      '${vehicle.make} ${vehicle.model}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+            if (errorMessage.isNotEmpty)
+              Center(
+                child: Column(
+                  children: [
+                    SizedBox(height: 30),
+                    Text(
+                      errorMessage,
+                      style: TextStyle(
+                          color: const Color.fromARGB(255, 0, 0, 0),
+                          fontSize: 16),
+                    ),
+                  ],
+                ),
+              )
+            else
+              ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: vehicles.length,
+                itemBuilder: (context, index) {
+                  final vehicle = vehicles[index];
+                  return Card(
+                    margin:
+                        const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                    elevation: 3,
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.all(10),
+                      leading: vehicle.imageUrl.isNotEmpty
+                          ? Image.network(
+                              vehicle.imageUrl,
+                              width: 70,
+                              height: 50,
+                              fit: BoxFit.cover,
+                            )
+                          : const Icon(Icons.image_not_supported, size: 50),
+                      title: Text(
+                        '${vehicle.make} ${vehicle.model}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 5),
+                          Text(
+                            'Year: ${vehicle.year}',
+                            style: const TextStyle(fontSize: 15),
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            vehicle.nearestReminder != null
+                                ? vehicle.nearestReminder!.type
+                                : 'Not set',
+                            style: const TextStyle(
+                              fontSize: 15,
+                              color: Color.fromARGB(255, 105, 104, 104),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 5),
-                        Text(
-                          'Year: ${vehicle.year}',
-                          style: const TextStyle(fontSize: 15),
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          vehicle.nearestReminder != null
-                              ? vehicle.nearestReminder!.type
-                              : 'Not set',
-                          style: const TextStyle(
-                            fontSize: 15,
-                            color: Color.fromARGB(255, 105, 104, 104),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
+                  );
+                },
+              ),
           ],
         ),
       ),
