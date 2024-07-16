@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:panchikawatta/screens/app.dart';
 import 'package:panchikawatta/screens/search_page1.dart';
 
 class OrderPlacedSuccessfullyScreen extends StatelessWidget {
@@ -18,7 +19,7 @@ class OrderPlacedSuccessfullyScreen extends StatelessWidget {
               onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const search_page1(ads: [],)),
+                        MaterialPageRoute(builder: (context) => const MyHomePage()),
                       );
                     },
               child: Text('Leave', style: TextStyle(color: Colors.white)),

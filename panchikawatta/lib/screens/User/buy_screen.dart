@@ -9,6 +9,7 @@ import 'package:panchikawatta/services/get_api_services.dart';
 import 'package:panchikawatta/services/post_api_service.dart';
 import 'package:panchikawatta/models/sparepart.dart' as model;
 import 'package:card_swiper/card_swiper.dart';
+import 'package:panchikawatta/global/globals.dart' as globals;
 
 class BuyScreen extends StatefulWidget {
   final int sparePartId;
@@ -27,7 +28,7 @@ class _BuyScreenState extends State<BuyScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   User? get currentUser => _auth.currentUser;
-  int? get userId => 2;
+  int? get userId => globals.userId;
   final _firestore = FirebaseFirestore.instance;
   late String otherUserId = '';
   late String userDisplayName = '';
@@ -45,6 +46,7 @@ class _BuyScreenState extends State<BuyScreen> {
 
     // Verify the ID received
     print('Received Sparepart ID in BuyScreen: ${widget.sparePartId}');
+    print('User Id $userId');
 
     // Fetch the spare part using the received ID
     futureSparePart = GetApiService().getSparePartById(widget.sparePartId);
@@ -163,7 +165,11 @@ class _BuyScreenState extends State<BuyScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => BuyNowScreen()),
+                            builder: (context) => BuyNowScreen(
+                              userId: userId!,
+                            sparePartId: widget.sparePartId,
+                            ),
+                          ),
                         );
                       },
                       text: 'Buy it Now',
@@ -249,56 +255,60 @@ class _BuyScreenState extends State<BuyScreen> {
                                     const BoxConstraints(maxWidth: 180),
                                 child: Table(
                                   columnWidths: const {
-                                    0: FixedColumnWidth(100.0),
-                                    1: FlexColumnWidth(),
+                                    0: FixedColumnWidth(80),
+                                    1: FixedColumnWidth(100),
                                   },
-                                  defaultVerticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  children: [
+                                  children: const [
                                     TableRow(
                                       children: [
-                                        const Padding(
-                                          padding:
-                                              EdgeInsets.symmetric(vertical: 5),
-                                          child: Text('Title:'),
+                                        Text(
+                                          'Condition',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.black,
+                                          ),
                                         ),
-                                        Text(sparePart.title),
-                                      ],
-                                    ),
-                                    TableRow(
-                                      children: [
-                                        const Padding(
-                                          padding:
-                                              EdgeInsets.symmetric(vertical: 5),
-                                          child: Text('Price:'),
+                                        Text(
+                                          'New',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                            color: Colors.black,
+                                          ),
                                         ),
-                                        Text('Rs. ${sparePart.price}'),
-                                      ],
-                                    ),
-                                    TableRow(
-                                      children: [
-                                        const Padding(
-                                          padding:
-                                              EdgeInsets.symmetric(vertical: 5),
-                                          child: Text('Description:'),
-                                        ),
-                                        Text(sparePart.description),
-                                      ],
-                                    ),
-                                    TableRow(
-                                      children: [
-                                        const Padding(
-                                          padding:
-                                              EdgeInsets.symmetric(vertical: 5),
-                                          child: Text('Seller ID:'),
-                                        ),
-                                        Text('${sparePart.sellerId}'),
                                       ],
                                     ),
                                   ],
                                 ),
                               ),
                             ),
+                            const Divider(color: Colors.grey, thickness: 1),
+                            const SizedBox(height: 10),
+                            const Center(
+                              child: Text(
+                                'Description',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 30.0,
+                                vertical: 10,
+                              ),
+                              child: Text(
+                                sparePart.description,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                            const Divider(color: Colors.grey, thickness: 1),
                           ],
                         ),
                       ),
@@ -309,39 +319,6 @@ class _BuyScreenState extends State<BuyScreen> {
             );
           }
         },
-      ),
-    );
-  }
-
-  Widget TextDetail({required String title, required String value}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 1,
-            child: Text(
-              title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Color.fromARGB(255, 87, 87, 87),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 2,
-            child: Text(
-              value,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

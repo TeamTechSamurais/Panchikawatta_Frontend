@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
+import 'package:panchikawatta/global/globals.dart';
 import 'package:panchikawatta/models/vehicle.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -35,6 +36,7 @@ class _BuyerProfileState extends State<BuyerProfile> {
         final data = json.decode(response.body);
         setState(() {
           globals.userId = data['userId'];
+          print('User id: ${globals.userId}');
         });
         fetchVehicles(); // Once userId is fetched, fetch vehicles
       } else {
@@ -88,7 +90,7 @@ class _BuyerProfileState extends State<BuyerProfile> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  const WishlistScreen(userId: 1)),
+                                  WishlistScreen(userId: globals.userId!)),
                         );
                       },
                       text: 'Wishlist',
@@ -99,7 +101,8 @@ class _BuyerProfileState extends State<BuyerProfile> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => BuyerOrderScreen()),
+                              builder: (context) =>
+                                  BuyerOrderScreen(userId: globals.userId!)),
                         );
                       },
                       text: 'Orders',

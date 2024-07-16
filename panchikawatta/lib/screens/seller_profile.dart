@@ -4,11 +4,9 @@ import 'package:panchikawatta/screens/AdPost/adType.dart';
 import 'package:panchikawatta/screens/Order/seller_order.dart';
 import 'package:panchikawatta/screens/services_ads.dart';
 import 'package:panchikawatta/screens/spare_parts_ads.dart';
+import 'package:panchikawatta/global/globals.dart' as globals;
 
 class SellerProfile extends StatefulWidget {
-
-  // SellerProfile({required this.userId});
-
   @override
   _SellerProfile createState() => _SellerProfile();
 }
@@ -16,21 +14,12 @@ class SellerProfile extends StatefulWidget {
 class _SellerProfile extends State<SellerProfile>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  
-  get sellerId => 1;
-  // Future<Map<String, dynamic>>? _seller;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    // fetchSeller();
   }
-
-  // void fetchSeller() {
-  //   // Fetch the seller's data from the database
-  //   _seller =  ApiServices.getSellerById(widget.userId);
-  // }
 
   @override
   void dispose() {
@@ -59,7 +48,9 @@ class _SellerProfile extends State<SellerProfile>
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => SellerOrderScreen(sellerId: sellerId,)),
+                      MaterialPageRoute(
+                        builder: (context) => SellerOrderScreen(userId: globals.userId!),
+                      ),
                     );
                   },
                   text: 'View Orders'),

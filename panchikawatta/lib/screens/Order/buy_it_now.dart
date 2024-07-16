@@ -5,6 +5,11 @@ import 'package:panchikawatta/constant/utils.dart';
 import 'package:panchikawatta/screens/Order/info.dart';
 
 class BuyNowScreen extends StatefulWidget {
+  final int userId;
+  final int sparePartId;
+
+  BuyNowScreen({required this.userId, required this.sparePartId});
+
   @override
   _BuyNowScreenState createState() => _BuyNowScreenState();
 }
@@ -40,12 +45,14 @@ class _BuyNowScreenState extends State<BuyNowScreen> {
       headers: <String, String>{
         'Content-Type': 'application/json',
       },
-      body: jsonEncode(<String, String>{
+      body: jsonEncode(<String, dynamic>{
         'name': fullNameController.text,
         'email': email,
-        'phoneNO': phone,
+        'phoneNo': phone,
         'address': addressController.text,
         'deliveryMethod': _deliveryMethod,
+        'userId': widget.userId,             // Add userId to the request body
+        'sparePartId': widget.sparePartId,   // Add sparePartId to the request body
       }),
     );
 

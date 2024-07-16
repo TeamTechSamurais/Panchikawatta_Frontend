@@ -42,10 +42,10 @@ class GetApiService {
       throw Exception('Failed to load service');
     }
   }
-
-  Future<SparePart> getSparePartById(int id) async {
+ 
+  Future<SparePart> getSparePartById(int sparePartId) async {
     final response = await http
-        .get(Uri.parse('${Utils.baseUrl}/adListing/getSparepartById/$id'));
+        .get(Uri.parse('${Utils.baseUrl}/users/spare-parts/$sparePartId'));
 
     if (response.statusCode == 200) {
       Map<String, dynamic> data = jsonDecode(response.body);

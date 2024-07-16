@@ -1,11 +1,10 @@
-// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors
-
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/screens/Order/buyer_order.dart';
 import 'package:panchikawatta/screens/Order/wishlist.dart';
 import 'package:panchikawatta/screens/profile_page.dart';
 import 'package:panchikawatta/screens/User/vehicle_details.dart';
+import 'package:panchikawatta/global/globals.dart' as globals;
 
 class BuyerProfile extends StatelessWidget {
   @override
@@ -29,9 +28,8 @@ class BuyerProfile extends StatelessWidget {
         child: Column(
           children: [
             SizedBox(height: 20),
-            // Circular profile picture and name
             const CircleAvatar(
-              radius: 70, // Adjust radius as needed
+              radius: 70,
               backgroundImage: AssetImage('assets/images/profileImage.png'),
             ),
             SizedBox(height: 10),
@@ -72,10 +70,10 @@ class BuyerProfile extends StatelessWidget {
             SizedBox(height: 15),
             Padding(
               padding: EdgeInsets.fromLTRB(
-                MediaQuery.of(context).size.width * 0.1, // left
-                0, // top
-                MediaQuery.of(context).size.width * 0.1, // right
-                0, // bottom
+                MediaQuery.of(context).size.width * 0.1,
+                0,
+                MediaQuery.of(context).size.width * 0.1,
+                0,
               ),
               child: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.8,
@@ -85,11 +83,7 @@ class BuyerProfile extends StatelessWidget {
                     CustomButton(
                       onPressed: () {
                         print('Navigating to wishlist');
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //       builder: (context) => WishlistScreen(userId: 1)),
-                        // );
+                        // Implement navigation to wishlist with userId
                       },
                       text: 'Wishlist',
                     ),
@@ -99,7 +93,8 @@ class BuyerProfile extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => WishlistScreen(userId: 1)),
+                              builder: (context) =>
+                                  BuyerOrderScreen(userId: globals.userId!)),
                         );
                       },
                       text: 'Orders',
@@ -116,15 +111,13 @@ class BuyerProfile extends StatelessWidget {
                 thickness: 1,
               ),
             ),
-
             const SizedBox(height: 20),
-
             Padding(
               padding: EdgeInsets.fromLTRB(
-                MediaQuery.of(context).size.width * 0.1, // left
-                0, // top
-                MediaQuery.of(context).size.width * 0.1, // right
-                0, // bottom
+                MediaQuery.of(context).size.width * 0.1,
+                0,
+                MediaQuery.of(context).size.width * 0.1,
+                0,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -148,15 +141,14 @@ class BuyerProfile extends StatelessWidget {
                 ],
               ),
             ),
-
-            SizedBox(
-              //color: Colors.pink.shade100,
-              height: 1000,
-              child: VehicleDetails(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+            SizedBox
+(
+height: 1000,
+child: VehicleDetails(),
+),
+],
+),
+),
+);
+}
 }
