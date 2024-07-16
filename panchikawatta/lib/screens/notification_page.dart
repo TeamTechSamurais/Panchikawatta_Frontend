@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/screens/Notification/chat.dart';
 import 'package:panchikawatta/screens/Notification/reminder.dart';
+import 'package:panchikawatta/screens/chat_screen.dart';
 
 class NotificationPage extends StatelessWidget {
   const NotificationPage({super.key});
@@ -20,9 +21,9 @@ class NotificationPage extends StatelessWidget {
             tabs: [Tab(text: 'Chats'), Tab(text: 'Reminders')],
           ),
         ),
-        body: const TabBarView(
+        body: TabBarView(
           children: [
-            ChatsPage(),
+            ChatScreen(),
             ReminderPage(),
           ],
         ),

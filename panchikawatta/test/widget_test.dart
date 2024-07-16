@@ -8,8 +8,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:panchikawatta/main.dart';
 import 'package:panchikawatta/screens/app.dart';
 
 void main() {
