@@ -1,89 +1,122 @@
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
+import 'package:panchikawatta/models/vehicle.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:panchikawatta/global/globals.dart' as globals;
 import 'package:panchikawatta/screens/Order/buyer_order.dart';
 import 'package:panchikawatta/screens/Order/wishlist.dart';
-import 'package:panchikawatta/screens/profile_page.dart';
-import 'package:panchikawatta/screens/User/vehicle_details.dart';
-import 'package:panchikawatta/global/globals.dart' as globals;
 
-class BuyerProfile extends StatelessWidget {
+class BuyerProfile extends StatefulWidget {
+  final String? email;
+
+  BuyerProfile(this.email);
+
+  @override
+  _BuyerProfileState createState() => _BuyerProfileState();
+}
+
+class _BuyerProfileState extends State<BuyerProfile> {
+  List<Vehicle> vehicles = [];
+  String errorMessage = '';
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserIdByEmail();
+  }
+
+  Future<void> fetchUserIdByEmail() async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://10.0.2.2:8000/users/getidbyemail/${widget.email}'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          globals.userId = data['userId'];
+          print('User id: ${globals.userId}');
+        });
+        fetchVehicles(); // Once userId is fetched, fetch vehicles
+      } else {
+        throw Exception('Failed to load user ID');
+      }
+    } catch (e) {
+      print('Error fetching user ID: $e');
+    }
+  }
+
+  Future<void> fetchVehicles() async {
+    if (globals.userId != null) {
+      try {
+        final response = await http.get(
+          Uri.parse('http://10.0.2.2:8000/users/getVehicles/${globals.userId}'),
+        );
+
+        if (response.statusCode == 200) {
+          final List<dynamic> decodedBody = json.decode(response.body);
+          if (decodedBody.isEmpty) {
+            setState(() {
+              errorMessage = 'No vehicles found';
+              vehicles = [];
+            });
+          } else {
+            setState(() {
+              vehicles =
+                  decodedBody.map((json) => Vehicle.fromJson(json)).toList();
+              errorMessage =
+                  ''; // Clear the error message if vehicles are found
+            });
+          }
+        } else {
+          setState(() {
+            errorMessage = 'No vehicles registered';
+            vehicles = [];
+          });
+        }
+      } catch (e) {
+        setState(() {
+          errorMessage = 'An error occurred: $e';
+          vehicles = [];
+        });
+      }
+    } else {
+      setState(() {
+        errorMessage = 'User ID is null';
+        vehicles = [];
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'My Profile',
-          style: TextStyle(
-            color: Color(0xFFFF5C01),
-            fontSize: 27,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(height: 20),
-            const CircleAvatar(
-              radius: 70,
-              backgroundImage: AssetImage('assets/images/profileImage.png'),
-            ),
-            SizedBox(height: 10),
-            Text(
-              'Anne Fernando',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
             const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => BuyerProfile()),
-                    );
-                  },
-                  child: const Text('        Buyer',
-                      style: TextStyle(fontSize: 18, color: Color(0xFFFF5C01))),
-                ),
-                Text('|'),
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ProfilePage()),
-                    );
-                  },
-                  child: const Text('Seller        ',
-                      style: TextStyle(fontSize: 18, color: Color(0xFF757575))),
-                ),
-              ],
-            ),
-            SizedBox(height: 15),
             Padding(
               padding: EdgeInsets.fromLTRB(
-                MediaQuery.of(context).size.width * 0.1,
-                0,
-                MediaQuery.of(context).size.width * 0.1,
-                0,
+                MediaQuery.of(context).size.width * 0.1, // left
+                0, // top
+                MediaQuery.of(context).size.width * 0.1, // right
+                0, // bottom
               ),
-              child: SizedBox(
+              child: Container(
                 width: MediaQuery.of(context).size.width * 0.8,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     CustomButton(
                       onPressed: () {
                         print('Navigating to wishlist');
-                        // Implement navigation to wishlist with userId
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  WishlistScreen(userId: globals.userId!)),
+                        );
                       },
                       text: 'Wishlist',
                     ),
@@ -103,7 +136,7 @@ class BuyerProfile extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 25),
+            const SizedBox(height: 15),
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.9,
               child: const Divider(
@@ -114,10 +147,10 @@ class BuyerProfile extends StatelessWidget {
             const SizedBox(height: 20),
             Padding(
               padding: EdgeInsets.fromLTRB(
-                MediaQuery.of(context).size.width * 0.1,
-                0,
-                MediaQuery.of(context).size.width * 0.1,
-                0,
+                MediaQuery.of(context).size.width * 0.1, // left
+                0, // top
+                MediaQuery.of(context).size.width * 0.1, // right
+                0, // bottom
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -137,18 +170,79 @@ class BuyerProfile extends StatelessWidget {
                       // Add your button press logic here
                     },
                     text: "Add Vehicle",
-                  ),
+                  )
                 ],
               ),
             ),
-            SizedBox
-(
-height: 1000,
-child: VehicleDetails(),
-),
-],
-),
-),
-);
-}
+            if (errorMessage.isNotEmpty)
+              Center(
+                child: Column(
+                  children: [
+                    SizedBox(height: 30),
+                    Text(
+                      errorMessage,
+                      style: TextStyle(
+                          color: const Color.fromARGB(255, 0, 0, 0),
+                          fontSize: 16),
+                    ),
+                  ],
+                ),
+              )
+            else
+              ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: vehicles.length,
+                itemBuilder: (context, index) {
+                  final vehicle = vehicles[index];
+                  return Card(
+                    margin:
+                        const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                    elevation: 3,
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.all(10),
+                      leading: vehicle.imageUrl.isNotEmpty
+                          ? Image.network(
+                              vehicle.imageUrl,
+                              width: 70,
+                              height: 50,
+                              fit: BoxFit.cover,
+                            )
+                          : const Icon(Icons.image_not_supported, size: 50),
+                      title: Text(
+                        '${vehicle.make} ${vehicle.model}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 5),
+                          Text(
+                            'Year: ${vehicle.year}',
+                            style: const TextStyle(fontSize: 15),
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            vehicle.nearestReminder != null
+                                ? vehicle.nearestReminder!.type
+                                : 'Not set',
+                            style: const TextStyle(
+                              fontSize: 15,
+                              color: Color.fromARGB(255, 105, 104, 104),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+          ],
+        ),
+      ),
+    );
+  }
 }

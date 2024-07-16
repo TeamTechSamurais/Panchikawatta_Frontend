@@ -1,10 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:panchikawatta/screens/Order/stepper.dart';
 import 'package:panchikawatta/services/order_api_services.dart';
 
-class SellerOrderScreen extends StatelessWidget {
+class SellerOrderScreen extends StatefulWidget {
   final int userId;
 
   SellerOrderScreen({required this.userId});
+
+  @override
+  _SellerOrderScreenState createState() => _SellerOrderScreenState();
+}
+
+class _SellerOrderScreenState extends State<SellerOrderScreen> {
+  late Future<List<Map<String, dynamic>>> _futureOrders;
+
+  @override
+  void initState() {
+    super.initState();
+    _futureOrders = ApiService.getSellerOrdersByUserId(widget.userId);
+  }
+
+  void _refreshOrders() {
+    setState(() {
+      _futureOrders = ApiService.getSellerOrdersByUserId(widget.userId);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +34,7 @@ class SellerOrderScreen extends StatelessWidget {
         backgroundColor: Color(0xFFFF5C01),
       ),
       body: FutureBuilder(
-        future: ApiService.getSellerOrdersByUserId(userId),
+        future: _futureOrders,
         builder: (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -26,7 +46,11 @@ class SellerOrderScreen extends StatelessWidget {
               itemCount: orders.length,
               itemBuilder: (context, index) {
                 final order = orders[index];
-                return OrderCard(order: order, userId: userId);
+                return OrderCard(
+                  order: order,
+                  userId: widget.userId,
+                  onStatusChanged: _refreshOrders,
+                );
               },
             );
           }
@@ -39,8 +63,9 @@ class SellerOrderScreen extends StatelessWidget {
 class OrderCard extends StatelessWidget {
   final Map<String, dynamic> order;
   final int userId;
+  final VoidCallback onStatusChanged;
 
-  OrderCard({required this.order, required this.userId});
+  OrderCard({required this.order, required this.userId, required this.onStatusChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -54,11 +79,11 @@ class OrderCard extends StatelessWidget {
             Text('Order ID: ${order['orderId']}'),
             Text('Title: ${order['sparePart']['title']}'),
             OrderStatusStepper(status: order['status']),
-            if (order['status'] == 'Processing')
+            if (order['status'] == 'Completed')
               ElevatedButton(
                 onPressed: () async {
                   await ApiService.markOrderAsDispatched(order['orderId'], userId);
-                  // Implement logic to refresh the list
+                  onStatusChanged();
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Color(0xFFFF5C01)),
                 child: Text('Mark as Dispatched'),
@@ -66,51 +91,6 @@ class OrderCard extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class OrderStatusStepper extends StatelessWidget {
-  final String status;
-
-  OrderStatusStepper({required this.status});
-
-  @override
-  Widget build(BuildContext context) {
-    int currentStep;
-    if (status == 'Processing') {
-      currentStep = 0;
-    } else if (status == 'Dispatched') {
-      currentStep = 1;
-    } else {
-      currentStep = 2;
-    }
-
-    return Stepper(
-      currentStep: currentStep,
-      steps: [
-        Step(
-          title: Text('Processing'),
-          content: Container(),
-          isActive: currentStep >= 0,
-          state: currentStep > 0 ? StepState.complete : StepState.indexed,
-        ),
-        Step(
-          title: Text('Dispatched'),
-          content: Container(),
-          isActive: currentStep >= 1,
-          state: currentStep > 1 ? StepState.complete : StepState.indexed,
-        ),
-        Step(
-          title: Text('Delivered'),
-          content: Container(),
-          isActive: currentStep >= 2,
-          state: currentStep == 2 ? StepState.complete : StepState.indexed,
-        ),
-      ],
-      controlsBuilder: (BuildContext context, ControlsDetails details) {
-        return Container();
-      },
     );
   }
 }
