@@ -1,6 +1,6 @@
 name: panchikawatta
 description: "A new Flutter project."
-publish_to: 'none' 
+publish_to: 'none'
 
 version: 1.0.0+1
 
@@ -15,7 +15,7 @@ dependencies:
   card_swiper: ^3.0.1
   flutter_otp_text_field: ^1.1.3+2
   carousel_slider: ^4.2.1
-  image_picker: ^1.1.1
+  image_picker: ^0.8.4+13
   http: ^1.2.1
   firebase_auth: ^5.0.0
   firebase_core: ^3.0.0
@@ -24,8 +24,8 @@ dependencies:
   firebase_messaging: ^15.0.3
   intl: ^0.19.0
   image_cropper: ^7.0.5
-  shared_preferences: any
-  fluttertoast: any
+  shared_preferences: ^2.0.15
+  fluttertoast: ^8.0.9
   badges: ^3.0.2
   firebase_app_check: ^0.3.0+3
   email_validator: ^2.0.1
@@ -33,6 +33,7 @@ dependencies:
   googleapis_auth: ^1.6.0
   flutter_local_notifications: ^17.2.1+1
   url_launcher: ^6.3.0
+  youtube_player_flutter: ^8.0.0
 
 dev_dependencies:
   flutter_test:
@@ -47,9 +48,9 @@ flutter:
     - assets/warning_lights/
     - lib/assets/profilePicture.jpg
     - lib/assets/vehicleDetails.jpeg
-    - lib/src/img/orange logo 1.png
+    - lib/src/img/orange_logo_1.png
     - lib/src/img/profile.png
     - lib/src/img/uploadicon.png
     - lib/src/img/Whitelogo2.png
     - lib/src/img/vehicleDetails.jpeg
-    - lib/src/img/Success.png 
+    - lib/src/img/Success.png

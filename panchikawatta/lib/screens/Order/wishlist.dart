@@ -15,6 +15,7 @@ class WishlistScreen extends StatefulWidget {
 
 class _WishlistScreenState extends State<WishlistScreen> {
   late Future<List<SparePart>> _favorites;
+  TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -22,19 +23,25 @@ class _WishlistScreenState extends State<WishlistScreen> {
     _favorites = fetchFavorites(widget.userId);
   }
 
-Future<List<SparePart>> fetchFavorites(int userId) async {
-  var url = Uri.parse('${Utils.baseUrl}/adListing/favorites/$userId');
-  var response = await http.get(url);
+  Future<List<SparePart>> fetchFavorites(int userId, [String? keyword]) async {
+    var url = Uri.parse('${Utils.baseUrl}/adListing/favorites/$userId${keyword != null && keyword.isNotEmpty ? '/search?keyword=$keyword' : ''}');
+    var response = await http.get(url);
 
-  if (response.statusCode == 200) {
-    print(response.body); // Log the body to debug
-    List<dynamic> body = jsonDecode(response.body);
-    List<SparePart> spareParts = body.map((dynamic item) => SparePart.fromJson(item['sparePart'])).toList();
-    return spareParts;
-  } else {
-    throw Exception('Failed to load favorites');
+    if (response.statusCode == 200) {
+      print(response.body); // Log the body to debug
+      List<dynamic> body = jsonDecode(response.body);
+      List<SparePart> spareParts = body.map((dynamic item) => SparePart.fromJson(item['sparePart'])).toList();
+      return spareParts;
+    } else {
+      throw Exception('Failed to load favorites');
+    }
   }
-}
+
+  void _searchFavorites() {
+    setState(() {
+      _favorites = fetchFavorites(widget.userId, _searchController.text);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,13 +66,18 @@ Future<List<SparePart>> fetchFavorites(int userId) async {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
+              controller: _searchController,
               decoration: InputDecoration(
                 labelText: "Search",
-                suffixIcon: Icon(Icons.search),
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.search),
+                  onPressed: _searchFavorites,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
+              onSubmitted: (value) => _searchFavorites(),
             ),
           ),
           Expanded(
