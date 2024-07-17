@@ -19,7 +19,7 @@ class _ChatScreenState extends State<ChatScreen> {
   String? currentUserId;
   final _auth = FirebaseAuth.instance;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  List<String> selectedChatRooms = [];  
+  List<String> selectedChatRooms = [];
 
   String chatRoomId(String user1, String user2) {
     List<String> users = [user1, user2];
@@ -31,9 +31,11 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     //This function will call when the _buildSearchResults() widget is loaded
     super.initState();
-    currentUserId = FirebaseAuth.instance.currentUser!.uid;  //Get the current user's id
+    currentUserId =
+        FirebaseAuth.instance.currentUser!.uid; //Get the current user's id
 
-    _searchController.addListener(() {  //Listen to the changes in the search field. This will call every time the searchText change
+    _searchController.addListener(() {
+      //Listen to the changes in the search field. This will call every time the searchText change
 
       if (_searchController.text.isEmpty) {
         return; //If the search field is empty, do nothing.
@@ -55,7 +57,7 @@ class _ChatScreenState extends State<ChatScreen> {
   // void onSearch(String searchText) async {
   //   await _firestore
   //   .collection('users')
-  //   .where('email', isGreaterThanOrEqualTo: searchText) 
+  //   .where('email', isGreaterThanOrEqualTo: searchText)
   //   .where('email', isLessThan: searchText + 'z')   //The 'z' is added to the searchText to ensure that all possible strings that start with searchText are included in the results.
   //   .get()
   //   .then((value) {
@@ -75,8 +77,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void onSearch(String searchText) async {
     // Retrieve the current user's chat rooms
-    DocumentSnapshot userSnapshot = await _firestore.collection('users').doc(currentUserId).get();
-    List<Map<String, dynamic>> chatRooms = List<Map<String, dynamic>>.from((userSnapshot.data() as Map<String, dynamic>)['chatRooms']);
+    DocumentSnapshot userSnapshot =
+        await _firestore.collection('users').doc(currentUserId).get();
+    List<Map<String, dynamic>> chatRooms = List<Map<String, dynamic>>.from(
+        (userSnapshot.data() as Map<String, dynamic>)['chatRooms']);
 
     List<Map<String, dynamic>> searchResults = [];
 
@@ -85,8 +89,10 @@ class _ChatScreenState extends State<ChatScreen> {
       String otherUserId = chatRoom['otherUid'];
 
       // Retrieve the other user's document from the users collection
-      DocumentSnapshot otherUserSnapshot = await _firestore.collection('users').doc(otherUserId).get();
-      String displayName = (otherUserSnapshot.data() as Map<String, dynamic>)['name'];
+      DocumentSnapshot otherUserSnapshot =
+          await _firestore.collection('users').doc(otherUserId).get();
+      String displayName =
+          (otherUserSnapshot.data() as Map<String, dynamic>)['name'];
 
       // Check if the display name starts with the search text
       if (displayName.toLowerCase().startsWith(searchText.toLowerCase())) {
@@ -110,10 +116,13 @@ class _ChatScreenState extends State<ChatScreen> {
       // await _firestore.collection('chatRoom').doc(chatRoomId).delete();
 
       // Remove chat room from current user's chatRooms field
-      DocumentSnapshot currentUserSnapshot = await _firestore.collection('users').doc(currentUserId).get();
-      Map<String, dynamic> currentUserData = currentUserSnapshot.data() as Map<String, dynamic>;
+      DocumentSnapshot currentUserSnapshot =
+          await _firestore.collection('users').doc(currentUserId).get();
+      Map<String, dynamic> currentUserData =
+          currentUserSnapshot.data() as Map<String, dynamic>;
       List<dynamic> currentUserChatRooms = currentUserData['chatRooms'];
-      var chatRoomToRemove = currentUserChatRooms.firstWhere((chatRoom) => chatRoom['chatRoomId'] == chatRoomId);
+      var chatRoomToRemove = currentUserChatRooms
+          .firstWhere((chatRoom) => chatRoom['chatRoomId'] == chatRoomId);
 
       await _firestore.collection('users').doc(currentUserId).update({
         'chatRooms': FieldValue.arrayRemove([chatRoomToRemove]),
@@ -154,36 +163,37 @@ class _ChatScreenState extends State<ChatScreen> {
       );
     }
 
-    return ListView.builder(  //A scrollable list of widgets that are created on demand.
-      itemCount: searchResults?.length ?? 0, 
-      itemBuilder: (context, index) {   //The itemBuilder function is called for each item in the list.
+    return ListView.builder(
+      //A scrollable list of widgets that are created on demand.
+      itemCount: searchResults?.length ?? 0,
+      itemBuilder: (context, index) {
+        //The itemBuilder function is called for each item in the list.
         if (index < results.length) {
-          final String roomId = chatRoomId(_auth.currentUser!.uid, results[index]['uid']);
+          final String roomId =
+              chatRoomId(_auth.currentUser!.uid, results[index]['uid']);
 
-              return _buildChatTile(
-                chatRoomId: roomId, 
-                otherUserId: results[index]['uid'], 
-                userDisplayName: results[index]['name'], 
-                userDisplayPicture: results[index]['profile_picture'] ?? '', 
-                unreadMessages: results[index]['unreadMessages'] ?? 0, 
-                isSelected: selectedChatRooms.contains(roomId), 
-                onSelect: (isSelected) {
-                  setState(() {
-                    if (isSelected) {
-                      selectedChatRooms.add(roomId);
-                    } else {
-                      selectedChatRooms.remove(roomId);
-                    }
-                  });
-                }
-              );
+          return _buildChatTile(
+              chatRoomId: roomId,
+              otherUserId: results[index]['uid'],
+              userDisplayName: results[index]['name'],
+              userDisplayPicture: results[index]['profile_picture'] ?? '',
+              unreadMessages: results[index]['unreadMessages'] ?? 0,
+              isSelected: selectedChatRooms.contains(roomId),
+              onSelect: (isSelected) {
+                setState(() {
+                  if (isSelected) {
+                    selectedChatRooms.add(roomId);
+                  } else {
+                    selectedChatRooms.remove(roomId);
+                  }
+                });
+              });
         } else {
           return Container();
         }
       },
     );
   }
-
 
   Widget _buildChatTile({
     required String chatRoomId,
@@ -251,9 +261,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   backgroundImage: userDisplayPicture.isEmpty
                       ? null
                       : NetworkImage(userDisplayPicture),
-                  child: userDisplayPicture.isEmpty
-                      ? Icon(Icons.person)
-                      : null,
+                  child: userDisplayPicture.isEmpty ? Icon(Icons.person) : null,
                 ),
                 title: Text(userDisplayName),
                 subtitle: Text(
@@ -283,12 +291,12 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<String> getLastMessage(String chatRoomId) async {
     final querySnapshot = await _firestore
-      .collection('chatRoom')
-      .doc(chatRoomId)
-      .collection('chats')
-      .orderBy('time', descending: true)
-      .limit(1)
-      .get();
+        .collection('chatRoom')
+        .doc(chatRoomId)
+        .collection('chats')
+        .orderBy('time', descending: true)
+        .limit(1)
+        .get();
 
     if (querySnapshot.docs.isNotEmpty) {
       return querySnapshot.docs.first['message'] ?? '';
@@ -430,22 +438,22 @@ class _ChatScreenState extends State<ChatScreen> {
                               // final lastMessage = chatDocs.first;
 
                               return FutureBuilder<DocumentSnapshot>(
-                                  future: _firestore
-                                      .collection('users')
-                                      .doc(otherUserId)
-                                      .get(),
-                                  builder: (context, userSnapshot) {
-                                    // if (userSnapshot.connectionState == ConnectionState.waiting) { // && userSnapshot.hasData) {
-                                    //   return const Center(
-                                    //     child: CircularProgressIndicator(),
-                                    //   );
-                                    // }
+                                future: _firestore
+                                    .collection('users')
+                                    .doc(otherUserId)
+                                    .get(),
+                                builder: (context, userSnapshot) {
+                                  // if (userSnapshot.connectionState == ConnectionState.waiting) { // && userSnapshot.hasData) {
+                                  //   return const Center(
+                                  //     child: CircularProgressIndicator(),
+                                  //   );
+                                  // }
 
-                                    if (userSnapshot.hasError) {
-                                      return const Center(
-                                        child: Text('An error occurred'),
-                                      );
-                                    }
+                                  if (userSnapshot.hasError) {
+                                    return const Center(
+                                      child: Text('An error occurred'),
+                                    );
+                                  }
 
                                     final otherUserId = chatRoomMap?['otherUid'] as String? ?? 'defaultUserId';
 
@@ -466,51 +474,79 @@ class _ChatScreenState extends State<ChatScreen> {
                         return const SizedBox.shrink();
                       }
 
-                        return FutureBuilder<DocumentSnapshot>(
-                          future: _firestore.collection('users').doc(otherUserId).get(), 
-                          builder: (context, userSnapshot) {
+                                        return FutureBuilder<DocumentSnapshot>(
+                                            future: _firestore
+                                                .collection('users')
+                                                .doc(otherUserId)
+                                                .get(),
+                                            builder: (context, userSnapshot) {
+                                              if (userSnapshot.hasError) {
+                                                return const Center(
+                                                  child:
+                                                      Text('An error occurred'),
+                                                );
+                                              }
 
-                            if (userSnapshot.hasError) {
-                              return const Center(
-                                child: Text('An error occurred'),
-                              );
-                            }
+                                              if (!userSnapshot.hasData ||
+                                                  !userSnapshot.data!.exists) {
+                                                return const SizedBox.shrink();
+                                              }
 
-                            if (!userSnapshot.hasData || !userSnapshot.data!.exists) {
-                              return const SizedBox.shrink();
-                            }
+                                              final data =
+                                                  userSnapshot.data?.data();
+                                              final userDisplayName = data
+                                                      is Map<String, dynamic>
+                                                  ? data['name'] as String? ??
+                                                      'defaultName'
+                                                  : 'defaultname';
+                                              final userDisplayPicture =
+                                                  data is Map<String, dynamic>
+                                                      ? data['profile_picture']
+                                                              as String? ??
+                                                          ''
+                                                      : '';
 
-                              final data = userSnapshot.data?.data() ;
-                              final userDisplayName =  data is Map<String, dynamic> ? data['name'] as String? ?? 'defaultName' : 'defaultname' ; 
-                              final userDisplayPicture = data is Map<String, dynamic> ? data['profile_picture'] as String? ?? '' : '' ; 
-
-                              return _buildChatTile(
-                                chatRoomId: chatRoomId!,
-                                otherUserId: otherUserId,
-                                userDisplayName: userDisplayName,
-                                userDisplayPicture: userDisplayPicture,
-                                unreadMessages: (chatRoomMap?['unreadMessages'] ?? {})[_auth.currentUser!.uid] ?? 0,
-                                isSelected: selectedChatRooms.contains(chatRoomId),
-                                onSelect: (isSelected) {
-                                  setState(() {
-                                    if (isSelected) {
-                                      selectedChatRooms.add(chatRoomId!);
-                                    } else {
-                                      selectedChatRooms.remove(chatRoomId);
-                                    }
-                                  });
+                                              return _buildChatTile(
+                                                chatRoomId: chatRoomId!,
+                                                otherUserId: otherUserId,
+                                                userDisplayName:
+                                                    userDisplayName,
+                                                userDisplayPicture:
+                                                    userDisplayPicture,
+                                                unreadMessages: (chatRoomMap?[
+                                                                'unreadMessages'] ??
+                                                            {})[
+                                                        _auth.currentUser!
+                                                            .uid] ??
+                                                    0,
+                                                isSelected: selectedChatRooms
+                                                    .contains(chatRoomId),
+                                                onSelect: (isSelected) {
+                                                  setState(() {
+                                                    if (isSelected) {
+                                                      selectedChatRooms
+                                                          .add(chatRoomId!);
+                                                    } else {
+                                                      selectedChatRooms
+                                                          .remove(chatRoomId);
+                                                    }
+                                                  });
+                                                },
+                                              );
+                                            });
+                                      });
                                 },
                               );                              
                           }
                         );
                     }
                   );
-                                  },
-                              ); 
-                            }
-                        );
-                      },
-                    );
+                    //               },
+                    //           ); 
+                    //         }
+                    //     );
+                    //   },
+                    // );
             } else if (snapshot.hasError) {
               return const Center(
                 child: Text('An error occurred'),

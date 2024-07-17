@@ -24,7 +24,7 @@ class Vehicle {
   final String lastServiceDate;
   final String make;
   final String type;
-  final List<String> imageUrls;
+  String imageUrl;
   final NearestReminder? nearestReminder;
 
   Vehicle({
@@ -39,7 +39,7 @@ class Vehicle {
     required this.lastServiceDate,
     required this.make,
     required this.type,
-    required this.imageUrls,
+    required this.imageUrl,
     required this.nearestReminder,
   });
 
@@ -56,7 +56,7 @@ class Vehicle {
       lastServiceDate: json['lastServiceDate'],
       make: json['make'],
       type: json['type'],
-      imageUrls: List<String>.from(json['imageUrls']),
+      imageUrl: json['imageUrl'],
       nearestReminder: json['nearestReminder'] != null
           ? NearestReminder.fromJson(json['nearestReminder'])
           : null,
