@@ -9,6 +9,7 @@ import 'package:panchikawatta/global/common/toast.dart';
 import 'package:panchikawatta/main.dart';
 import 'package:panchikawatta/rest/rest_api.dart';
 import 'package:panchikawatta/screens/Profile/forgetpassword1.dart';
+import 'package:panchikawatta/screens/SignUp/admin.dart';
 import 'package:panchikawatta/screens/SignUp/sign_up1.dart';
 import 'package:panchikawatta/screens/SplashScreen.dart';
 //import 'package:panchikawatta/screens/app.dart';
@@ -231,10 +232,10 @@ class _LoginState extends State<login> {
     // Check if the login attempt is for an admin
     if (email == 'hiruni@gmail.com' && password == 'Hiruni@123') {
       // Admin login logic
-      // showToast(message: "Admin login successful");
+      showToast(message: "Admin login successful");
       // Navigator.push(
       //   context,
-      //   MaterialPageRoute(builder: (context) => sign_up1()), // Navigate to Admin Home Page
+      //   MaterialPageRoute(builder: (context) =>  AdminPage()), // Navigate to Admin Home Page
       // );
     } else {
       // Regular user login logic

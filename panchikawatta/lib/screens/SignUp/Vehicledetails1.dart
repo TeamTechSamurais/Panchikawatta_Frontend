@@ -419,6 +419,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:panchikawatta/screens/auth_functions.dart';
+import 'package:panchikawatta/screens/login.dart';
  
 FirebaseAuth _auth = FirebaseAuth.instance;
 FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -773,13 +774,13 @@ Future<String> uploadVehiclePhoto(String uid, String imagePath) async {
                       children: [
                         CustomButton(
                           onPressed: () {
-                            int vehicleId = widget.vehicleId;
-                            final userId = widget.userId;
+                            
+                            
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => Vehicledetails2(
-                                      vehicleId: vehicleId, userId: userId)),
+                                  builder: (context) => login(
+                                       )),
                             );
                           },
                           text: 'Skip',

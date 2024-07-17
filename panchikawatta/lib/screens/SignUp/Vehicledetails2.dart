@@ -228,8 +228,9 @@ class _Vehicledetails2State extends State<Vehicledetails2> {
 
     // Prepare data to be sent to the server
     Map<String, dynamic> userData = {
+      
       'vehicleId': widget.vehicleId,
-      'mileagePerWeek': mileage,
+      'milagePerWeek': mileage,
       'lastServiceDate': lastServiceDateController.text.trim(),
        'batteryCondition': selectedBatteryCondition ?? '',
       // Add other necessary fields here
