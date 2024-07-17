@@ -31,7 +31,7 @@ class SparePart {
 
   factory SparePart.fromJson(Map<String, dynamic> json) {
     return SparePart(
-      id: json['sparePartId'] ?? 0,
+      id: json['sparePartId'],
       sellerId: json['sellerId'] ?? 0,
       title: json['title'] ?? '',
       description: json['description'] ?? '',

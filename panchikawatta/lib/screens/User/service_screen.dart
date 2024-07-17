@@ -1,5 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/models/service.dart';
+import 'package:panchikawatta/services/api_service.dart';
+import 'package:panchikawatta/screens/chat_room.dart';
 import 'package:panchikawatta/services/get_api_services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -14,13 +18,60 @@ class ServiceScreen extends StatefulWidget {
 
 class _ServiceScreenState extends State<ServiceScreen> {
   late Future<Service> futureService;
-  final double _padding = 20.0;
+  final double _padding = 20.0; // Define common padding value
+  final _firestore = FirebaseFirestore.instance;
+  late String otherUserId = '';
+  late String userDisplayName = '';
+  late String? userDisplayPicture = '';
+  final _auth = FirebaseAuth.instance;
+
+  // String chatRoomId(String user1, String user2) {
+  //   List<String> users = [user1, user2];
+  //   users.sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+  //   return users.join("");
+  // }
+  String chatRoomId(String user1, String user2, int sparePartId) {
+    // Create a list with user1 and user2
+    List<String> users = [user1, user2];
+
+    // Sort the list to ensure a consistent order
+    users.sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+
+    // Add the sparePartId to the end of the list as a string
+    users.add(sparePartId.toString());
+
+    // Join the elements to form the chatRoomId
+    return users.join("_");
+  }
 
   @override
   void initState() {
     super.initState();
     print('ServiceScreen serviceId: ${widget.serviceId}');
     futureService = GetApiService().getServiceById(widget.serviceId);
+  }
+
+  Future<void> _fetchUser(int sellerId) async {
+    print('Seller ID: $sellerId');
+    final Map<String, dynamic> seller = await ApiServices.getUserById(sellerId);
+    final sellerEmail = seller['email'];
+
+    final querySnapshot = await _firestore
+        .collection('users')
+        .where('email', isEqualTo: sellerEmail)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      final doc = querySnapshot.docs.first;
+
+      setState(() {
+        otherUserId = doc.id;
+        userDisplayName = doc['name'];
+        userDisplayPicture = doc['profile_picture'];
+      });
+    } else {
+      print('User not found');
+    }
   }
 
   @override
@@ -160,7 +211,31 @@ class _ServiceScreenState extends State<ServiceScreen> {
                       const SizedBox(width: 30),
                       GestureDetector(
                         onTap: () async {
-                          // Implement chat functionality similar to BuyScreen if required
+                          final sellerId = service.id;
+
+                          await _fetchUser(sellerId);
+
+                          String roomId = chatRoomId(
+                            _auth.currentUser!.uid,
+                            otherUserId,
+                            service.id,
+                          );
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ChatRoom(
+                                chatRoomId: roomId,
+                                userMap: {
+                                  'uid': otherUserId,
+                                  'name': userDisplayName,
+                                  'profile_picture': userDisplayPicture,
+                                  'title': service.title,
+                                  'sparePartId': service.id,
+                                },
+                              ),
+                            ),
+                          );
                         },
                         child: const Icon(Icons.mail_rounded,
                             color: Color(0xFFFF5C01), size: 35),

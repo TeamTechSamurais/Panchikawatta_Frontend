@@ -37,10 +37,23 @@ class _BuyScreenState extends State<BuyScreen> {
   late String userDisplayName = '';
   late String? userDisplayPicture = '';
 
-  String chatRoomId(String user1, String user2) {
+  // String chatRoomId(String user1, String user2) {
+  //   List<String> users = [user1, user2];
+  //   users.sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+  //   return users.join("");
+  // }
+  String chatRoomId(String user1, String user2, int sparePartId) {
+    // Create a list with user1 and user2
     List<String> users = [user1, user2];
+
+    // Sort the list to ensure a consistent order
     users.sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
-    return users.join("");
+
+    // Add the sparePartId to the end of the list as a string
+    users.add(sparePartId.toString());
+
+    // Join the elements to form the chatRoomId
+    return users.join("_");
   }
 
   @override
@@ -56,20 +69,21 @@ class _BuyScreenState extends State<BuyScreen> {
   }
 
   Future<void> _fetchUser(int sellerId) async {
-    final seller = await ApiServices.getUserById(sellerId);
+    print('Seller ID: $sellerId');
+    final Map<String, dynamic> seller = await ApiServices.getUserById(sellerId);
     final sellerEmail = seller['email'];
 
     final querySnapshot = await _firestore
-        .collection('user')
+        .collection('users')
         .where('email', isEqualTo: sellerEmail)
         .get();
 
     if (querySnapshot.docs.isNotEmpty) {
       final doc = querySnapshot.docs.first;
       setState(() {
-        otherUserId = doc['uid'];
-        userDisplayName = doc['displayName'];
-        userDisplayPicture = doc['photoUrl'];
+        otherUserId = doc.id;
+        userDisplayName = doc['name'];
+        userDisplayPicture = doc['profile_picture'];
       });
     } else {
       print('User not found');
@@ -205,11 +219,19 @@ class _BuyScreenState extends State<BuyScreen> {
                       const SizedBox(width: 100),
                       GestureDetector(
                         onTap: () async {
-                          final sellerId = sparePart.sellerId;
-                          await _fetchUser(sellerId);
+                          final sellerId = sparePart
+                              .sellerId; // Get the seller ID from the spare part table
+                          await _fetchUser(
+                              sellerId); // Fetch the user ID from the firestore
 
-                          String roomId =
-                              chatRoomId(_auth.currentUser!.uid, otherUserId);
+                          // Generate chat room ID
+                          String roomId = chatRoomId(
+                            _auth.currentUser!.uid,
+                            otherUserId,
+                            sparePart.id,
+                          );
+
+                          // Navigate to the chat room
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (_) => ChatRoom(
@@ -217,7 +239,9 @@ class _BuyScreenState extends State<BuyScreen> {
                                 userMap: {
                                   'uid': otherUserId,
                                   'name': userDisplayName,
-                                  'profile_picture': userDisplayPicture
+                                  'title': sparePart.title,
+                                  'profile_picture': userDisplayPicture,
+                                  'sparePartId': sparePart.id,
                                 },
                               ),
                             ),

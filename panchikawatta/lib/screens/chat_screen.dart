@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/input_fields.dart';
 import 'package:panchikawatta/screens/chat_room.dart';
@@ -16,25 +15,36 @@ class _ChatScreenState extends State<ChatScreen> {
   bool _isSelecting = false;
   final FocusNode _searchfocusNode = FocusNode();
   final TextEditingController _searchController = TextEditingController();
-  List<Map<String, dynamic>>? searchResults =
-      []; //Empty list of maps, where each map has string keys and values of any type (dynamic).
+  List<Map<String, dynamic>>? searchResults = []; //Empty list of maps, where each map has string keys and values of any type (dynamic).
   String? currentUserId;
   final _auth = FirebaseAuth.instance;
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   List<String> selectedChatRooms = [];
 
-  String chatRoomId(String user1, String user2) {
+  // String chatRoomId(String user1, String user2) {
+  //   List<String> users = [user1, user2];
+  //   users.sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+  //   return users.join("");
+  // }
+  String chatRoomId(String user1, String user2, int sparePartId) {
+    // Create a list with user1 and user2
     List<String> users = [user1, user2];
+    
+    // Sort the list to ensure a consistent order
     users.sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
-    return users.join("");
+    
+    // Add the sparePartId to the end of the list as a string
+    users.add(sparePartId.toString());
+    
+    // Join the elements to form the chatRoomId
+    return users.join("_");
   }
 
   @override
   void initState() {
     //This function will call when the _buildSearchResults() widget is loaded
     super.initState();
-    currentUserId =
-        FirebaseAuth.instance.currentUser!.uid; //Get the current user's id
+    currentUserId = FirebaseAuth.instance.currentUser!.uid; //Get the current user's id
 
     _searchController.addListener(() {
       //Listen to the changes in the search field. This will call every time the searchText change
@@ -42,8 +52,7 @@ class _ChatScreenState extends State<ChatScreen> {
       if (_searchController.text.isEmpty) {
         return; //If the search field is empty, do nothing.
       } else {
-        onSearch(_searchController
-            .text); //If the search field is not empty, call the onSearch function.
+        onSearch(_searchController.text); //If the search field is not empty, call the onSearch function.
       }
     });
   }
@@ -51,50 +60,24 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void dispose() {
     //This function will call when the _buildSearchResults() widget is disposed/permanently removed from the screen
-    _searchController
-        .dispose(); //cleans up the resources used by _searchController.
+    _searchController.dispose(); //cleans up the resources used by _searchController.
     super.dispose();
   }
 
-  // void onSearch(String searchText) async {
-  //   await _firestore
-  //   .collection('users')
-  //   .where('email', isGreaterThanOrEqualTo: searchText)
-  //   .where('email', isLessThan: searchText + 'z')   //The 'z' is added to the searchText to ensure that all possible strings that start with searchText are included in the results.
-  //   .get()
-  //   .then((value) {
-  //     setState(() {
-  //       searchResults = value.docs  //Access the docs property of the value object. This property is a list of all the documents returned by a Firestore query.
-  //       .map((doc) => {'uid' : doc.id, ...doc.data(),}) //A method that transforms each item in the list. For each document (doc), it calls the data() method, which returns a Map<String, dynamic> representing the data in the document.
-  //       // .where((user) => user['uid'] != currentUserId)  //A method that filters the list. It removes the current user from the search results.
-  //       .toList();  //A method that converts the result of the map operation (which is an Iterable) back into a List.
-  //     });
-  //     print (searchResults);
-  //   });
-
-  //   setState(() {
-  //     searchResults = searchResults!.where((user) => user['uid'] != currentUserId).toList();
-  //   });
-  // }
-
   void onSearch(String searchText) async {
     // Retrieve the current user's chat rooms
-    DocumentSnapshot userSnapshot =
-        await _firestore.collection('users').doc(currentUserId).get();
+    DocumentSnapshot userSnapshot =  await _firestore.collection('users').doc(currentUserId).get();
     List<Map<String, dynamic>> chatRooms = List<Map<String, dynamic>>.from(
         (userSnapshot.data() as Map<String, dynamic>)['chatRooms']);
 
     List<Map<String, dynamic>> searchResults = [];
 
     for (var chatRoom in chatRooms) {
-      // String chatRoomId = chatRoom['chatRoomId'];
       String otherUserId = chatRoom['otherUid'];
 
       // Retrieve the other user's document from the users collection
-      DocumentSnapshot otherUserSnapshot =
-          await _firestore.collection('users').doc(otherUserId).get();
-      String displayName =
-          (otherUserSnapshot.data() as Map<String, dynamic>)['name'];
+      DocumentSnapshot otherUserSnapshot = await _firestore.collection('users').doc(otherUserId).get();
+      String displayName = (otherUserSnapshot.data() as Map<String, dynamic>)['name'];
 
       // Check if the display name starts with the search text
       if (displayName.toLowerCase().startsWith(searchText.toLowerCase())) {
@@ -114,9 +97,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> _deleteSelectedChats() async {
     for (String chatRoomId in selectedChatRooms) {
-      // Delete chat room from Firestore
-      // await _firestore.collection('chatRoom').doc(chatRoomId).delete();
-
       // Remove chat room from current user's chatRooms field
       DocumentSnapshot currentUserSnapshot =
           await _firestore.collection('users').doc(currentUserId).get();
@@ -129,25 +109,6 @@ class _ChatScreenState extends State<ChatScreen> {
       await _firestore.collection('users').doc(currentUserId).update({
         'chatRooms': FieldValue.arrayRemove([chatRoomToRemove]),
       });
-
-      // Get the other userId from the chatRoom object
-      // String otherUserId = chatRoomToRemove['otherUid'];
-
-      // // Remove chat room from other user's chatRooms field
-      // DocumentSnapshot otherUserSnapshot = await _firestore.collection('users').doc(otherUserId).get();
-      // Map<String, dynamic> otherUserData = otherUserSnapshot.data() as Map<String, dynamic>;
-      // List<dynamic> otherUserChatRooms = otherUserData['chatRooms'];
-      // var otherChatRoomToRemove = otherUserChatRooms.firstWhere((chatRoom) => chatRoom['chatRoomId'] == chatRoomId);
-
-      // await _firestore.collection('users').doc(otherUserId).update({
-      //   'chatRooms': FieldValue.arrayRemove([otherChatRoomToRemove]),
-      // });
-
-      // // Delete images from Firebase Storage
-      // ListResult result = await FirebaseStorage.instance.ref('chat_images/$chatRoomId').listAll();
-      // for (Reference fileRef in result.items) {
-      //   await fileRef.delete();
-      // }
     }
 
     setState(() {
@@ -171,12 +132,12 @@ class _ChatScreenState extends State<ChatScreen> {
       itemBuilder: (context, index) {
         //The itemBuilder function is called for each item in the list.
         if (index < results.length) {
-          final String roomId =
-              chatRoomId(_auth.currentUser!.uid, results[index]['uid']);
+          final String roomId = chatRoomId(_auth.currentUser!.uid, results[index]['uid'], results[index]['sparePartId']);
 
           return _buildChatTile(
               chatRoomId: roomId,
               otherUserId: results[index]['uid'],
+              title: results[index]['title'],
               userDisplayName: results[index]['name'],
               userDisplayPicture: results[index]['profile_picture'] ?? '',
               unreadMessages: results[index]['unreadMessages'] ?? 0,
@@ -190,8 +151,6 @@ class _ChatScreenState extends State<ChatScreen> {
                   }
                 });
               });
-        } else {
-          return Container();
         }
       },
     );
@@ -200,6 +159,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget _buildChatTile({
     required String chatRoomId,
     required String otherUserId,
+    required String title,
     required String userDisplayName,
     required String userDisplayPicture,
     required int unreadMessages,
@@ -224,6 +184,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       'uid': otherUserId,
                       'name': userDisplayName,
                       'profile_picture': userDisplayPicture,
+                      'title': title,
                     },
                   ),
                 ),
@@ -255,7 +216,7 @@ class _ChatScreenState extends State<ChatScreen> {
             child: Container(
               height: 75,
               decoration: BoxDecoration(
-                border: Border(bottom: BorderSide(color: Color(0xFFFF5C01))),
+                border: Border(bottom: BorderSide(color: Colors.grey)),
                 color: isSelected ? Color(0xFFFCB891) : Colors.transparent,
               ),
               child: ListTile(
@@ -265,12 +226,46 @@ class _ChatScreenState extends State<ChatScreen> {
                       : NetworkImage(userDisplayPicture),
                   child: userDisplayPicture.isEmpty ? Icon(Icons.person) : null,
                 ),
-                title: Text(userDisplayName),
+                title: Row(
+    children: [
+      Expanded(
+        child: RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: title,
+                style: const TextStyle(
+                  color: Colors.black, // Color for the first part
+                  fontWeight: FontWeight.bold, // Style for the first part
+                  fontSize: 16, // Size for the first part
+                ),
+              ),
+              const TextSpan(
+                text: ' | ',
+                style: TextStyle(
+                  color: Colors.black, // Color for the separator
+                  fontSize: 16, // Size for the separator
+                ),
+              ),
+              TextSpan(
+                text: userDisplayName ,
+                style: const TextStyle(
+                  color: Colors.black, // Color for the second part
+                  fontSize: 16, // Size for the second part
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ],
+  ),
+                //Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: Text(
                   lastMessage,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 15),
+                  style: TextStyle(fontSize: 15, color: Colors.black.withOpacity(0.7)),
                 ),
                 trailing: unreadMessages > 0
                     ? badges.Badge(
@@ -310,112 +305,61 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          leading: !_isSelecting
-              ? _isSearching
-                  ? Container()
-                  : IconButton(
-                      icon: const Icon(Icons.arrow_back,
-                          color: Colors.black, size: 26),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    )
-              : IconButton(
-                  icon: const Icon(Icons.close, color: Colors.black, size: 26),
-                  onPressed: () {
-                    setState(() {
-                      _isSelecting = false;
-                      selectedChatRooms.clear();
-                    });
-                  },
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        leading: _isSelecting 
+          ? IconButton(
+              icon: const Icon(Icons.close, color: Colors.black, size: 26),
+              onPressed: () {
+                setState(() {
+                  _isSelecting = false;
+                  selectedChatRooms.clear();
+                });
+              },
+            )
+          : null,
+        title: !_isSelecting
+          ? _isSearching 
+            ? Flex(
+              direction: Axis.horizontal,
+              children: [
+                Expanded(
+                  child: InputFields(
+                    hintText: 'Search..', 
+                    width1: 0.8,
+                    focusNode: _searchfocusNode,
+                    controller: _searchController,
+                  ),
                 ),
-          title: !_isSelecting
-              ? _isSearching
-                  ? Flex(
-                      direction: Axis.horizontal,
-                      children: [
-                        Expanded(
-                          child: InputFields(
-                            hintText: 'Search..',
-                            width1: 0.8,
-                            focusNode: _searchfocusNode,
-                            controller: _searchController,
-                          ),
-                        ),
-                      ],
-                    )
-                  : const Text('Chats',
-                      style: TextStyle(color: Color(0xFFFF5C01), fontSize: 28))
-              : Text(
-                  '${selectedChatRooms.length} selected',
-                  style: const TextStyle(color: Colors.black, fontSize: 20),
-                ),
-          actions: [
-            if (_isSelecting)
-              IconButton(
-                icon: const Icon(Icons.delete, color: Color(0xFFFF5C01)),
-                onPressed: _deleteSelectedChats,
-              )
-            else
-              IconButton(
-                icon: Icon(_isSearching ? Icons.clear : Icons.search),
-                onPressed: () {
-                  setState(() {
-                    _isSearching = !_isSearching;
-                    if (!_isSearching) {
-                      _searchController.clear();
-                    }
-                  });
-                },
-              ),
-          ],
-        ),
+              ],
+            ) 
+            : null //const Text('Chats', style: TextStyle(color: Color(0xFFFF5C01), fontSize: 28))
+          : Text(
+            '${selectedChatRooms.length} selected',
+            style: const TextStyle(color: Colors.black, fontSize: 20),
+          ),
+        actions: [
+          if (_isSelecting)
+            IconButton(
+              icon: const Icon(Icons.delete, color: Color(0xFFFF5C01)),
+              onPressed: _deleteSelectedChats,
+            )
+          else
+            IconButton(
+              icon: Icon(_isSearching ? Icons.clear : Icons.search, color: Color(0xFFFF5C01)),
+              onPressed: () {
+                setState(() {
+                  _isSearching = !_isSearching;
+                  if (!_isSearching) {
+                    _searchController.clear();
+                  }
+                });
+              },
+            ),
+        ],
+      ),
 
-        // body: _isSearching
-        //   ? _buildSearchResults()
-        //   : StreamBuilder<DocumentSnapshot>(
-        //     stream: _firestore.collection('users').doc(_auth.currentUser!.uid).snapshots(), //get the document of the current user
-        //     builder: (context, snapshot) {
-        //       if (snapshot.hasData && snapshot.data != null) {
-        //         final chatrooms = snapshot.data?.data() ;
-        //         final chatRooms = chatrooms is Map<String, dynamic>
-        //                             ? (chatrooms['chatRooms'] as List<dynamic>? ?? []).toList()
-        //                             : [] ;
-
-        //         if (chatRooms.isEmpty) {
-        //           return const Center(
-        //             child: Text('You have not chat with anyone', style: TextStyle(fontSize: 20)),
-        //           );
-        //         }
-
-        //         return ListView.builder(
-        //           itemCount: chatRooms.length,
-        //           itemBuilder: (context, index) {
-        //             final item = chatRooms[index];
-        //             Map<String, dynamic>? chatRoomMap ;
-        //             String? chatRoomId ;
-
-        //             if (item is Map<String, dynamic>) {
-        //               chatRoomMap = item;
-        //               final id = chatRoomMap['chatRoomId'] ;
-
-        //               if (id is String) {
-        //                 chatRoomId = id;
-        //               } else {
-        //                 print('chatRoomId is not a String');
-        //               }
-        //             } else {
-        //               print('Item at index $index is not a Map<String, dynamic>');
-        //             }
-        //             _isSearching = !_isSearching;
-        //           });
-        //       }
-        //     },
-        //   ),
-        //   //   ],
-        //   // ),
-        body: _isSearching
+      body: _isSearching
             ? _buildSearchResults()
             : StreamBuilder<DocumentSnapshot>(
                 stream: FirebaseFirestore.instance
@@ -454,17 +398,15 @@ class _ChatScreenState extends State<ChatScreen> {
                             print('chatRoomId is not a String');
                           }
                         } else {
-                          print(
-                              'Item at index $index is not a Map<String, dynamic>');
+                          print('Item at index $index is not a Map<String, dynamic>');
                         }
 
                         if (chatRoomId == null) {
                           return const SizedBox.shrink();
                         }
 
-                        final otherUserId =
-                            chatRoomMap?['otherUid'] as String? ??
-                                'defaultUserId';
+                        final otherUserId = chatRoomMap?['otherUid'] as String? ?? 'defaultUserId';
+                        final title = chatRoomMap?['title'] as String? ?? 'defaultTitle';
 
                         return StreamBuilder<QuerySnapshot>(
                             stream: _firestore
@@ -474,8 +416,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                 .orderBy('time', descending: true)
                                 .snapshots(),
                             builder: (context, chatSnapshot) {
-                              if (chatSnapshot.connectionState ==
-                                  ConnectionState.waiting) {
+                              if (chatSnapshot.connectionState == ConnectionState.waiting) {
                                 return const Center(
                                   child: CircularProgressIndicator(),
                                 );
@@ -512,27 +453,24 @@ class _ChatScreenState extends State<ChatScreen> {
                                     );
                                   }
 
-                                  final otherUserId =
-                                      chatRoomMap?['otherUid'] as String? ??
-                                          'defaultUserId';
+                                    final otherUserId = chatRoomMap?['otherUid'] as String? ?? 'defaultUserId';
 
-                                  return StreamBuilder<QuerySnapshot>(
-                                      stream: _firestore
-                                          .collection('chatRoom')
-                                          .doc(chatRoomId)
-                                          .collection('chats')
-                                          .orderBy('time', descending: true)
-                                          .snapshots(),
-                                      builder: (context, chatSnapshot) {
-                                        if (chatSnapshot.hasError) {
-                                          return const Center(
-                                            child: Text('An error occurred'),
-                                          );
-                                        }
-                                        if (!chatSnapshot.hasData ||
-                                            chatSnapshot.data!.docs.isEmpty) {
-                                          return const SizedBox.shrink();
-                                        }
+                                    return StreamBuilder<QuerySnapshot>(
+                    stream: _firestore
+                      .collection('chatRoom')
+                      .doc(chatRoomId)
+                      .collection('chats')
+                      .orderBy('time', descending: true)
+                      .snapshots(),
+                    builder: (context, chatSnapshot) {
+                      if (chatSnapshot.hasError) {
+                        return const Center(
+                          child: Text('An error occurred'),
+                        );
+                      }
+                      if (!chatSnapshot.hasData || chatSnapshot.data!.docs.isEmpty) {
+                        return const SizedBox.shrink();
+                      }
 
                                         return FutureBuilder<DocumentSnapshot>(
                                             future: _firestore
@@ -569,6 +507,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                               return _buildChatTile(
                                                 chatRoomId: chatRoomId!,
                                                 otherUserId: otherUserId,
+                                                title: title,
                                                 userDisplayName:
                                                     userDisplayName,
                                                 userDisplayPicture:
@@ -596,21 +535,22 @@ class _ChatScreenState extends State<ChatScreen> {
                                             });
                                       });
                                 },
-                              );
-                            });
-                      },
-                    );
-                  } else if (snapshot.hasError) {
-                    return const Center(
-                      child: Text('An error occurred'),
-                    );
-                  } else {
-                    return const Center(
-                      child: Text('You have not chat with anyone',
-                          style: TextStyle(fontSize: 20)),
-                    );
-                  }
-                },
-              ));
+                              );                              
+                          }
+                        );
+                    }
+                  );
+            } else if (snapshot.hasError) {
+              return const Center(
+                child: Text('An error occurred'),
+              );
+            } else {
+              return const Center(
+                child: Text('You have not chat with anyone', style: TextStyle(fontSize: 20)),
+              );
+            }
+          },
+        )
+    );
   }
 }

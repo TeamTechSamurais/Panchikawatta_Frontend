@@ -1,10 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/components/input_fields.dart';
+import 'package:panchikawatta/global/common/toast.dart';
 import 'package:panchikawatta/screens/Profile/buyer_profile.dart';
+import 'package:panchikawatta/screens/Profile/edit_seller_profile.dart';
 import 'package:panchikawatta/services/api_service.dart';
-import 'package:panchikawatta/screens/chat_screen.dart';
 import 'package:panchikawatta/screens/Profile/delete_and_edit_my_profile.dart';
 import 'package:panchikawatta/screens/edit_profile_page.dart';
 import 'package:panchikawatta/screens/Profile/seller_profile.dart';
@@ -18,12 +18,10 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  Future<Map<String, dynamic>>? _userFuture;
+  // Future<Map<String, dynamic>>? _userFuture;
   String? profilePictureUrl;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   bool _isSeller = false;
   int? _userId;
-  String? _email;
   final TextEditingController _businessName = TextEditingController();
   final TextEditingController _businessAddress = TextEditingController();
   final TextEditingController _businessPhone = TextEditingController();
@@ -37,11 +35,18 @@ class _ProfilePageState extends State<ProfilePage>
     _fetchUser();
   }
 
-  @override
-  void dispose() {
-    _tabController.removeListener(_handleTabChange);
-    _tabController.dispose();
-    super.dispose();
+  Future<void> _fetchSellerStatus(int userId) async {
+    final sellerData = await ApiServices.getSellerById(userId);
+    bool isSeller = false;
+
+    if ((!sellerData.containsKey('status') ||
+        sellerData['status'] != 'error')) {
+      isSeller = true;
+    }
+
+    setState(() {
+      _isSeller = isSeller;
+    });
   }
 
   Future<void> _fetchUser() async {
@@ -49,33 +54,14 @@ class _ProfilePageState extends State<ProfilePage>
     final String? email = prefs.getString('userEmail');
 
     if (email != null) {
-      setState(() {
-        _email = email;
-      });
-
-      final querySnapshot = await _firestore
-          .collection('users')
-          .where('email', isEqualTo: email)
-          .get();
-
       final user = await ApiServices.getUserByEmail(email);
       final userId = user['id'];
 
       setState(() {
-        _userFuture = Future.value(user);
         _userId = userId;
 
-        if (querySnapshot.docs.isNotEmpty) {
-          final doc = querySnapshot.docs.first;
-          if (doc['profile_picture'] != null) {
-            profilePictureUrl = doc['profile_picture'];
-          } else {
-            profilePictureUrl = null;
-          }
-
-          if (userId != null) {
-            _fetchSellerStatus(userId);
-          }
+        if (userId != null) {
+          _fetchSellerStatus(userId);
         }
       });
     } else {
@@ -100,18 +86,11 @@ class _ProfilePageState extends State<ProfilePage>
     }
   }
 
-  Future<void> _fetchSellerStatus(int userId) async {
-    final sellerData = await ApiServices.getSellerById(userId);
-    bool isSeller = false;
-
-    if ((!sellerData.containsKey('status') ||
-        sellerData['status'] != 'error')) {
-      isSeller = true;
-    }
-
-    setState(() {
-      _isSeller = isSeller;
-    });
+  @override
+  void dispose() {
+    _tabController.removeListener(_handleTabChange);
+    _tabController.dispose();
+    super.dispose();
   }
 
   void _handleTabChange() {
@@ -121,10 +100,10 @@ class _ProfilePageState extends State<ProfilePage>
         showDialog(
           context: context,
           builder: (BuildContext context) {
-            return AlertDialog(
+            return SingleChildScrollView(
+                child: AlertDialog(
               content: Container(
                 width: MediaQuery.of(context).size.width * 0.98,
-                //height: MediaQuery.of(context).size.height * 0.65,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -182,10 +161,15 @@ class _ProfilePageState extends State<ProfilePage>
                             },
                           ),
                           const SizedBox(height: 20),
-                          InputFields(
-                            hintText: "Business description",
-                            width1: MediaQuery.of(context).size.width * 0.8,
+                          TextFormField(
                             controller: _businessDescription,
+                            maxLines: 5,
+                            decoration: const InputDecoration(
+                              hintText: 'Business Description',
+                              filled: true,
+                              fillColor: Color.fromARGB(255, 241, 239, 237),
+                              border: InputBorder.none,
+                            ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter a business description';
@@ -195,18 +179,51 @@ class _ProfilePageState extends State<ProfilePage>
                           ),
                           const SizedBox(height: 20),
                           CustomButton(
-                            onPressed: () {
+                            onPressed: () async {
                               if (formKey.currentState!.validate()) {
                                 // Handle form submission
                                 final data = {
-                                  'business_name': _businessName.text,
-                                  'business_address': _businessAddress.text,
-                                  'business_phone': _businessPhone.text,
-                                  'business_description':
+                                  'businessName': _businessName.text,
+                                  'businessAddress': _businessAddress.text,
+                                  'businessPhoneNo': _businessPhone.text,
+                                  'businessDescription':
                                       _businessDescription.text,
-                                  'user_id': _userId,
+                                  'userId': _userId,
                                 };
-                                ApiServices.registerSeller(data);
+
+                                try {
+                                  final response =
+                                      await ApiServices.registerSeller(data);
+
+                                  if (response['status'] != 'error') {
+                                    setState(() {
+                                      _isSeller = true;
+                                    });
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => SellerProfile(
+                                          userId: _userId!,
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    // Show error message
+                                    // ScaffoldMessenger.of(context).showSnackBar(
+                                    //   SnackBar(content: Text(response['message'])),
+                                    // );
+                                    showToast(message: response['message']);
+                                    Navigator.of(context).pop();
+                                  }
+                                } catch (e) {
+                                  // Handle any errors that might have occurred during the request
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content: Text(
+                                            'An unexpected error occurred')),
+                                  );
+                                  Navigator.of(context).pop();
+                                }
                               }
                             },
                             text: 'submit',
@@ -217,7 +234,7 @@ class _ProfilePageState extends State<ProfilePage>
                   ],
                 ),
               ),
-            );
+            ));
           },
         ).then((_) {
           _tabController.index =
@@ -233,21 +250,24 @@ class _ProfilePageState extends State<ProfilePage>
         appBar: AppBar(
           elevation: 0.0,
           automaticallyImplyLeading: false,
-          title: const Text('My Profile',
-              style: TextStyle(
-                  color: Color(0xFFFF5C01),
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold)),
           actions: [
             PopupMenuButton<String>(
               icon: const Icon(Icons.settings, color: Colors.black, size: 28),
               onSelected: (String result) {
                 switch (result) {
-                  case 'EditProfile':
+                  case 'EditBuyerProfile':
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => EditProfilePage()),
+                    );
+                    break;
+                  case 'EditSellerProfile':
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return EditSellerProfile(userId: _userId!);
+                      },
                     );
                     break;
                   case 'DeleteProfile':
@@ -267,19 +287,16 @@ class _ProfilePageState extends State<ProfilePage>
                       },
                     );
                     break;
-
-                  case 'chat':
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ChatScreen()),
-                    );
-                    break;
                 }
               },
               itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                 const PopupMenuItem<String>(
-                  value: 'EditProfile',
-                  child: Text('Edit Profile'),
+                  value: 'EditBuyerProfile',
+                  child: Text('Edit Buyer Profile'),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'EditSellerProfile',
+                  child: Text('Edit Seller Profile'),
                 ),
                 const PopupMenuItem<String>(
                   value: 'DeleteProfile',
@@ -287,112 +304,41 @@ class _ProfilePageState extends State<ProfilePage>
                 ),
                 const PopupMenuItem<String>(
                   value: 'Logout',
-                  child: Text('Logout',
-                      style: TextStyle(color: Color(0xFFFF5C01))),
-                ),
-                const PopupMenuItem<String>(
-                  value: 'chat',
-                  child: Text('chat'),
+                  child: Text('Logout'),
                 ),
               ],
             ),
           ],
+          bottom: TabBar(
+            indicatorColor: Color(0xffFF5C01),
+            labelColor: Color(0xffFF5C01),
+            unselectedLabelColor: Colors.black,
+            labelStyle: TextStyle(fontSize: 15),
+            indicatorSize: TabBarIndicatorSize.label,
+            controller: _tabController,
+            tabs: [Tab(text: 'Buyer'), Tab(text: 'Seller')],
+          ),
         ),
-        body: FutureBuilder<Map<String, dynamic>>(
-          future: _userFuture,
-          builder: (context, snapshot) {
-            if (_userFuture == null) {
-              return const Center(
-                child: CircularProgressIndicator(
-                  color: Color(0xFFFF5C01),
-                ),
-              );
-            } else if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(color: Color(0xFFFF5C01)),
-              );
-            } else if (snapshot.hasError) {
-              return Center(
-                child: Text('Error: ${snapshot.error}'),
-              );
-            } else {
-              final user = snapshot.data!;
-              return SingleChildScrollView(
-                child: Column(
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                height: 1500,
+                child: TabBarView(
+                  controller: _tabController,
                   children: [
-                    const SizedBox(height: 20),
-                    Center(
-                      child: CircleAvatar(
-                          radius: 60,
-                          backgroundImage: profilePictureUrl != null
-                              ? NetworkImage(profilePictureUrl!)
-                              : null,
-                          child: profilePictureUrl == null
-                              ? const Icon(
-                                  Icons.person,
-                                  size: 60,
-                                )
-                              : null),
-                    ),
-                    const SizedBox(height: 10),
-                    Center(
-                        child: Text(
-                      '${user['userName']}',
-                      style: const TextStyle(
-                        fontSize: 18,
-                      ),
-                    )),
-                    const SizedBox(height: 10),
-                    TabBar(
-                      controller: _tabController,
-                      tabs: [
-                        _individualTab(
-                          'Buyer',
-                        ),
-                        _individualTab('Seller'),
-                      ],
-                      labelColor: const Color(0xFFFF5C01),
-                      unselectedLabelColor: const Color(0x80000000),
-                      indicatorColor: Colors.transparent,
-                      indicatorSize: TabBarIndicatorSize.tab,
-                      labelPadding: const EdgeInsets.all(0),
-                      indicatorPadding: const EdgeInsets.all(0),
-                      dividerColor: Colors.transparent,
-                    ),
-                    Container(
-                      height: 1500,
-                      child: TabBarView(
-                        controller: _tabController,
-                        children: [
-                          BuyerProfile(_email),
-                          _isSeller ? SellerProfile() : Container(),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 10),
+                    BuyerProfile(),
+                    _isSeller
+                        ? SellerProfile(
+                            userId: _userId!,
+                          )
+                        : Container(),
                   ],
                 ),
-              );
-            }
-          },
+              ),
+              const SizedBox(height: 10),
+            ],
+          ),
         ));
-  }
-
-  //A method to create an individual tab. This is created to add a vertical divider between the tabs.
-  Widget _individualTab(String text) {
-    return Container(
-      height: 50 + MediaQuery.of(context).padding.bottom,
-      padding: const EdgeInsets.all(0),
-      width: double.infinity,
-      decoration: const BoxDecoration(
-          border: Border(
-              right: BorderSide(
-                  color: Color(0x80000000),
-                  width: 0,
-                  style: BorderStyle.solid))),
-      child: Tab(
-        text: text,
-      ),
-    );
   }
 }

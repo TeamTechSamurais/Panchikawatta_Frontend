@@ -85,6 +85,7 @@ class _SearchPage1State extends State<search_page1> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
+        automaticallyImplyLeading: false,
         actions: [
           Row(
             children: [

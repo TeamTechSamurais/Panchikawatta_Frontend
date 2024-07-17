@@ -664,10 +664,6 @@ class _SignUp1State extends State<sign_up1> {
                     );
                   },
                 );
-                // } else {
-                //   // Handle case where email verification failed to send
-                //   _showFillMessage('Failed to send verification email');
-                // }
               } else {
                 // Handle case where account creation failed
                 _showFillMessage('The email addreess is already  in use');

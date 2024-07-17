@@ -22,7 +22,9 @@ class ProvinceDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
       value: selectedProvince,
-      decoration: const InputDecoration(labelText: 'Province'),
+      decoration: const InputDecoration(labelText: 'Province',
+          border: InputBorder.none,
+      ),
       items: provinces.map((province) {
         return DropdownMenuItem<String>(
           value: province,
