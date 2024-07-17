@@ -312,7 +312,7 @@ class _ProfilePageState extends State<ProfilePage>
             labelStyle: TextStyle(fontSize: 15),
             indicatorSize: TabBarIndicatorSize.label,
             controller: _tabController,
-            tabs: [Tab(text: 'Buyer Profile'), Tab(text: 'Seller Profile')],
+            tabs: [Tab(text: 'Buyer'), Tab(text: 'Seller')],
           ),
         ),
         body: SingleChildScrollView(

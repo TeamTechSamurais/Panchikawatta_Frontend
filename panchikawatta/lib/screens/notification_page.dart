@@ -23,7 +23,7 @@ class NotificationPage extends StatelessWidget {
         ),
         body: Column(
           children: [
-            SizedBox(height: 20), // Adjust the height as needed
+            SizedBox(height: 10), // Adjust the height as needed
             Expanded(
               child: TabBarView(
                 children: [

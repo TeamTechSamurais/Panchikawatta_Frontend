@@ -61,7 +61,7 @@ class _ChatRoomState extends State<ChatRoom> {
           : Row (
             children: [
               CircleAvatar(
-                radius: 20,
+                radius: 25,
                 backgroundImage: widget.userMap['profile_picture'] == null 
                   ? null 
                   : NetworkImage(widget.userMap['profile_picture']!),
@@ -72,7 +72,21 @@ class _ChatRoomState extends State<ChatRoom> {
 
               const SizedBox(width: 10),
               
-              Text(widget.userMap['name'], style: const TextStyle(color: Color(0xFFFF5C01), fontSize: 25)),
+              // Text(widget.userMap['name'], style: const TextStyle(color: Color(0xFFFF5C01), fontSize: 25)),
+
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start, // Aligns text to the start (left)
+                children: [
+                  Text(
+                    widget.userMap['title'],
+                    style: const TextStyle(color: Color(0xFFFF5C01), fontSize: 25),
+                  ),
+                  Text(
+                    widget.userMap['name'],
+                    style: const TextStyle(color: Colors.black, fontSize: 14), // You can customize this style
+                  ),
+                ],
+              ),
             ],
           ),
         actions: selectedMessages.isNotEmpty
@@ -94,6 +108,7 @@ class _ChatRoomState extends State<ChatRoom> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            const SizedBox(height: 20),
             Container(
               height: size.height / 1.3,
               width: size.width,
@@ -301,6 +316,7 @@ class _ChatRoomState extends State<ChatRoom> {
     String uid = _auth.currentUser!.uid;
     String otherUid = widget.userMap['uid'];
     String chatRoomId = widget.chatRoomId;
+    String title = widget.userMap['title'];
 
     DocumentReference userDoc1 = _firestore.collection('users').doc(uid);
     DocumentReference userDoc2 = _firestore.collection('users').doc(otherUid);
@@ -316,20 +332,20 @@ class _ChatRoomState extends State<ChatRoom> {
           // Remove existing entry if it exists
           chatRooms.removeWhere((room) => room['chatRoomId'] == chatRoomId);
           // Add new entry at the beginning
-          chatRooms.insert(0, {'otherUid': otherUid, 'chatRoomId': chatRoomId});
+          chatRooms.insert(0, {'otherUid': otherUid, 'chatRoomId': chatRoomId, 'title': title, 'sparePartId': widget.userMap['sparePartId']});
 
           transaction.update(userDoc1, {'chatRooms': chatRooms});
         } else {
           // If chatRooms doesn't exist, create it
           transaction.update(userDoc1, {
-            'chatRooms': [{'otherUid': otherUid, 'chatRoomId': chatRoomId}]
+            'chatRooms': [{'otherUid': otherUid, 'chatRoomId': chatRoomId, 'title': title, 'sparePartId': widget.userMap['sparePartId']}]
           });
         }
       } else {
         // If the document doesn't exist or has no data, create it with the chatRooms field
         transaction.set(userDoc1, {
           'chatRooms': [
-            {'otherUid': otherUid, 'chatRoomId': chatRoomId}
+            {'otherUid': otherUid, 'chatRoomId': chatRoomId, 'title': title, 'sparePartId': widget.userMap['sparePartId']}
           ]
         });
       }
@@ -347,20 +363,20 @@ class _ChatRoomState extends State<ChatRoom> {
           // Remove existing entry if it exists
           chatRooms.removeWhere((room) => room['chatRoomId'] == chatRoomId);
           // Add new entry at the beginning
-          chatRooms.insert(0, {'otherUid': uid, 'chatRoomId': chatRoomId});
+          chatRooms.insert(0, {'otherUid': uid, 'chatRoomId': chatRoomId, 'title': title, 'sparePartId': widget.userMap['sparePartId']});
 
           transaction.update(userDoc2, {'chatRooms': chatRooms});
         } else {
           // If chatRooms doesn't exist, create it
           transaction.update(userDoc2, {
-            'chatRooms': [{'otherUid': uid, 'chatRoomId': chatRoomId}]
+            'chatRooms': [{'otherUid': uid, 'chatRoomId': chatRoomId, 'title': title, 'sparePartId': widget.userMap['sparePartId']}]
           });
         }
       } else {
         // If the document doesn't exist or has no data, create it with the chatRooms field
         transaction.set(userDoc2, {
           'chatRooms': [
-            {'otherUid': uid, 'chatRoomId': chatRoomId}
+            {'otherUid': uid, 'chatRoomId': chatRoomId, 'title': title, 'sparePartId': widget.userMap['sparePartId']}
           ]
         });
       }
@@ -422,7 +438,7 @@ class _ChatRoomState extends State<ChatRoom> {
                 map['message'],
                 style: const TextStyle(
                   fontSize: 18,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w400,
                   color: Colors.black,
                 ),
               ),

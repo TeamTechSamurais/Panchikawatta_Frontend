@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/global/common/toast.dart';
@@ -20,6 +21,8 @@ class _SellerProfile extends State<SellerProfile>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   Map<String, dynamic>? _seller;
+  final _firestore = FirebaseFirestore.instance;
+  String? profilePictureUrl;
 
   @override
   void initState() {
@@ -32,21 +35,25 @@ class _SellerProfile extends State<SellerProfile>
     try {
       final sellerData = await ApiServices.getSellerById(widget.userId);
 
-      // if (sellerData['status'] == 'error') {
-      //   print('Error fetching seller data: ${sellerData['message']}');
-      //   // Show a snackbar with the error message
-      //   ScaffoldMessenger.of(context).showSnackBar(
-      //     SnackBar(
-      //       content: Text(sellerData['message']),
-      //     ),
-      //   );
-      // } else {
-      //   setState(() {
-      //     _seller = sellerData;
-      //   });
-      // }
+      final user = await ApiServices.getUserById(widget.userId);
+      final userEmail = user['email'];
+
+      final querySnapshot = await _firestore
+          .collection('users')
+          .where('email', isEqualTo: userEmail)
+          .get();
+
       setState(() {
         _seller = sellerData;
+
+        if (querySnapshot.docs.isNotEmpty) {
+          final doc = querySnapshot.docs.first;
+          if (doc['profile_picture'] != null) {
+            profilePictureUrl = doc['profile_picture'];
+          } else {
+            profilePictureUrl = null;
+          }
+        }
       });
     } catch (e) {
       print('Error fetching seller data: $e');
@@ -70,18 +77,38 @@ class _SellerProfile extends State<SellerProfile>
           children: [
             const SizedBox(height: 20),
 
-            Center(
-              child: Text(
-                _seller!['businessName'],
-                style: const TextStyle(
-                  fontSize: 30,
-                  color: Color(0xFFFF5C01),
-                  fontWeight: FontWeight.bold,
-                ),
-              )
+            Padding(
+              padding: const EdgeInsets.only(left: 20, right: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Center(
+                    child: CircleAvatar(
+                      radius: 30,
+                      backgroundImage: profilePictureUrl != null
+                        ? NetworkImage(profilePictureUrl!)
+                        : null,
+                      child : profilePictureUrl == null
+                        ? const Icon(Icons.person, size: 60)
+                        : null
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Center(
+                    child: Text(
+                      _seller!['businessName'],
+                      style: const TextStyle(
+                        fontSize: 25,
+                        color: Color(0xFFFF5C01),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                  ),
+                ],
+              ),
             ),
 
-            // const SizedBox(height: 10),
+            const SizedBox(height: 10),
 
             Center(
               child: Text(
@@ -129,24 +156,32 @@ class _SellerProfile extends State<SellerProfile>
 
             const SizedBox(height: 20),
 
-            Center(
-              child: CustomButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const AdType()),
-                    );
-                  },
-                  text: 'Post ad'),
+            Padding(
+              padding: const EdgeInsets.only(left: 30, right: 30),
+              child: Row (
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CustomButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const AdType()),
+                      );
+                    },
+                    text: 'Post ad'
+                  ),
+                  CustomButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SellerOrderScreen(sellerId: widget.userId,)),
+                      );
+                    },
+                    text: 'View Orders'
+                  ),
+                ],
+              ),
             ),
-            CustomButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SellerOrderScreen(sellerId: widget.userId,)),
-                    );
-                  },
-                  text: 'View Orders'),
             const SizedBox(height: 15),
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.9,
