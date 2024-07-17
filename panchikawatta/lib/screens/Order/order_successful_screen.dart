@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/screens/app.dart';
-import 'package:panchikawatta/screens/search_page1.dart';
+import 'package:panchikawatta/screens/search_page.dart';
 
 class OrderPlacedSuccessfullyScreen extends StatelessWidget {
   @override

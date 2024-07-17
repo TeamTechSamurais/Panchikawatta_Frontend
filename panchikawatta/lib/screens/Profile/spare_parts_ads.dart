@@ -2,46 +2,46 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:panchikawatta/constant/utils.dart';
-import 'package:panchikawatta/models/service.dart';
+import 'package:panchikawatta/models/sparepart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
+import 'package:panchikawatta/global/globals.dart' as globals;
 
-class ServicesAds extends StatefulWidget {
+class SparePartsAds extends StatefulWidget {
   @override
-  _ServicesAdsState createState() => _ServicesAdsState();
+  _SparePartsAdsState createState() => _SparePartsAdsState();
 }
 
-class _ServicesAdsState extends State<ServicesAds> {
-  Future<List<Service>>? _servicesFuture;
+class _SparePartsAdsState extends State<SparePartsAds> {
+  Future<List<SparePart>>? _sparePartsFuture;
+  String? sellerEmail;
 
   @override
   void initState() {
     super.initState();
-    _fetchServices();
+    _fetchSellerEmail();
   }
 
-  Future<void> _fetchServices() async {
+  Future<void> _fetchSellerEmail() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? sellerEmail = prefs.getString('userEmail');
-
+    sellerEmail = prefs.getString('userEmail');
     if (sellerEmail != null) {
       setState(() {
-        _servicesFuture = _getServices(sellerEmail);
+        _sparePartsFuture = getSpareParts(sellerEmail!);
       });
     }
   }
 
-  Future<List<Service>> _getServices(String sellerEmail) async {
+  Future<List<SparePart>> getSpareParts(String sellerEmail) async {
+    int? sellerId = globals.userId;
     final response = await http.get(
-      Uri.parse(
-          '${Utils.baseUrl}/adListing/getServices?sellerEmail=$sellerEmail'),
-    );
+        Uri.parse('${Utils.baseUrl}/users/getSparePartsBySeller/$sellerId'));
 
     if (response.statusCode == 200) {
       List<dynamic> data = jsonDecode(response.body);
-      return data.map((json) => Service.fromJson(json)).toList();
+      return data.map((json) => SparePart.fromJson(json)).toList();
     } else {
-      throw Exception('Failed to load services');
+      throw Exception('Failed to load spare parts');
     }
   }
 
@@ -51,9 +51,9 @@ class _ServicesAdsState extends State<ServicesAds> {
     );
 
     if (response.statusCode == 200) {
-      // Refresh the services list
+      // Refresh the spare parts list
       setState(() {
-        _servicesFuture = _getServices('');
+        _sparePartsFuture = getSpareParts(sellerEmail!);
       });
     } else {
       throw Exception('Failed to delete ad');
@@ -66,8 +66,8 @@ class _ServicesAdsState extends State<ServicesAds> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            FutureBuilder<List<Service>>(
-              future: _servicesFuture,
+            FutureBuilder<List<SparePart>>(
+              future: _sparePartsFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
@@ -79,30 +79,31 @@ class _ServicesAdsState extends State<ServicesAds> {
                   );
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Center(
-                    child: Text('No services found'),
+                    child: Text('No ads found'),
                   );
                 } else {
                   return ListView.builder(
                     shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
+                    physics: NeverScrollableScrollPhysics(),
+                    padding: const EdgeInsets.all(10),
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
-                      final service = snapshot.data![index];
+                      final sparePart = snapshot.data![index];
                       return Card(
                         margin: const EdgeInsets.symmetric(vertical: 5),
                         elevation: 3,
                         child: ListTile(
                           contentPadding: const EdgeInsets.all(10),
-                          leading: service.imageUrls.isNotEmpty
+                          leading: sparePart.imageUrls.isNotEmpty
                               ? Image.network(
-                                  service.imageUrls[0],
+                                  sparePart.imageUrls[0],
                                   width: 70,
                                   height: 50,
                                   fit: BoxFit.cover,
                                 )
                               : const Icon(Icons.image_not_supported, size: 50),
                           title: Text(
-                            service.title,
+                            sparePart.title,
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
@@ -113,23 +114,22 @@ class _ServicesAdsState extends State<ServicesAds> {
                             children: [
                               const SizedBox(height: 5),
                               Text(
-                                'Price: ${service.price}',
+                                'Price: ${sparePart.price}',
                                 style: const TextStyle(fontSize: 15),
                               ),
                               const SizedBox(height: 5),
                               Text(
                                 'Posted on: ${DateFormat('yyyy-MM-dd').format(DateTime.now())}', // Adjust date if available
                                 style: const TextStyle(
-                                  fontSize: 15,
-                                  color: Color.fromARGB(255, 127, 126, 126),
-                                ),
+                                    fontSize: 15,
+                                    color: Color.fromARGB(255, 127, 126, 126)),
                               ),
                             ],
                           ),
                           trailing: IconButton(
                             icon: const Icon(Icons.delete, color: Colors.red),
                             onPressed: () {
-                              _deleteAd(service.id);
+                              _deleteAd(sparePart.id);
                             },
                           ),
                         ),

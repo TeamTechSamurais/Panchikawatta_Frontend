@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/components/input_fields.dart';
 import 'package:panchikawatta/screens/Profile/buyer_profile.dart';
-import 'package:panchikawatta/screens/api_service.dart';
+import 'package:panchikawatta/services/api_service.dart';
 import 'package:panchikawatta/screens/chat_screen.dart';
-import 'package:panchikawatta/screens/delete_and_edit_my_profile.dart';
+import 'package:panchikawatta/screens/Profile/delete_and_edit_my_profile.dart';
 import 'package:panchikawatta/screens/edit_profile_page.dart';
-import 'package:panchikawatta/screens/seller_profile.dart';
+import 'package:panchikawatta/screens/Profile/seller_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -91,7 +91,8 @@ class _ProfilePageState extends State<ProfilePage>
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: const Text('Sign Up', style: TextStyle(color: Color(0xFFFF5C01))),
+                  child: const Text('Sign Up',
+                      style: TextStyle(color: Color(0xFFFF5C01))),
                 ),
               ],
             );
@@ -104,7 +105,7 @@ class _ProfilePageState extends State<ProfilePage>
     bool isSeller = false;
 
     if ((!sellerData.containsKey('status') ||
-            sellerData['status'] != 'error')) {
+        sellerData['status'] != 'error')) {
       isSeller = true;
     }
 
@@ -270,8 +271,7 @@ class _ProfilePageState extends State<ProfilePage>
                   case 'chat':
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => ChatScreen()),
+                      MaterialPageRoute(builder: (context) => ChatScreen()),
                     );
                     break;
                 }

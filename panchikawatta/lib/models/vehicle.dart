@@ -62,6 +62,4 @@ class Vehicle {
           : null,
     );
   }
-
-  get id => null;
 }

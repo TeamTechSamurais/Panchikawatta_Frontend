@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:card_swiper/card_swiper.dart';
-import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/models/service.dart';
 import 'package:panchikawatta/services/get_api_services.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ServiceScreen extends StatefulWidget {
   final int serviceId;
 
-  ServiceScreen({super.key, required this.serviceId});
+  const ServiceScreen({Key? key, required this.serviceId}) : super(key: key);
 
   @override
   State<ServiceScreen> createState() => _ServiceScreenState();
@@ -15,7 +14,7 @@ class ServiceScreen extends StatefulWidget {
 
 class _ServiceScreenState extends State<ServiceScreen> {
   late Future<Service> futureService;
-  final double _padding = 20.0; // Define common padding value
+  final double _padding = 20.0;
 
   @override
   void initState() {
@@ -29,14 +28,9 @@ class _ServiceScreenState extends State<ServiceScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: InkWell(
-          onTap: () {
-            Navigator.pop(context);
-          },
-          child: const Icon(
-            Icons.arrow_back_rounded,
-            size: 30,
-            color: Colors.black,
-          ),
+          onTap: () => Navigator.pop(context),
+          child: const Icon(Icons.arrow_back_rounded,
+              size: 30, color: Colors.black),
         ),
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -47,7 +41,6 @@ class _ServiceScreenState extends State<ServiceScreen> {
               fontSize: 28,
               fontWeight: FontWeight.w500),
         ),
-        actions: const [],
       ),
       body: FutureBuilder<Service>(
         future: futureService,
@@ -61,52 +54,43 @@ class _ServiceScreenState extends State<ServiceScreen> {
           } else {
             var service = snapshot.data!;
             return Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal: _padding), // Apply common padding
+              padding: EdgeInsets.symmetric(horizontal: _padding),
               child: Column(
                 children: [
                   const SizedBox(height: 30),
                   Center(
                     child: Container(
-                      height: 260,
+                      height: 270,
                       width: double.infinity,
                       color: Colors.transparent,
-                      child: Image.network(service.imageUrls[0]),
-                      // child: Swiper(
-                      //   itemCount: service.imageUrls.length,
-                      //   itemBuilder: (BuildContext context, int index) {
-                      //     return Image.network(
-                      //       service.imageUrls[index],
-                      //       fit: BoxFit.contain,
-                      //     );
-                      //   },
-                      //   pagination: SwiperPagination(),
-                      //   control: SwiperControl(),
-                      // ),
+                      child: Image.network(
+                        service.imageUrls.isNotEmpty
+                            ? service.imageUrls[0]
+                            : 'placeholder_image_url',
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const Divider(
-                    color: Colors.grey,
-                    thickness: 1.5,
-                  ),
+                  const Divider(color: Colors.grey, thickness: 1.5),
                   const SizedBox(height: 10),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         service.title,
                         style: const TextStyle(
                             fontSize: 22,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w500,
                             color: Colors.black),
                       ),
                     ],
                   ),
                   const SizedBox(height: 10),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
+                      const SizedBox(width: 30),
                       Text(
                         'Rs. ${service.price}',
                         style: const TextStyle(
@@ -116,54 +100,94 @@ class _ServiceScreenState extends State<ServiceScreen> {
                       ),
                       const SizedBox(width: 100),
                       GestureDetector(
-                        onTap: () {
-                          // Add code to call the phone number here
+                        onTap: () async {
+                          try {
+                            String businessPhoneNo = await GetApiService()
+                                .getBusinessPhoneNo(service.sellerId);
+
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Call',
+                                      style: TextStyle(
+                                          color: Color(0xFFFF5C01),
+                                          fontWeight: FontWeight.bold)),
+                                  content: Text(businessPhoneNo,
+                                      style: const TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 20)),
+                                  actions: [
+                                    TextButton(
+                                      child: const Text('Cancel',
+                                          style: TextStyle(
+                                              color: Color(0xFFFF5C01))),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: const Text('Call',
+                                          style: TextStyle(
+                                              color: Color(0xFFFF5C01))),
+                                      onPressed: () async {
+                                        final url = 'tel:$businessPhoneNo';
+                                        if (await canLaunch(url)) {
+                                          await launch(url);
+                                        } else {
+                                          throw 'Could not launch $url';
+                                        }
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          } catch (e) {
+                            print('Error fetching business phone number: $e');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content:
+                                      Text('Error fetching phone number: $e')),
+                            );
+                          }
                         },
-                        child: const Icon(
-                          Icons.local_phone_rounded,
-                          color: Color(0xFFFF5C01),
-                          size: 35,
-                        ),
+                        child: const Icon(Icons.call_rounded,
+                            color: Color(0xFFFF5C01), size: 35),
                       ),
                       const SizedBox(width: 30),
                       GestureDetector(
-                        onTap: () {
-                          // Add code to call the phone number here
+                        onTap: () async {
+                          // Implement chat functionality similar to BuyScreen if required
                         },
-                        child: const Icon(
-                          Icons.mail_rounded,
-                          color: Color(0xFFFF5C01),
-                          size: 35,
-                        ),
+                        child: const Icon(Icons.mail_rounded,
+                            color: Color(0xFFFF5C01), size: 35),
                       ),
+                      const SizedBox(width: 30),
                     ],
                   ),
+                  const Divider(color: Colors.grey, thickness: 1),
                   Expanded(
                     child: SingleChildScrollView(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 5),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Divider(
-                              color: Colors.grey,
-                              thickness: 1,
-                            ),
-                            const SizedBox(height: 20),
                             const Text(
-                              'Description',
+                              "Description",
                               style: TextStyle(
-                                  fontSize: 21,
-                                  fontWeight: FontWeight.w500,
-                                  color: Color(0xFFFF5C01)),
+                                  color: Color(0xFFFF5C01),
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500),
                             ),
-                            const SizedBox(height: 5),
+                            const SizedBox(height: 10),
                             Text(
                               service.description,
-                              style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.black),
+                              style: const TextStyle(fontSize: 16),
+                              textAlign: TextAlign.justify,
                             ),
                           ],
                         ),

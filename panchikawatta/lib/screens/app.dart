@@ -7,13 +7,15 @@ import 'package:panchikawatta/screens/SplashScreen.dart';
 import 'package:panchikawatta/screens/alert_page.dart';
 import 'package:panchikawatta/screens/notification_page.dart';
 import 'package:panchikawatta/screens/profile_page.dart';
-import 'package:panchikawatta/screens/search_page1.dart';
+import 'package:panchikawatta/screens/search_page.dart';
 
 class MyApp extends StatelessWidget {
   final String initialRoute;
   final GlobalKey<NavigatorState> navigatorKey;
 
-  const MyApp({Key? key, required this.initialRoute, required this.navigatorKey}) : super(key: key);
+  const MyApp(
+      {Key? key, required this.initialRoute, required this.navigatorKey})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

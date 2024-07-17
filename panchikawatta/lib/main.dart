@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:panchikawatta/screens/app.dart';
-import 'package:panchikawatta/screens/firebase_api.dart';
+import 'package:panchikawatta/services/firebase_api.dart';
 import 'firebase_options.dart';
 import 'dart:convert';
 import 'screens/storage_helper.dart';

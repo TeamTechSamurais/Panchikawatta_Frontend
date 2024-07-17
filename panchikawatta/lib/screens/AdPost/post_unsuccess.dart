@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/screens/app.dart';
 import 'package:panchikawatta/screens/profile_page.dart';
-import 'package:panchikawatta/screens/search_page1.dart';
+import 'package:panchikawatta/screens/search_page.dart';
 
 class PostUnsuccess extends StatelessWidget {
   // ignore: use_super_parameters

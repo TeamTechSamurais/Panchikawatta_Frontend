@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:panchikawatta/components/custom_button.dart';
 import 'package:panchikawatta/constant/utils.dart';
 import 'package:panchikawatta/models/vehicle.dart';
+import 'package:panchikawatta/global/globals.dart' as globals;
 
 class ReminderPage extends StatefulWidget {
   const ReminderPage({super.key});
@@ -20,7 +21,8 @@ class _ReminderPageState extends State<ReminderPage> {
   @override
   void initState() {
     super.initState();
-    futureReminders = getUserVehicleReminders(1); // Provide the userId
+    int userId = globals.userId!;
+    futureReminders = getUserVehicleReminders(userId); // Provide the userId
   }
 
   Future<List<Vehicle>> getUserVehicleReminders(int userId) async {
@@ -136,7 +138,7 @@ class ReminderCard extends StatelessWidget {
                   onPressed: () async {
                     try {
                       await markAsDone(
-                          vehicle.id, vehicle.nearestReminder!.type);
+                          vehicle.vehicleId, vehicle.nearestReminder!.type);
                       // Optionally refresh the reminders list
                       // You can choose to refresh or update the list after marking as done
                       //  setState(() {

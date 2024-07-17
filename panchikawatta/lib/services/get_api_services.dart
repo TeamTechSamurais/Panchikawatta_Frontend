@@ -7,6 +7,8 @@ import 'package:panchikawatta/models/service.dart';
 import 'package:panchikawatta/models/sparepart.dart';
 
 class GetApiService {
+  //get all users
+
   Future<List<dynamic>> getUsers() async {
     final response = await http.get(Uri.parse('${Utils.baseUrl}/users'));
     if (response.statusCode == 200) {
@@ -15,6 +17,8 @@ class GetApiService {
       throw Exception('Failed to load users');
     }
   }
+
+  //get all spare parts
 
   Future<List<SparePart>> getSpareParts() async {
     final response =
@@ -27,6 +31,8 @@ class GetApiService {
       throw Exception('Failed to load spare parts');
     }
   }
+
+  //get all services
 
   Future<List<Service>> getServices() async {
     final response =
@@ -42,6 +48,7 @@ class GetApiService {
     }
   }
 
+  //get spare part details by id
   Future<SparePart> getSparePartById(int sparePartId) async {
     final response = await http
         .get(Uri.parse('${Utils.baseUrl}/users/spare-parts/$sparePartId'));
@@ -55,6 +62,7 @@ class GetApiService {
     }
   }
 
+  //get service details by id
   Future<Service> getServiceById(int serviceId) async {
     print('Fetching service with ID: $serviceId');
     final url = '${Utils.baseUrl}/users/services/$serviceId';
@@ -73,6 +81,8 @@ class GetApiService {
     }
   }
 
+  //search spare parts
+
   Future<List<SparePart>> searchSpareparts(String keyword) async {
     final response = await http
         .get(Uri.parse('${Utils.baseUrl}/adListing/search?keyword=$keyword'));
@@ -84,6 +94,8 @@ class GetApiService {
     }
   }
 
+  //search services
+
   Future<List<Service>> searchServices(String keyword) async {
     final response = await http.get(Uri.parse(
         '${Utils.baseUrl}/adListing/searchServices?keyword=$keyword'));
@@ -92,6 +104,19 @@ class GetApiService {
       return data.map((item) => Service.fromJson(item)).toList();
     } else {
       throw Exception('Failed to load services');
+    }
+  }
+
+  //getPhoneNo by id
+  Future<String> getBusinessPhoneNo(int sellerId) async {
+    final response = await http
+        .get(Uri.parse('${Utils.baseUrl}/users/getPhoneNoById/$sellerId'));
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return data['businessPhoneNo'];
+    } else {
+      throw Exception('Failed to load business phone number');
     }
   }
 }
