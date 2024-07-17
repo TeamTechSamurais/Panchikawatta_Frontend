@@ -9,6 +9,7 @@ import 'package:panchikawatta/screens/Profile/delete_and_edit_my_profile.dart';
 import 'package:panchikawatta/screens/edit_profile_page.dart';
 import 'package:panchikawatta/screens/Profile/seller_profile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:panchikawatta/global/globals.dart' as globals;
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -21,7 +22,7 @@ class _ProfilePageState extends State<ProfilePage>
   // Future<Map<String, dynamic>>? _userFuture;
   String? profilePictureUrl;
   bool _isSeller = false;
-  int? _userId;
+  int? _userId = globals.userId;
   final TextEditingController _businessName = TextEditingController();
   final TextEditingController _businessAddress = TextEditingController();
   final TextEditingController _businessPhone = TextEditingController();
@@ -59,6 +60,7 @@ class _ProfilePageState extends State<ProfilePage>
 
       setState(() {
         _userId = userId;
+        _userId = globals.userId;
 
         if (userId != null) {
           _fetchSellerStatus(userId);
