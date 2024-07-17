@@ -82,8 +82,13 @@ class OrderCard extends StatelessWidget {
             if (order['status'] == 'Completed')
               ElevatedButton(
                 onPressed: () async {
-                  await ApiService.markOrderAsDispatched(order['orderId'], userId);
-                  onStatusChanged();
+                  try {
+                    await ApiService.markOrderAsDispatched(order['orderId']);
+                    onStatusChanged();
+                  } catch (e) {
+                    print('Failed to mark order as dispatched: $e');
+                    // Optionally show a dialog or a snackbar here
+                  }
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Color(0xFFFF5C01)),
                 child: Text('Mark as Dispatched'),

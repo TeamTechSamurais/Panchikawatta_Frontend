@@ -24,7 +24,7 @@ class ApiService {
     }
   }
 
-  static Future<void> markOrderAsDispatched(int orderId, int userId) async {
+  static Future<void> markOrderAsDispatched(int orderId) async {
     final response = await http.post(
       Uri.parse('http://10.0.2.2:8000/adListing/orders/markAsDispatched'),
       body: json.encode({'orderId': orderId}),
@@ -42,7 +42,7 @@ class ApiService {
       body: json.encode({'userId': userId}),
     );
     if (response.statusCode != 200) {
-      throw Exception('Failed to mark order as delivered');
+      throw Exception('Failed to mark order as delivered: ${response.body}');
     }
   }
 }
