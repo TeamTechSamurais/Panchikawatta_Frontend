@@ -31,7 +31,7 @@ class AdPost extends StatefulWidget {
 }
 
 class _AdPostState extends State<AdPost> {
-  final List<XFile?> _images = List<XFile?>.filled(1, null);
+  final List<XFile?> _images = List<XFile?>.filled(3, null);
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();

@@ -27,12 +27,12 @@ class _SparePartsAdsState extends State<SparePartsAds> {
     sellerEmail = prefs.getString('userEmail');
     if (sellerEmail != null) {
       setState(() {
-        _sparePartsFuture = getSpareParts(sellerEmail!);
+        _sparePartsFuture = getSpareParts();
       });
     }
   }
 
-  Future<List<SparePart>> getSpareParts(String sellerEmail) async {
+  Future<List<SparePart>> getSpareParts() async {
     int? sellerId = globals.userId;
     final response = await http.get(
         Uri.parse('${Utils.baseUrl}/users/getSparePartsBySeller/$sellerId'));
@@ -45,17 +45,24 @@ class _SparePartsAdsState extends State<SparePartsAds> {
     }
   }
 
-  Future<void> _deleteAd(int adId) async {
+  Future<void> _deleteAd(int id) async {
     final response = await http.delete(
-      Uri.parse('${Utils.baseUrl}/adListing/deleteAd/$adId'),
+      Uri.parse('${Utils.baseUrl}/adPosting/deleteSparePart/$id'),
     );
 
     if (response.statusCode == 200) {
       // Refresh the spare parts list
       setState(() {
-        _sparePartsFuture = getSpareParts(sellerEmail!);
+        _sparePartsFuture = getSpareParts();
       });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ad deleted successfully')),
+      );
     } else {
+      print('Error: ${response.body}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to delete ad')),
+      );
       throw Exception('Failed to delete ad');
     }
   }
@@ -84,7 +91,7 @@ class _SparePartsAdsState extends State<SparePartsAds> {
                 } else {
                   return ListView.builder(
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     padding: const EdgeInsets.all(10),
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
@@ -93,46 +100,41 @@ class _SparePartsAdsState extends State<SparePartsAds> {
                         margin: const EdgeInsets.symmetric(vertical: 5),
                         elevation: 3,
                         child: ListTile(
-                          contentPadding: const EdgeInsets.all(10),
-                          leading: sparePart.imageUrls.isNotEmpty
-                              ? Image.network(
-                                  sparePart.imageUrls[0],
-                                  width: 70,
-                                  height: 50,
-                                  fit: BoxFit.cover,
-                                )
-                              : const Icon(Icons.image_not_supported, size: 50),
-                          title: Text(
-                            sparePart.title,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                            contentPadding: const EdgeInsets.all(10),
+                            leading: sparePart.imageUrls.isNotEmpty
+                                ? Image.network(
+                                    sparePart.imageUrls[0],
+                                    width: 70,
+                                    height: 50,
+                                    fit: BoxFit.cover,
+                                  )
+                                : const Icon(Icons.image_not_supported,
+                                    size: 50),
+                            title: Text(
+                              sparePart.title,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
                             ),
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 5),
-                              Text(
-                                'Price: ${sparePart.price}',
-                                style: const TextStyle(fontSize: 15),
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                'Posted on: ${DateFormat('yyyy-MM-dd').format(DateTime.now())}', // Adjust date if available
-                                style: const TextStyle(
-                                    fontSize: 15,
-                                    color: Color.fromARGB(255, 127, 126, 126)),
-                              ),
-                            ],
-                          ),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () {
-                              _deleteAd(sparePart.id);
-                            },
-                          ),
-                        ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 5),
+                                Text(
+                                  'Price: ${sparePart.price}',
+                                  style: const TextStyle(fontSize: 15),
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  'Posted on: ${DateFormat('yyyy-MM-dd').format(DateTime.now())}', // Adjust date if available
+                                  style: const TextStyle(
+                                      fontSize: 15,
+                                      color:
+                                          Color.fromARGB(255, 127, 126, 126)),
+                                ),
+                              ],
+                            )),
                       );
                     },
                   );

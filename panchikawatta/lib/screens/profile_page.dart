@@ -22,7 +22,7 @@ class _ProfilePageState extends State<ProfilePage>
   // Future<Map<String, dynamic>>? _userFuture;
   String? profilePictureUrl;
   bool _isSeller = false;
-  int? _userId = globals.userId;
+  int? _userId;
   final TextEditingController _businessName = TextEditingController();
   final TextEditingController _businessAddress = TextEditingController();
   final TextEditingController _businessPhone = TextEditingController();
@@ -37,6 +37,8 @@ class _ProfilePageState extends State<ProfilePage>
   }
 
   Future<void> _fetchSellerStatus(int userId) async {
+    userId = globals.userId!;
+    print('User id fetched to profile page: $userId');
     final sellerData = await ApiServices.getSellerById(userId);
     bool isSeller = false;
 
@@ -60,12 +62,14 @@ class _ProfilePageState extends State<ProfilePage>
 
       setState(() {
         _userId = userId;
-        _userId = globals.userId;
-
-        if (userId != null) {
-          _fetchSellerStatus(userId);
-        }
       });
+
+      globals.userId = userId; // Update the global userId here
+      print('User id fetched to profile page $userId');
+
+      if (userId != null) {
+        _fetchSellerStatus(userId);
+      }
     } else {
       // Handle the case where the email is not found
       return showDialog(

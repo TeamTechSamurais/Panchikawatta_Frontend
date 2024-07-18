@@ -6,8 +6,8 @@ class NearestReminder {
 
   factory NearestReminder.fromJson(Map<String, dynamic> json) {
     return NearestReminder(
-      type: json['type'],
-      date: json['date'],
+      type: json['type'] ?? '',
+      date: json['date'] ?? '',
     );
   }
 }
@@ -24,7 +24,7 @@ class Vehicle {
   final String lastServiceDate;
   final String make;
   final String type;
-  String imageUrl;
+  final String imageUrl;
   final NearestReminder? nearestReminder;
 
   Vehicle({
@@ -45,18 +45,18 @@ class Vehicle {
 
   factory Vehicle.fromJson(Map<String, dynamic> json) {
     return Vehicle(
-      vehicleId: json['vehicleId'],
-      userId: json['userId'],
-      model: json['model'],
-      year: json['year'],
-      milagePerWeek: json['milagePerWeek'],
-      licenceDate: json['licenceDate'],
-      insuranceDate: json['insuranceDate'],
-      batteryCondition: json['batteryCondition'],
-      lastServiceDate: json['lastServiceDate'],
-      make: json['make'],
-      type: json['type'],
-      imageUrl: json['imageUrl'],
+      vehicleId: json['vehicleId'] ?? 0, // Default values if null
+      userId: json['userId'] ?? 0,
+      model: json['model'] ?? '',
+      year: json['year'] ?? 0,
+      milagePerWeek: json['milagePerWeek'] ?? 0,
+      licenceDate: json['licenceDate'] ?? '',
+      insuranceDate: json['insuranceDate'] ?? '',
+      batteryCondition: json['batteryCondition'] ?? '',
+      lastServiceDate: json['lastServiceDate'] ?? '',
+      make: json['make'] ?? '',
+      type: json['type'] ?? '',
+      imageUrl: json['imageUrls'] ?? '',
       nearestReminder: json['nearestReminder'] != null
           ? NearestReminder.fromJson(json['nearestReminder'])
           : null,

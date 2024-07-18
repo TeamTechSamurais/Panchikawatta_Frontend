@@ -46,9 +46,9 @@ class _ServicesAdsState extends State<ServicesAds> {
     }
   }
 
-  Future<void> _deleteAd(int adId) async {
+  Future<void> _deleteAd(int serviceId) async {
     final response = await http.delete(
-      Uri.parse('${Utils.baseUrl}/adListing/deleteAd/$adId'),
+      Uri.parse('${Utils.baseUrl}/adPosting/deleteService/$serviceId'),
     );
 
     if (response.statusCode == 200) {
@@ -90,7 +90,8 @@ class _ServicesAdsState extends State<ServicesAds> {
                     itemBuilder: (context, index) {
                       final service = snapshot.data![index];
                       return Card(
-                        margin: const EdgeInsets.symmetric(vertical: 5),
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 5, horizontal: 10),
                         elevation: 3,
                         child: ListTile(
                           contentPadding: const EdgeInsets.all(10),

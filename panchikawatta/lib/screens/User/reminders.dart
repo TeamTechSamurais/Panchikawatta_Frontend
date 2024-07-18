@@ -1,9 +1,9 @@
 // ignore_for_file: library_private_types_in_public_api
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:panchikawatta/constant/utils.dart';
 import 'dart:convert';
-
+import 'package:panchikawatta/global/globals.dart' as globals;
 import 'package:panchikawatta/models/vehicle.dart';
 
 class ReminderScreen extends StatefulWidget {
@@ -14,34 +14,61 @@ class ReminderScreen extends StatefulWidget {
 }
 
 class _ReminderScreenState extends State<ReminderScreen> {
-  List<Map<String, dynamic>> vehicles = [];
+  List<Vehicle> vehicles = [];
+  String errorMessage = '';
 
   @override
   void initState() {
     super.initState();
-    fetchVehicles();
-  }
-
-  Future<void> fetchVehicles() async {
-    final response = await http
-        // .get(Uri.parse('http://10.0.2.2:8000/users/getReminder/$vehicleId'));
-        .get(Uri.parse('http://10.0.2.2:8000/users/getReminder'));
-    if (response.statusCode == 200) {
-      setState(() {
-        vehicles = List<Map<String, dynamic>>.from(json.decode(response.body));
-      });
+    if (globals.userId != null) {
+      fetchReminders(globals.userId!); // Fetch vehicles with the user ID
     } else {
-      throw Exception('Failed to load vehicles');
+      setState(() {
+        errorMessage = 'User ID is null';
+        vehicles = [];
+      });
     }
   }
 
-  Future<void> markAsDone(int vehicleId) async {
-    final response = await http
-        .delete(Uri.parse('http://localhost:8000/users/markAsDone/$vehicleId'));
-    if (response.statusCode == 200) {
-      fetchVehicles(); // Refresh the list after deletion
-    } else {
-      throw Exception('Failed to delete reminder');
+  Future<void> fetchReminders(int userId) async {
+    try {
+      final response = await http
+          .get(Uri.parse('http://10.0.2.2:8000/users/getReminder/$userId'));
+
+      if (response.statusCode == 200) {
+        setState(() {
+          vehicles = (json.decode(response.body) as List)
+              .map((data) => Vehicle.fromJson(data))
+              .toList();
+        });
+      } else {
+        setState(() {
+          errorMessage = 'Failed to load vehicles';
+          vehicles = [];
+        });
+      }
+    } catch (e) {
+      setState(() {
+        errorMessage = 'An error occurred: $e';
+        vehicles = [];
+      });
+    }
+  }
+
+  Future<void> markAsDone(int vehicleId, String reminderType) async {
+    try {
+      final response = await http.delete(Uri.parse(
+          '${Utils.baseUrl}/users/markAsDone/$vehicleId/$reminderType'));
+
+      if (response.statusCode == 200) {
+        fetchReminders(globals.userId!); // Refresh the list after deletion
+      } else {
+        throw Exception('Failed to delete reminder');
+      }
+    } catch (e) {
+      setState(() {
+        errorMessage = 'An error occurred: $e';
+      });
     }
   }
 
@@ -58,25 +85,27 @@ class _ReminderScreenState extends State<ReminderScreen> {
           ),
         ),
       ),
-      body: GridView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 1,
-          childAspectRatio: 3 / 1,
-          mainAxisSpacing: 10,
-        ),
-        itemCount: vehicles.length,
-        itemBuilder: (ctx, i) => VehicleItem(
-          vehicleId: vehicles[i]['vehicleId'],
-          make: vehicles[i]['make'],
-          model: vehicles[i]['model'],
-          year: vehicles[i]['year'].toString(),
-          nearestReminder: vehicles[i]['nearestReminder']['type'] +
-              ': ' +
-              vehicles[i]['nearestReminder']['date'],
-          onMarkAsDone: markAsDone,
-        ),
-      ),
+      body: errorMessage.isNotEmpty
+          ? Center(child: Text(errorMessage))
+          : GridView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 1,
+                childAspectRatio: 3 / 1,
+                mainAxisSpacing: 10,
+              ),
+              itemCount: vehicles.length,
+              itemBuilder: (ctx, i) => VehicleItem(
+                vehicleId: vehicles[i].vehicleId,
+                make: vehicles[i].make,
+                model: vehicles[i].model,
+                year: vehicles[i].year.toString(),
+                nearestReminder: vehicles[i].nearestReminder != null
+                    ? '${vehicles[i].nearestReminder!.type}: ${vehicles[i].nearestReminder!.date}'
+                    : 'No reminders',
+                onMarkAsDone: markAsDone,
+              ),
+            ),
     );
   }
 }
@@ -87,7 +116,7 @@ class VehicleItem extends StatelessWidget {
   final String model;
   final String year;
   final String nearestReminder;
-  final Function(int) onMarkAsDone;
+  final Function(int, String) onMarkAsDone;
 
   const VehicleItem({
     super.key,
@@ -110,10 +139,8 @@ class VehicleItem extends StatelessWidget {
           children: [
             Row(
               children: [
-                const SizedBox(height: 20, width: 20),
-                const Icon(Icons.car_crash_outlined,
-                    size: 50, color: Color.fromARGB(255, 0, 0, 0)),
-                const SizedBox(width: 50),
+                const Icon(Icons.car_crash_outlined, size: 50),
+                const SizedBox(width: 20),
                 Text('$make $model $year',
                     style: const TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 18)),
@@ -123,7 +150,7 @@ class VehicleItem extends StatelessWidget {
                 style: const TextStyle(
                     color: Color.fromARGB(255, 255, 26, 10), fontSize: 16)),
             ElevatedButton(
-              onPressed: () => onMarkAsDone(vehicleId),
+              onPressed: () => onMarkAsDone(vehicleId, nearestReminder),
               child: const Text('Mark as Done'),
             ),
           ],

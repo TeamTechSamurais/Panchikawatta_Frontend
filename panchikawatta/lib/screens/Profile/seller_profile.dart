@@ -83,7 +83,7 @@ class _SellerProfile extends State<SellerProfile>
                       children: [
                         Center(
                           child: CircleAvatar(
-                              radius: 30,
+                              radius: 40,
                               backgroundImage: profilePictureUrl != null
                                   ? NetworkImage(profilePictureUrl!)
                                   : null,
@@ -122,8 +122,8 @@ class _SellerProfile extends State<SellerProfile>
                         Text(
                           _seller!['businessAddress'],
                           style: const TextStyle(
-                            fontSize: 20,
-                            color: Colors.black,
+                            fontSize: 16,
+                            color: Colors.grey,
                           ),
                         ),
                       ],
@@ -137,7 +137,7 @@ class _SellerProfile extends State<SellerProfile>
                         Text(
                           _seller!['businessPhoneNo'],
                           style: const TextStyle(
-                            fontSize: 20,
+                            fontSize: 18,
                             color: Colors.black,
                           ),
                         ),

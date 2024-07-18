@@ -6,7 +6,8 @@ import 'package:panchikawatta/dropdowns/origin.dart';
 import 'package:panchikawatta/dropdowns/vehicle_make.dart';
 import 'package:panchikawatta/dropdowns/vehicle_model.dart';
 import 'package:panchikawatta/dropdowns/vehicle_type.dart';
-import 'package:panchikawatta/screens/app.dart';
+import 'package:panchikawatta/screens/User/filtered_list.dart';
+import 'package:panchikawatta/models/sparepart.dart';
 import 'package:panchikawatta/services/filter_api_service.dart';
 
 class FilterSortScreen extends StatefulWidget {
@@ -32,7 +33,7 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
 
   Future<void> fetchFilteredAds() async {
     try {
-      final ads = await FilterApiService().fetchFilteredAds(
+      final List ads = await FilterApiService().fetchFilteredAds(
         type: selectedVehicleType,
         vehicleMake: selectedVehicleMake,
         model: selectedModel,
@@ -47,7 +48,9 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => const MyHomePage(),
+          builder: (context) => FilteredSparePartsScreen(
+              filteredSpareParts:
+                  ads.map((ad) => SparePart.fromJson(ad)).toList()),
         ),
       );
     } catch (error) {
@@ -57,6 +60,11 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
 
   @override
   Widget build(BuildContext context) {
+    List<String> makes = selectedVehicleType != null &&
+            vehicleTypeToMakes.containsKey(selectedVehicleType)
+        ? vehicleTypeToMakes[selectedVehicleType]!
+        : [];
+
     List<String> models = selectedVehicleMake != null &&
             vehicleMakeToModels.containsKey(selectedVehicleMake)
         ? vehicleMakeToModels[selectedVehicleMake]!
@@ -89,8 +97,9 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
             ),
             const SizedBox(height: 16),
             VehicleMake(
+              selectedType: selectedVehicleType,
               selectedMake: selectedVehicleMake,
-              makes: vehicleMakeToModels[selectedVehicleMake] ?? [],
+              makes: makes,
               onChanged: (String? make) {
                 setState(() {
                   selectedVehicleMake = make;
@@ -161,28 +170,38 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
             Row(
               children: [
                 Expanded(
-                  child: TextField(
-                    controller: TextEditingController(text: selectedMinYear),
-                    keyboardType: TextInputType.number,
+                  child: DropdownButtonFormField<String>(
                     decoration: const InputDecoration(labelText: 'Min Year'),
-                    onChanged: (value) {
+                    value: selectedMinYear,
+                    items: List.generate(
+                      DateTime.now().year - 1990 + 1,
+                      (index) => DropdownMenuItem(
+                        value: (1990 + index).toString(),
+                        child: Text((1990 + index).toString()),
+                      ),
+                    ),
+                    onChanged: (String? year) {
                       setState(() {
-                        selectedMinYear = value;
+                        selectedMinYear = year;
                       });
                     },
                   ),
                 ),
                 const SizedBox(width: 16),
-                const Text('-'),
-                const SizedBox(width: 16),
                 Expanded(
-                  child: TextField(
-                    controller: TextEditingController(text: selectedMaxYear),
-                    keyboardType: TextInputType.number,
+                  child: DropdownButtonFormField<String>(
                     decoration: const InputDecoration(labelText: 'Max Year'),
-                    onChanged: (value) {
+                    value: selectedMaxYear,
+                    items: List.generate(
+                      DateTime.now().year - 1990 + 1,
+                      (index) => DropdownMenuItem(
+                        value: (1990 + index).toString(),
+                        child: Text((1990 + index).toString()),
+                      ),
+                    ),
+                    onChanged: (String? year) {
                       setState(() {
-                        selectedMaxYear = value;
+                        selectedMaxYear = year;
                       });
                     },
                   ),
@@ -190,30 +209,9 @@ class _FilterSortScreenState extends State<FilterSortScreen> {
               ],
             ),
             const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                CustomButton(
-                  onPressed: () {
-                    setState(() {
-                      selectedVehicleMake = null;
-                      selectedModel = null;
-                      selectedOrigin = null;
-                      selectedMinYear = null;
-                      selectedMaxYear = null;
-                      minPriceController.clear();
-                      maxPriceController.clear();
-                      selectedConditions.clear();
-                      selectedFuel = null;
-                    });
-                  },
-                  text: 'Reset',
-                ),
-                CustomButton(
-                  onPressed: fetchFilteredAds,
-                  text: 'Apply',
-                ),
-              ],
+            CustomButton(
+              text: 'Apply',
+              onPressed: fetchFilteredAds,
             ),
           ],
         ),

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:panchikawatta/components/custom_button.dart';
+import 'package:panchikawatta/constant/utils.dart';
 import 'package:panchikawatta/models/vehicle.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -11,10 +12,6 @@ import 'package:panchikawatta/services/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class BuyerProfile extends StatefulWidget {
-  // final String? email;
-
-  //  BuyerProfile(this.email);
-
   @override
   _BuyerProfileState createState() => _BuyerProfileState();
 }
@@ -30,7 +27,6 @@ class _BuyerProfileState extends State<BuyerProfile> {
   @override
   void initState() {
     super.initState();
-    fetchUserIdByEmail();
     _fetchUser();
   }
 
@@ -61,6 +57,9 @@ class _BuyerProfileState extends State<BuyerProfile> {
             profilePictureUrl = null;
           }
         }
+
+        globals.userId = user['id']; // Assign user ID to globals.userId
+        fetchVehicles(globals.userId!); // Fetch vehicles with the user ID
       });
     } else {
       // Handle the case where the email is not found
@@ -84,65 +83,36 @@ class _BuyerProfileState extends State<BuyerProfile> {
     }
   }
 
-  Future<void> fetchUserIdByEmail() async {
+  Future<void> fetchVehicles(int userId) async {
     try {
+      print('User ID: $userId');
       final response = await http.get(
-        Uri.parse('http://10.0.2.2:8000/users/getidbyemail/${_email}'),
+        Uri.parse('${Utils.baseUrl}/users/getVehicles/$userId'),
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        setState(() {
-          globals.userId = data['userId'];
-          print('User id: ${globals.userId}');
-        });
-        fetchVehicles(); // Once userId is fetched, fetch vehicles
-      } else {
-        throw Exception('Failed to load user ID');
-      }
-    } catch (e) {
-      print('Error fetching user ID: $e');
-    }
-  }
-
-  Future<void> fetchVehicles() async {
-    int? userId = globals.userId;
-    if (userId != null) {
-      try {
-        final response = await http.get(
-          Uri.parse('http://10.0.2.2:8000/users/getVehicles/$userId'),
-        );
-
-        if (response.statusCode == 200) {
-          final List<dynamic> decodedBody = json.decode(response.body);
-          if (decodedBody.isEmpty) {
-            setState(() {
-              errorMessage = 'No vehicles found';
-              vehicles = [];
-            });
-          } else {
-            setState(() {
-              vehicles =
-                  decodedBody.map((json) => Vehicle.fromJson(json)).toList();
-              errorMessage =
-                  ''; // Clear the error message if vehicles are found
-            });
-          }
-        } else {
+        final List<dynamic> decodedBody = json.decode(response.body);
+        if (decodedBody.isEmpty) {
           setState(() {
-            errorMessage = 'No vehicles registered';
+            errorMessage = 'No vehicles found';
             vehicles = [];
           });
+        } else {
+          setState(() {
+            vehicles =
+                decodedBody.map((json) => Vehicle.fromJson(json)).toList();
+            errorMessage = ''; // Clear the error message if vehicles are found
+          });
         }
-      } catch (e) {
+      } else {
         setState(() {
-          errorMessage = 'An error occurred: $e';
+          errorMessage = 'No vehicles registered';
           vehicles = [];
         });
       }
-    } else {
+    } catch (e) {
       setState(() {
-        errorMessage = 'User ID is null';
+        errorMessage = 'An error occurred: $e';
         vehicles = [];
       });
     }
@@ -172,7 +142,6 @@ class _BuyerProfileState extends State<BuyerProfile> {
               child: Column(
                 children: [
                   const SizedBox(height: 20),
-
                   Center(
                     child: CircleAvatar(
                         radius: 60,
@@ -183,15 +152,11 @@ class _BuyerProfileState extends State<BuyerProfile> {
                             ? const Icon(Icons.person, size: 60)
                             : null),
                   ),
-
                   const SizedBox(height: 10),
-
                   Center(
                       child: Text('${user['userName']}',
                           style: const TextStyle(fontSize: 18))),
-
                   const SizedBox(height: 20),
-
                   Padding(
                     padding: EdgeInsets.fromLTRB(
                       MediaQuery.of(context).size.width * 0.1, // left
@@ -210,8 +175,8 @@ class _BuyerProfileState extends State<BuyerProfile> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) =>
-                                        const WishlistScreen(userId: 1)),
+                                    builder: (context) => WishlistScreen(
+                                        userId: globals.userId!)),
                               );
                             },
                             text: 'Wishlist',
@@ -233,9 +198,7 @@ class _BuyerProfileState extends State<BuyerProfile> {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 15),
-
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.9,
                     child: const Divider(
@@ -243,9 +206,7 @@ class _BuyerProfileState extends State<BuyerProfile> {
                       thickness: 1,
                     ),
                   ),
-
                   const SizedBox(height: 20),
-
                   Padding(
                     padding: EdgeInsets.fromLTRB(
                       MediaQuery.of(context).size.width * 0.1, // left
@@ -261,9 +222,9 @@ class _BuyerProfileState extends State<BuyerProfile> {
                           child: const Text(
                             'My Vehicles',
                             style: TextStyle(
-                              color: Color(0xFF000000),
-                              fontSize: 18,
-                            ),
+                                color: Color(0xFF000000),
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500),
                           ),
                         ),
                         CustomButton(
@@ -275,81 +236,15 @@ class _BuyerProfileState extends State<BuyerProfile> {
                       ],
                     ),
                   ),
-
-                  // ListView.builder(
-                  //   shrinkWrap: true,
-                  //   physics: NeverScrollableScrollPhysics(),
-                  //   itemCount: vehicles.length,
-                  //   itemBuilder: (context, index) {
-                  //     final vehicle = vehicles[index];
-                  //     return Card(
-                  //       margin:
-                  //           const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                  //       elevation: 3,
-                  //       child: ListTile(
-                  //         contentPadding: const EdgeInsets.all(10),
-                  //         leading: vehicle.imageUrls.isNotEmpty
-                  //             ? Image.network(
-                  //                 vehicle.imageUrls[0],
-                  //                 width: 70,
-                  //                 height: 50,
-                  //                 fit: BoxFit.cover,
-                  //               )
-                  //             : const Icon(Icons.image_not_supported, size: 50),
-                  //         title: Text(
-                  //           '${vehicle.make} ${vehicle.model}',
-                  //           style: const TextStyle(
-                  //             fontWeight: FontWeight.bold,
-                  //             fontSize: 16,
-                  //                     ),
-                  //                   ),
-                  //                   subtitle: Column(
-                  //                     crossAxisAlignment: CrossAxisAlignment.start,
-                  //                     children: [
-                  //                       const SizedBox(height: 5),
-                  //                       Text(
-                  //                         'Year: ${vehicle.year}',
-                  //                         style: const TextStyle(fontSize: 15),
-                  //                       ),
-                  //                       const SizedBox(height: 5),
-                  //                       Text(
-                  //                         vehicle.nearestReminder != null
-                  //                             ? vehicle.nearestReminder!.type
-                  //                             : 'Not set',
-                  //                         style: const TextStyle(
-                  //                           fontSize: 15,
-                  //                           color: Color.fromARGB(255, 105, 104, 104),
-                  //                         ),
-                  //                       ),
-                  //                     ],
-                  //                   ),
-                  //                 ),
-                  //               );
-                  //             },
-                  //           ),
-                  //         ],
-                  //       ),
-                  //     );
-                  //   }
-                  // },
-                  //           CustomButton(
-                  //             onPressed: () {
-                  //               // Add your button press logic here
-                  //             },
-                  //             text: "Add Vehicle",
-                  //           )
-                  //         ],
-                  //       ),
-                  //     ),
                   if (errorMessage.isNotEmpty)
                     Center(
                       child: Column(
                         children: [
-                          SizedBox(height: 30),
+                          const SizedBox(height: 30),
                           Text(
                             errorMessage,
-                            style: TextStyle(
-                                color: const Color.fromARGB(255, 0, 0, 0),
+                            style: const TextStyle(
+                                color: Color.fromARGB(255, 0, 0, 0),
                                 fontSize: 16),
                           ),
                         ],
@@ -358,7 +253,7 @@ class _BuyerProfileState extends State<BuyerProfile> {
                   else
                     ListView.builder(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: vehicles.length,
                       itemBuilder: (context, index) {
                         final vehicle = vehicles[index];
@@ -396,11 +291,8 @@ class _BuyerProfileState extends State<BuyerProfile> {
                                 Text(
                                   vehicle.nearestReminder != null
                                       ? vehicle.nearestReminder!.type
-                                      : 'Not set',
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    color: Color.fromARGB(255, 105, 104, 104),
-                                  ),
+                                      : 'No reminders',
+                                  style: const TextStyle(fontSize: 15),
                                 ),
                               ],
                             ),

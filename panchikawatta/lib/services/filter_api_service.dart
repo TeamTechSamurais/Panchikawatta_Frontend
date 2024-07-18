@@ -35,19 +35,27 @@ class FilterApiService {
     queryParams.removeWhere((key, value) => value == null);
 
     final uri =
-        Uri.http('10.0.2.2:8000', '/adListing/getFilteredAds', queryParams);
+        Uri.http('//10.0.2.2', '/adListing/getFilteredAds', queryParams);
 
     final response = await http.get(uri);
 
     if (response.statusCode == 200) {
       final List<dynamic> ads = json.decode(response.body);
-      return ads;
+      return ads.map((item) {
+        if (item['type'] == 'sparepart') {
+          return SparePart.fromJson(item);
+        } else if (item['type'] == 'service') {
+          return Service.fromJson(item);
+        } else {
+          throw Exception('Unknown ad type');
+        }
+      }).toList();
     } else {
       throw Exception('Failed to fetch filtered ads');
     }
   }
 
-  //sorting APIs
+  // Sorting APIs
   Future<List<SparePart>> getSortedSpareParts(String sort) async {
     final response = await http.get(
         Uri.parse('${Utils.baseUrl}/adListing/getsortedspareparts?sort=$sort'));

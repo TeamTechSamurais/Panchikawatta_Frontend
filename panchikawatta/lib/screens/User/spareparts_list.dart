@@ -31,11 +31,6 @@ class SparePartsList extends StatelessWidget {
               ),
               itemBuilder: (context, i) {
                 var sparePart = snapshot.data![i];
-                // final imageWidget = Image.asset(
-                //             'assets/images/no_image.png',
-                //             height: 73,
-                //             width: 81,
-                //           );
                 final imageWidget = sparePart.imageUrls.isNotEmpty
                     ? Image.network(
                         sparePart.imageUrls[0],

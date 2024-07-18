@@ -8,6 +8,7 @@ import 'package:panchikawatta/global/common/toast.dart';
 import 'package:panchikawatta/screens/Profile/forgetpassword1.dart';
 import 'package:panchikawatta/screens/SignUp/sign_up1.dart';
 import 'package:panchikawatta/screens/app.dart';
+import 'package:panchikawatta/screens/profile_page.dart';
 import 'package:panchikawatta/services/firebase_api.dart';
 import 'package:panchikawatta/screens/storage_helper.dart';
 import 'package:panchikawatta/user_auth/firebase_auth_implementation/firebase_auth_services.dart';
